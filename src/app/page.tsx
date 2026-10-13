@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useMemo } from 'react';
+import { useState, useCallback, useMemo, useEffect } from 'react';
 import { runEngine, runQuickMode, type UserProfile, type EngineResult } from '@/lib/engine';
 import { searchOccupations, BRAZILIAN_STATES, type Occupation } from '@/data/occupations';
 import type { Argument, ProfileTag } from '@/data/arguments';
@@ -33,6 +33,7 @@ export default function BoraApp() {
   // Modals state
   const [activeCardArg, setActiveCardArg] = useState<Argument | null>(null);
   const [showSimulator, setShowSimulator] = useState(false);
+  const [installPrompt, setInstallPrompt] = useState<any>(null);
 
   const goToStep = useCallback((nextStep: AppStep) => {
     setStep(nextStep);
@@ -50,6 +51,62 @@ export default function BoraApp() {
     setResults(engineResults);
     goToStep('results');
   }, [profile, goToStep]);
+
+  // Read URL query params on mount & listen for PWA install prompt
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+
+    // PWA install listener
+    const installHandler = (e: any) => {
+      e.preventDefault();
+      setInstallPrompt(e);
+    };
+    window.addEventListener('beforeinstallprompt', installHandler);
+
+    // URL parameters for deep-linking
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('mode') === 'quick') {
+      const quickRes = runQuickMode();
+      setResults(quickRes);
+      setStep('results');
+      return () => window.removeEventListener('beforeinstallprompt', installHandler);
+    }
+
+    const stateParam = params.get('state');
+    const levelParam = params.get('level');
+    const occParam = params.get('occ');
+
+    if (stateParam || levelParam || occParam) {
+      const updatedProfile: UserProfile = {
+        profileTags: [],
+        rejectionLevel: levelParam ? Math.max(1, Math.min(4, parseInt(levelParam, 10))) : 2,
+        state: stateParam ? stateParam.toUpperCase() : undefined,
+        occupation: occParam || undefined,
+        familyFlags: {
+          hasElderly: false,
+          hasChildren: false,
+          dependsSUS: false,
+          receivesBenefit: false,
+          hasPCD: false,
+        },
+      };
+      setProfile(updatedProfile);
+      const res = runEngine(updatedProfile);
+      setResults(res);
+      setStep('results');
+    }
+
+    return () => window.removeEventListener('beforeinstallprompt', installHandler);
+  }, []);
+
+  const handleInstallApp = useCallback(async () => {
+    if (!installPrompt) return;
+    installPrompt.prompt();
+    const { outcome } = await installPrompt.userChoice;
+    if (outcome === 'accepted') {
+      setInstallPrompt(null);
+    }
+  }, [installPrompt]);
 
   return (
     <div className="min-h-screen flex flex-col">
@@ -71,6 +128,8 @@ export default function BoraApp() {
           onStart={() => goToStep('location')}
           onQuickMode={handleQuickMode}
           onOpenSimulator={() => setShowSimulator(true)}
+          canInstall={!!installPrompt}
+          onInstall={handleInstallApp}
         />
       )}
       {step === 'location' && (
@@ -94,6 +153,8 @@ export default function BoraApp() {
         <ResultsPanel
           results={results}
           profile={profile}
+          canInstall={!!installPrompt}
+          onInstall={handleInstallApp}
           onOpenCardGenerator={(arg) => setActiveCardArg(arg)}
           onOpenSimulator={() => setShowSimulator(true)}
           onRestart={() => {
@@ -131,10 +192,14 @@ function HeroSection({
   onStart,
   onQuickMode,
   onOpenSimulator,
+  canInstall,
+  onInstall,
 }: {
   onStart: () => void;
   onQuickMode: () => void;
   onOpenSimulator: () => void;
+  canInstall?: boolean;
+  onInstall?: () => void;
 }) {
   return (
     <section className="min-h-screen flex flex-col items-center justify-center px-5 py-12 text-center animate-fade-in relative">
@@ -187,6 +252,16 @@ function HeroSection({
           <span>🥋</span>
           <span>Treinar Diálogo (Simulador de Conversa)</span>
         </button>
+
+        {canInstall && onInstall && (
+          <button
+            className="py-3 px-4 rounded-xl text-sm font-bold transition-all border border-teal-500/50 bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 flex items-center justify-center gap-2 animate-pulse"
+            onClick={onInstall}
+          >
+            <span>📲</span>
+            <span>Instalar App no Celular (Funciona Offline)</span>
+          </button>
+        )}
       </div>
 
       {/* Trust badges */}
@@ -565,12 +640,16 @@ function ProfileStep({
 function ResultsPanel({
   results,
   profile,
+  canInstall,
+  onInstall,
   onOpenCardGenerator,
   onOpenSimulator,
   onRestart,
 }: {
   results: EngineResult;
   profile: UserProfile;
+  canInstall?: boolean;
+  onInstall?: () => void;
   onOpenCardGenerator: (arg: Argument) => void;
   onOpenSimulator: () => void;
   onRestart: () => void;
@@ -600,6 +679,17 @@ function ResultsPanel({
       setTimeout(() => setCopiedId(null), 2000);
     }
   }, []);
+
+  const handleCopyShareLink = useCallback(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams();
+    if (profile.state) params.set('state', profile.state);
+    if (profile.rejectionLevel) params.set('level', String(profile.rejectionLevel));
+    if (profile.occupation) params.set('occ', profile.occupation);
+    const query = params.toString();
+    const shareUrl = `${window.location.origin}${window.location.pathname}${query ? `?${query}` : ''}`;
+    handleCopy(shareUrl, 'share-link');
+  }, [profile, handleCopy]);
 
   const handleShareWhatsApp = useCallback((text: string) => {
     const encoded = encodeURIComponent(text);
@@ -646,11 +736,17 @@ function ResultsPanel({
   const categories = [
     { id: 'todos', label: 'Todos' },
     { id: 'combustivel', label: '⛽ Combustível' },
-    { id: 'salario_minimo', label: '💵 Salário' },
-    { id: 'alimentacao', label: '🥩 Alimentos' },
+    { id: 'tributacao', label: '🛒 Imposto Zero & IR' },
+    { id: 'salario', label: '💵 Salário Mínimo' },
+    { id: 'previdencia', label: '🧓 BPC & Aposentadoria' },
+    { id: 'educacao', label: '🎒 Pé-de-Meia & Escola' },
     { id: 'saude', label: '🏥 SUS & Remédios' },
-    { id: 'previdencia', label: '🧓 Aposentadoria & BPC' },
-    { id: 'emprego', label: '💼 Emprego & MEI' },
+    { id: 'credito', label: '💳 Desenrola & Nome Limpo' },
+    { id: 'seguranca', label: '🛡️ Segurança Pública' },
+    { id: 'agro', label: '🌾 Plano Safra & Agro' },
+    { id: 'alimentacao', label: '🥩 Comida no Prato' },
+    { id: 'trabalho', label: '⚖️ Direitos CLT' },
+    { id: 'regional', label: '🗺️ Obras Regionais' },
   ];
 
   // Filtered arguments
@@ -1070,6 +1166,15 @@ function ResultsPanel({
             </span>
           </button>
 
+          <button
+            className="btn-secondary w-full"
+            onClick={handleCopyShareLink}
+          >
+            <span className="flex items-center justify-center gap-2">
+              {copiedId === 'share-link' ? '✅ Link Desta Estratégia Copiado!' : '🔗 Copiar Link Desta Estratégia'}
+            </span>
+          </button>
+
           {typeof navigator !== 'undefined' && 'share' in navigator && (
             <button
               className="btn-secondary w-full"
@@ -1088,6 +1193,16 @@ function ResultsPanel({
             <span>🥋</span>
             <span>Treinar no Simulador de Conversa</span>
           </button>
+
+          {canInstall && onInstall && (
+            <button
+              className="py-3 px-4 rounded-xl text-sm font-bold transition-all border border-teal-500/50 bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 flex items-center justify-center gap-2 animate-pulse"
+              onClick={onInstall}
+            >
+              <span>📲</span>
+              <span>Instalar App no Celular (Funciona Offline)</span>
+            </button>
+          )}
         </div>
       )}
 

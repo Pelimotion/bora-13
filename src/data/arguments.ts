@@ -363,6 +363,151 @@ export const ARGUMENTS_DATABASE: Argument[] = [
     impactScore: 8,
     emoji: '🎓',
   },
+  // ═══════════════════════════════════════
+  // REFORMA TRIBUTÁRIA E IMPOSTO DE RENDA
+  // ═══════════════════════════════════════
+  {
+    id: 'tax-001',
+    category: 'tributacao',
+    targetProfiles: ['clt', 'comerciante', 'pj', 'autonomo', 'generico'],
+    route: 'A',
+    stage: 'gatilho',
+    title: 'Cesta Básica com Imposto Zero e Cashback',
+    headline: 'Comida sem imposto na cesta básica nacional',
+    scriptText: 'A Reforma Tributária aprovada zera o imposto de todos os alimentos da cesta básica essencial: arroz, feijão, pão, leite, carnes e legumes. Além disso, cria o Cashback do Povo, devolvendo impostos de luz, gás e água direto na conta das famílias de menor renda. A oposição votou em peso contra essa isenção da comida do trabalhador.',
+    counterArgument: 'Mas vão criar um imposto do pecado e aumentar tudo.',
+    rebuttal: 'O imposto seletivo é apenas para cigarro e bebidas alcoólicas, como é no mundo inteiro para proteger a saúde. O que alimenta a família — arroz, feijão, frango, carne bovina, ovo — terá imposto ZERO. Quem é contra isso defende cobrar o mesmo imposto do prato do pedreiro e da lancha do bilionário.',
+    sourceName: 'Ministério da Fazenda / Congresso Nacional (PEC 45)',
+    sourceUrl: 'https://www.gov.br/fazenda/pt-br/assuntos/reforma-tributaria',
+    impactScore: 10,
+    emoji: '🛒',
+  },
+  {
+    id: 'tax-002',
+    category: 'tributacao',
+    targetProfiles: ['clt', 'servidor_publico', 'professor', 'autonomo', 'generico'],
+    route: 'A',
+    stage: 'ponte',
+    title: 'Isenção de Imposto de Renda até R$ 5.000',
+    headline: 'Quem ganha até R$ 5.000 não vai pagar Imposto de Renda',
+    scriptText: 'A tabela do Imposto de Renda ficou congelada de 2015 a 2022, fazendo quem ganhava um salário e meio pagar IR como se fosse rico. Já foi ampliada a faixa de isenção e o compromisso aprovado é isenção total para quem ganha até R$ 5 mil mensais, cobrando mais dos super-ricos e fundos exclusivos.',
+    sourceName: 'Receita Federal do Brasil',
+    sourceUrl: 'https://www.gov.br/receitafederal',
+    impactScore: 9,
+    emoji: '💵',
+  },
+
+  // ═══════════════════════════════════════
+  // PÉ-DE-MEIA (POUPANÇA ENSINO MÉDIO)
+  // ═══════════════════════════════════════
+  {
+    id: 'edu-002',
+    category: 'educacao',
+    targetProfiles: ['mae', 'pai', 'jovem', 'periferia', 'generico'],
+    route: 'A',
+    stage: 'ponte',
+    title: 'Poupança Pé-de-Meia para Estudantes',
+    headline: 'Até R$ 9.200 para o jovem concluir a escola',
+    scriptText: 'Quase meio milhão de jovens abandonavam o ensino médio todo ano para trabalhar e ajudar em casa. O programa Pé-de-Meia paga R$ 200 por mês para o aluno da escola pública continuar estudando, mais R$ 1.000 ao fim de cada ano letivo aprovado, somando até R$ 9.200 na formatura. É dinheiro que fica na poupança da família e impede o jovem de cair na criminalidade.',
+    counterArgument: 'Isso é assistencialismo que acostuma o jovem mal.',
+    rebuttal: 'O jovem só recebe se tiver 80% de frequência escolar e passar de ano. Não é favor, é investimento comprovado: cada ano a mais de estudo aumenta o salário futuro do jovem em 15% e reduz drasticamente a violência juvenil nas periferias.',
+    sourceName: 'MEC / Caixa Econômica Federal',
+    sourceUrl: 'https://www.gov.br/mec/pt-br/pe-de-meia',
+    impactScore: 10,
+    emoji: '🎒',
+  },
+
+  // ═══════════════════════════════════════
+  // DESENROLA BRASIL (LIMPEZA DE NOME)
+  // ═══════════════════════════════════════
+  {
+    id: 'credit-001',
+    category: 'credito',
+    targetProfiles: ['desempregado', 'autonomo', 'clt', 'comerciante', 'generico'],
+    route: 'A',
+    stage: 'ponte',
+    title: 'Desenrola Brasil e Limpeza de Nome',
+    headline: '15 milhões de brasileiros com nome limpo e até 96% de desconto',
+    scriptText: 'Milhões de brasileiros entraram na lista de inadimplentes com juros abusivos de cartão e cheque especial. O Desenrola Brasil renegociou mais de R$ 50 bilhões em dívidas com descontos médios de 85% e parcelas a partir de R$ 30. Quem tinha o nome sujo por conta de energia ou telefone pôde voltar a ter crédito no comércio do seu bairro.',
+    sourceName: 'Ministério da Fazenda / Serasa Experian',
+    sourceUrl: 'https://desenrola.gov.br',
+    impactScore: 9,
+    emoji: '💳',
+  },
+
+  // ═══════════════════════════════════════
+  // AGRONEGÓCIO FAMILIAR E PLANO SAFRA
+  // ═══════════════════════════════════════
+  {
+    id: 'agro-001',
+    category: 'agro',
+    targetProfiles: ['rural', 'agronegocio', 'comerciante', 'generico'],
+    route: 'BOTH',
+    stage: 'gatilho',
+    title: 'Plano Safra Recorde de R$ 400 Bilhões',
+    headline: 'Maior Plano Safra da história do Brasil',
+    scriptText: 'Muitos dizem nas redes que a esquerda odeia o agro. Os dados oficiais mostram o oposto: o atual Plano Safra bateu recorde absoluto de mais de R$ 400 bilhões de crédito, com juros subsidiados para médios produtores e Pronaf histórico para a agricultura familiar — que é quem produz 70% da comida que chega na mesa do brasileiro.',
+    counterArgument: 'Mas eles apoiam invasão de terra.',
+    rebuttal: 'O crédito rural do Plano Safra exige regularidade fiscal e ambiental estrita. As exportações do agronegócio bateram recorde em 2023 e 2024 porque o Brasil recuperou a diplomacia com a China e a Europa, abrindo mais de 100 novos mercados agrícolas no exterior.',
+    sourceName: 'Ministério da Agricultura e Pecuária (MAPA)',
+    sourceUrl: 'https://www.gov.br/agricultura',
+    impactScore: 8,
+    emoji: '🌾',
+  },
+
+  // ═══════════════════════════════════════
+  // SEGURANÇA PÚBLICA E CRIME ORGANIZADO
+  // ═══════════════════════════════════════
+  {
+    id: 'safety-001',
+    category: 'seguranca',
+    targetProfiles: ['generico', 'periferia', 'evangelico', 'comerciante'],
+    route: 'BOTH',
+    stage: 'gatilho',
+    title: 'Apreensão Recorde de Drogas e Armas Ilegais',
+    headline: 'Polícia Federal quebra recorde de apreensões e asfixia financeira do crime',
+    scriptText: 'Em vez de retórica violenta que só atinge quem mora na favela, o foco da segurança pública foi asfixiar as contas bancárias dos chefes do crime organizado. A Polícia Federal e a PRF bateram recordes históricos de apreensão de cocaína e fuzis, bloqueando mais de R$ 2 bilhões em bens de facções e milícias.',
+    counterArgument: 'A segurança tá pior, a esquerda defende bandido.',
+    rebuttal: 'Defender o trabalhador é justamente não deixar o crime organizado dominar os bairros. A taxa de homicídios no Brasil caiu para o menor patamar dos últimos 12 anos segundo o Fórum Brasileiro de Segurança Pública. A polícia hoje tem inteligência, tecnologia e concurso público aberto.',
+    sourceName: 'Fórum Brasileiro de Segurança Pública / MJSP',
+    sourceUrl: 'https://forumseguranca.org.br',
+    impactScore: 9,
+    emoji: '🛡️',
+  },
+
+  // ═══════════════════════════════════════
+  // SEGURANÇA HÍDRICA E TRANSIÇÃO REGIONAL
+  // ═══════════════════════════════════════
+  {
+    id: 'reg-ne-001',
+    category: 'regional',
+    targetProfiles: ['rural', 'generico'],
+    route: 'A',
+    stage: 'ponte',
+    title: 'Transposição do Rio São Francisco e Água no Sertão',
+    headline: 'Água garantida para 12 milhões de sertanejos',
+    scriptText: 'As obras de transposição do São Francisco, que ficaram paradas com canais rachando no governo anterior, foram concluídas e religadas com a retomada do Ramal do Agreste e do Cinturão das Águas. Além disso, o programa de 1 milhão de cisternas foi reativado para garantir água de beber e de plantar no semiárido.',
+    regions: ['BA', 'PE', 'CE', 'PB', 'RN', 'AL', 'SE', 'PI', 'MA'],
+    sourceName: 'Ministério da Integração e do Desenvolvimento Regional',
+    sourceUrl: 'https://www.gov.br/midr',
+    impactScore: 10,
+    emoji: '💧',
+  },
+  {
+    id: 'reg-se-001',
+    category: 'regional',
+    targetProfiles: ['clt', 'pj', 'comerciante', 'generico'],
+    route: 'A',
+    stage: 'ponte',
+    title: 'Nova Indústria Brasil e Polos Automotivos',
+    headline: 'Montadoras e indústrias voltando a investir no Sudeste',
+    scriptText: 'Montadoras multinacionais (BYD, Toyota, Stellantis, Volkswagen) anunciaram mais de R$ 130 bilhões em novos investimentos no Brasil até 2028, após anos de fuga de fábricas como a Ford. Isso gera empregos industriais qualificados com carteira assinada e movimenta toda a cadeia de peças e serviços em SP, RJ e MG.',
+    regions: ['SP', 'RJ', 'MG', 'ES', 'PR'],
+    sourceName: 'MDIC / ANFAVEA',
+    sourceUrl: 'https://www.gov.br/mdic',
+    impactScore: 9,
+    emoji: '🏭',
+  },
 ];
 
 // ═══════════════════════════════════════
