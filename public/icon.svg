@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="75%">
+      <stop offset="0%" stop-color="#162036" />
+      <stop offset="100%" stop-color="#080F1A" />
+    </radialGradient>
+    <linearGradient id="glowGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2DD4BF" />
+      <stop offset="50%" stop-color="#14B8A6" />
+      <stop offset="100%" stop-color="#0D9488" />
+    </linearGradient>
+    <linearGradient id="warmGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FCD34D" />
+      <stop offset="100%" stop-color="#F59E0B" />
+    </linearGradient>
+    <filter id="softGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="16" result="blur" />
+      <feComposite in="SourceGraphic" in2="blur" operator="over" />
+    </filter>
+  </defs>
+
+  <!-- Background base with rounded squircle -->
+  <rect width="512" height="512" rx="128" fill="url(#bgGrad)" />
+  <rect width="504" height="504" x="4" y="4" rx="124" fill="none" stroke="rgba(20, 184, 166, 0.25)" stroke-width="4" />
+
+  <!-- Ambient glow behind icons -->
+  <circle cx="256" cy="256" r="140" fill="#14B8A6" opacity="0.12" filter="url(#softGlow)" />
+
+  <!-- Dialogue Bubbles & Handshake Concept -->
+  <!-- Left Bubble (Listener / Bridge) -->
+  <path d="M 120 180 C 120 135 156 100 200 100 L 290 100 C 334 100 370 135 370 180 C 370 225 334 260 290 260 L 220 260 L 160 300 L 175 255 C 142 245 120 215 120 180 Z" 
+        fill="url(#glowGrad)" opacity="0.95" />
+
+  <!-- Right Bubble (Empathetic Response) -->
+  <path d="M 392 310 C 392 350 360 380 320 380 L 270 380 L 220 415 L 232 375 C 205 368 185 342 185 310 C 185 270 217 240 257 240 L 320 240 C 360 240 392 270 392 310 Z" 
+        fill="url(#warmGrad)" opacity="0.9" />
+
+  <!-- Bridge Spark / Connection Icon in the Center -->
+  <circle cx="270" cy="250" r="16" fill="#FFFFFF" />
+  <circle cx="225" cy="180" r="8" fill="#FFFFFF" opacity="0.8" />
+  <circle cx="260" cy="180" r="8" fill="#FFFFFF" opacity="0.8" />
+  <circle cx="295" cy="180" r="8" fill="#FFFFFF" opacity="0.8" />
+</svg>

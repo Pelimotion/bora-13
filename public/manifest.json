@@ -1,0 +1,31 @@
+{
+  "name": "Bora — Conversas que Importam",
+  "short_name": "Bora",
+  "description": "Encontre os melhores argumentos baseados em dados reais para dialogar sobre o futuro do Brasil.",
+  "start_url": "/",
+  "id": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#080F1A",
+  "theme_color": "#080F1A",
+  "lang": "pt-BR",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["news", "social", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Argumento Rápido",
+      "short_name": "Rápido",
+      "description": "Obtenha argumentos imediatos para qualquer perfil",
+      "url": "/?mode=quick",
+      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
+    }
+  ]
+}
