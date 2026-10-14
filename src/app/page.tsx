@@ -4,7 +4,7 @@ import { useState, useCallback, useMemo, useEffect } from 'react';
 import { runEngine, runQuickMode, type UserProfile, type EngineResult } from '@/lib/engine';
 import { searchOccupations, inferTagsFromCustomOccupation, type Occupation } from '@/data/occupations';
 import { BRAZIL_STATES_GEO, getStateByUF, type StateGeo } from '@/data/brazilGeo';
-import type { Argument, ProfileTag } from '@/data/arguments';
+import { ARGUMENTS_DATABASE, type Argument, type ProfileTag } from '@/data/arguments';
 import type { Opportunity } from '@/data/opportunities';
 import VisualCardGenerator from '@/components/VisualCardGenerator';
 import ConversationSimulator from '@/components/ConversationSimulator';
@@ -146,8 +146,12 @@ export default function BoraApp() {
             }}
             className="flex items-center gap-2.5 text-left group"
           >
-            <div className="w-9 h-9 rounded-xl bg-[#C52229] text-white flex items-center justify-center font-black text-sm shadow-sm group-hover:scale-105 transition-transform">
-              ⭐ 13
+            <div className="w-9 h-9 rounded-xl overflow-hidden border border-red-200 dark:border-red-800/50 shadow-sm group-hover:scale-105 transition-transform bg-white shrink-0">
+              <img
+                src="/brand/logo-emblem.jpg"
+                alt="Emblema Bora 13"
+                className="w-full h-full object-cover"
+              />
             </div>
             <div>
               <span className="font-black text-sm tracking-tight text-slate-900 dark:text-white flex items-center gap-1">
@@ -173,6 +177,15 @@ export default function BoraApp() {
                 ← Início
               </button>
             )}
+
+            <button
+              onClick={() => setActiveCardArg(ARGUMENTS_DATABASE[0])}
+              className="text-xs font-bold px-2.5 py-1 rounded-lg bg-red-50 dark:bg-red-950/40 text-[#C52229] dark:text-red-300 border border-red-200 dark:border-red-800/40 hover:bg-red-100 transition-colors flex items-center gap-1"
+              title="Estúdio de Posts & Carrossel Instagram"
+            >
+              <span>🎨</span>
+              <span className="hidden sm:inline">Carrossel & Cards</span>
+            </button>
 
             <button
               onClick={() => setShowSimulator(true)}
@@ -227,6 +240,7 @@ export default function BoraApp() {
             onStart={() => goToStep('location')}
             onQuickMode={handleQuickMode}
             onOpenSimulator={() => setShowSimulator(true)}
+            onOpenStudio={() => setActiveCardArg(ARGUMENTS_DATABASE[0])}
             canInstall={!!installPrompt}
             onInstall={handleInstallApp}
           />
@@ -298,33 +312,37 @@ function HeroSection({
   onStart,
   onQuickMode,
   onOpenSimulator,
+  onOpenStudio,
   canInstall,
   onInstall,
 }: {
   onStart: () => void;
   onQuickMode: () => void;
   onOpenSimulator: () => void;
+  onOpenStudio: () => void;
   canInstall?: boolean;
   onInstall?: () => void;
 }) {
   return (
     <section className="min-h-[calc(100vh-60px)] flex flex-col items-center justify-center px-4 py-10 text-center animate-fade-in relative max-w-xl mx-auto w-full">
       {/* Badge Oficial Casa 13 */}
-      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-6 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/40 text-[#C52229] dark:text-red-300 text-xs font-black tracking-wider uppercase shadow-sm">
+      <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-5 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-800/40 text-[#C52229] dark:text-red-300 text-xs font-black tracking-wider uppercase shadow-sm">
         <span className="text-amber-500">⭐</span>
         <span>Casa 13 • QG da Esperança & Diálogo</span>
       </div>
 
-      {/* Título Principal & Apresentação */}
-      <div className="mb-6 animate-slide-up">
-        <div
-          className="inline-flex items-center justify-center w-20 h-20 rounded-3xl mb-4 shadow-md text-4xl select-none"
-          style={{
-            background: 'linear-gradient(135deg, #C52229 0%, #B91C1C 60%, #F59E0B 120%)',
-          }}
-        >
-          🤝
+      {/* Emblema Oficial Bora 13 com Cores do Brasil */}
+      <div className="mb-5 animate-slide-up">
+        <div className="relative inline-block mb-3 group">
+          <div className="w-24 h-24 rounded-3xl overflow-hidden border-2 border-amber-300/80 dark:border-amber-500/40 shadow-xl mx-auto bg-white p-1 group-hover:scale-105 transition-transform">
+            <img
+              src="/brand/logo-emblem.jpg"
+              alt="Bora 13 • Diálogo Político e Social"
+              className="w-full h-full object-cover rounded-2xl"
+            />
+          </div>
         </div>
+
         <h1 className="text-4xl md:text-5xl font-black tracking-tight mb-2 text-slate-900 dark:text-white">
           Bora Conversar
         </h1>
@@ -334,7 +352,7 @@ function HeroSection({
       </div>
 
       {/* Proposta de Valor Humanizada */}
-      <p className="text-sm md:text-base max-w-md mx-auto mb-8 leading-relaxed text-slate-600 dark:text-slate-400">
+      <p className="text-sm md:text-base max-w-md mx-auto mb-6 leading-relaxed text-slate-600 dark:text-slate-400">
         Conecte fatos comprovados do IBGE, DIEESE e ministérios à realidade da profissão e da cidade de quem você quer conversar. Sem briga, com respeito e foco no bolso.
       </p>
 
@@ -374,6 +392,15 @@ function HeroSection({
           </span>
         </button>
 
+        {/* Botão de Estúdio de Carrossel & Posts */}
+        <button
+          className="py-3 px-4 rounded-xl text-xs font-bold border border-red-300 dark:border-red-800/60 bg-red-50/80 dark:bg-red-950/30 hover:bg-red-100 text-[#C52229] dark:text-red-300 flex items-center justify-center gap-2 transition-all shadow-sm"
+          onClick={onOpenStudio}
+        >
+          <span>🎨</span>
+          <span>Estúdio Social: Carrossel & Posts (Instagram)</span>
+        </button>
+
         <button
           className="py-3 px-4 rounded-xl text-xs font-bold border border-amber-300 dark:border-amber-800/50 bg-amber-50/60 dark:bg-amber-950/20 hover:bg-amber-100 text-amber-900 dark:text-amber-300 flex items-center justify-center gap-2 transition-all shadow-sm"
           onClick={onOpenSimulator}
@@ -393,13 +420,13 @@ function HeroSection({
         )}
       </div>
 
-      {/* Selos de Confiança Institucional */}
+      {/* Selos de Confiança Institucional & Identidade Brasil */}
       <div className="flex flex-wrap justify-center gap-2 animate-slide-up stagger-2">
         {[
-          { icon: '🔒', text: '100% Anônimo & Sem Cadastro' },
+          { icon: '🇧🇷', text: 'Cores & Design Oficial Casa 13' },
+          { icon: '📚', text: 'Gerador de Carrossel Instagram' },
           { icon: '📊', text: 'Fontes Oficiais Auditadas' },
-          { icon: '🎨', text: 'Cards Oficiais Casa 13' },
-          { icon: '🚀', text: 'Benefícios & Oportunidades Reais' },
+          { icon: '🔒', text: '100% Anônimo & Offline' },
         ].map((badge) => (
           <div
             key={badge.text}
