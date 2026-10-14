@@ -4,6 +4,7 @@
 // ═══════════════════════════════════════════════════════════════
 
 import { ARGUMENTS_DATABASE, ACOLHIMENTO_SCRIPTS, type Argument, type ProfileTag, type Route } from '@/data/arguments';
+import { getOpportunitiesForProfile, type Opportunity } from '@/data/opportunities';
 
 // ═══════════════════════════════════════
 // TIPOS DO ENGINE
@@ -39,6 +40,8 @@ export interface EngineResult {
   acolhimento: typeof ACOLHIMENTO_SCRIPTS;
   /** Argumentos rankeados do mais ao menos impactante */
   arguments: ScoredArgument[];
+  /** Oportunidades e direitos práticos para o perfil */
+  opportunities: Opportunity[];
   /** Instruções contextuais */
   instructions: string[];
   /** Rótulo do perfil detectado */
@@ -231,10 +234,13 @@ export function runEngine(profile: UserProfile): EngineResult {
       )
     : ACOLHIMENTO_SCRIPTS;
 
+  const opportunities = getOpportunitiesForProfile(profile.profileTags);
+
   return {
     primaryRoute,
     acolhimento: acolhimento.length > 0 ? acolhimento : ACOLHIMENTO_SCRIPTS,
     arguments: scored,
+    opportunities,
     instructions,
     profileLabel,
   };

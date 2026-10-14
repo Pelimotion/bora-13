@@ -24,6 +24,15 @@
   --accent-hope: #22C55E;
   --accent-hope-glow: rgba(34, 197, 94, 0.15);
 
+  /* Casa 13 / Lula Campaign Official Palette */
+  --casa-red: #C52229;
+  --casa-red-dark: #9E191F;
+  --casa-red-glow: rgba(197, 34, 41, 0.28);
+  --casa-gold: #FFCC00;
+  --casa-gold-glow: rgba(255, 204, 0, 0.2);
+  --casa-green: #009B3A;
+  --casa-blue: #002776;
+
   /* Text */
   --text-primary: #F1F5F9;
   --text-secondary: #94A3B8;
@@ -243,6 +252,61 @@ body {
 .btn-ghost:hover {
   color: var(--text-primary);
   background: rgba(148, 163, 184, 0.08);
+}
+
+.btn-pt {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: linear-gradient(135deg, var(--casa-red) 0%, var(--casa-red-dark) 100%);
+  color: #FFFFFF;
+  font-weight: 700;
+  padding: 14px 28px;
+  border-radius: var(--radius-lg);
+  border: 1px solid rgba(255, 204, 0, 0.3);
+  cursor: pointer;
+  transition: all var(--duration-normal) var(--ease-spring);
+  box-shadow: 0 4px 20px var(--casa-red-glow);
+  min-height: 48px;
+  text-decoration: none;
+}
+
+.btn-pt:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 28px rgba(197, 34, 41, 0.45);
+  border-color: var(--casa-gold);
+}
+
+.badge-casa13 {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: var(--radius-full);
+  background: var(--casa-red-glow);
+  color: #FF8085;
+  border: 1px solid rgba(197, 34, 41, 0.4);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.card-opportunity {
+  background: linear-gradient(145deg, rgba(22, 32, 53, 0.9) 0%, rgba(14, 22, 38, 0.95) 100%);
+  border: 1px solid rgba(255, 204, 0, 0.25);
+  border-radius: var(--radius-xl);
+  padding: 20px;
+  position: relative;
+  overflow: hidden;
+  transition: all var(--duration-normal) var(--ease-smooth);
+}
+
+.card-opportunity:hover {
+  border-color: var(--casa-gold);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 30px rgba(255, 204, 0, 0.12);
 }
 
 /* ═══════ CHIPS / TAGS ═══════ */

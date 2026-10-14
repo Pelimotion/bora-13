@@ -11,6 +11,7 @@ interface VisualCardGeneratorProps {
 export default function VisualCardGenerator({ argument, onClose }: VisualCardGeneratorProps) {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const [format, setFormat] = useState<'square' | 'story'>('square'); // 1:1 or 9:16
+  const [theme, setTheme] = useState<'casa13' | 'modern'>('casa13');
   const [downloading, setDownloading] = useState(false);
   const [shareSupported, setShareSupported] = useState(false);
 
@@ -27,75 +28,98 @@ export default function VisualCardGenerator({ argument, onClose }: VisualCardGen
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const width = format === 'square' ? 1080 : 1080;
+    const width = 1080;
     const height = format === 'square' ? 1080 : 1920;
 
     canvas.width = width;
     canvas.height = height;
 
-    // Background gradient
+    const isCasa13 = theme === 'casa13';
+
+    // 1. Background gradient
     const bgGrad = ctx.createLinearGradient(0, 0, width, height);
-    bgGrad.addColorStop(0, '#080F1A');
-    bgGrad.addColorStop(0.5, '#0F1729');
-    bgGrad.addColorStop(1, '#070D18');
+    if (isCasa13) {
+      bgGrad.addColorStop(0, '#100B11');
+      bgGrad.addColorStop(0.4, '#1C0E14');
+      bgGrad.addColorStop(1, '#0C080E');
+    } else {
+      bgGrad.addColorStop(0, '#080F1A');
+      bgGrad.addColorStop(0.5, '#0F1729');
+      bgGrad.addColorStop(1, '#070D18');
+    }
     ctx.fillStyle = bgGrad;
     ctx.fillRect(0, 0, width, height);
 
-    // Glowing accents / Ambient orbs in canvas
-    const glow1 = ctx.createRadialGradient(200, 200, 20, 200, 200, 450);
-    glow1.addColorStop(0, 'rgba(20, 184, 166, 0.25)');
-    glow1.addColorStop(1, 'rgba(20, 184, 166, 0)');
-    ctx.fillStyle = glow1;
-    ctx.fillRect(0, 0, width, height);
+    // 2. Glowing accents / Mesh orbs in canvas
+    if (isCasa13) {
+      // Casa 13 Vermelho Glow
+      const glow1 = ctx.createRadialGradient(240, 200, 20, 240, 200, 520);
+      glow1.addColorStop(0, 'rgba(197, 34, 41, 0.40)');
+      glow1.addColorStop(1, 'rgba(197, 34, 41, 0)');
+      ctx.fillStyle = glow1;
+      ctx.fillRect(0, 0, width, height);
 
-    const glow2 = ctx.createRadialGradient(width - 200, height - 300, 20, width - 200, height - 300, 400);
-    glow2.addColorStop(0, 'rgba(245, 158, 11, 0.18)');
-    glow2.addColorStop(1, 'rgba(245, 158, 11, 0)');
-    ctx.fillStyle = glow2;
-    ctx.fillRect(0, 0, width, height);
+      // Gold Glow
+      const glow2 = ctx.createRadialGradient(width - 220, height - 320, 30, width - 220, height - 320, 480);
+      glow2.addColorStop(0, 'rgba(255, 204, 0, 0.25)');
+      glow2.addColorStop(1, 'rgba(255, 204, 0, 0)');
+      ctx.fillStyle = glow2;
+      ctx.fillRect(0, 0, width, height);
+    } else {
+      const glow1 = ctx.createRadialGradient(200, 200, 20, 200, 200, 450);
+      glow1.addColorStop(0, 'rgba(20, 184, 166, 0.25)');
+      glow1.addColorStop(1, 'rgba(20, 184, 166, 0)');
+      ctx.fillStyle = glow1;
+      ctx.fillRect(0, 0, width, height);
 
-    // Outer subtle border
-    ctx.strokeStyle = 'rgba(20, 184, 166, 0.3)';
+      const glow2 = ctx.createRadialGradient(width - 200, height - 300, 20, width - 200, height - 300, 400);
+      glow2.addColorStop(0, 'rgba(245, 158, 11, 0.18)');
+      glow2.addColorStop(1, 'rgba(245, 158, 11, 0)');
+      ctx.fillStyle = glow2;
+      ctx.fillRect(0, 0, width, height);
+    }
+
+    // 3. Outer border with gradient
+    ctx.strokeStyle = isCasa13 ? 'rgba(255, 204, 0, 0.35)' : 'rgba(20, 184, 166, 0.3)';
     ctx.lineWidth = 4;
-    ctx.strokeRect(32, 32, width - 64, height - 64);
+    ctx.strokeRect(36, 36, width - 72, height - 72);
 
-    // Header badge
-    const headerY = format === 'square' ? 110 : 220;
-    
+    // 4. Header badge
+    const headerY = format === 'square' ? 115 : 230;
+
     // Badge pill
-    ctx.fillStyle = 'rgba(20, 184, 166, 0.15)';
+    ctx.fillStyle = isCasa13 ? 'rgba(197, 34, 41, 0.35)' : 'rgba(20, 184, 166, 0.15)';
     ctx.beginPath();
-    ctx.roundRect(80, headerY - 35, 340, 50, [25]);
+    ctx.roundRect(80, headerY - 35, 360, 52, [26]);
     ctx.fill();
-    ctx.strokeStyle = 'rgba(45, 212, 191, 0.4)';
+    ctx.strokeStyle = isCasa13 ? '#FFCC00' : 'rgba(45, 212, 191, 0.4)';
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    ctx.fillStyle = '#2DD4BF';
+    ctx.fillStyle = isCasa13 ? '#FFCC00' : '#2DD4BF';
     ctx.font = 'bold 20px Inter, system-ui, sans-serif';
-    ctx.fillText('✅ FATO VERIFICADO', 110, headerY);
+    ctx.fillText(isCasa13 ? '⭐ BRASIL DA ESPERANÇA' : '✅ FATO VERIFICADO', 105, headerY);
 
     // Brand on right
-    ctx.fillStyle = '#94A3B8';
-    ctx.font = '600 24px Inter, system-ui, sans-serif';
+    ctx.fillStyle = isCasa13 ? '#FFFFFF' : '#94A3B8';
+    ctx.font = '900 24px Inter, system-ui, sans-serif';
     ctx.textAlign = 'right';
-    ctx.fillText('BORA APP 🤝', width - 80, headerY);
+    ctx.fillText(isCasa13 ? 'BORA 13 🤝' : 'BORA APP 🤝', width - 80, headerY);
     ctx.textAlign = 'left';
 
-    // Emoji icon
-    const contentStartY = format === 'square' ? 240 : 440;
+    // 5. Emoji icon
+    const contentStartY = format === 'square' ? 245 : 445;
     ctx.font = '68px Apple Color Emoji, Segoe UI Emoji, sans-serif';
     ctx.fillText(argument.emoji || '📌', 80, contentStartY);
 
-    // Headline
+    // 6. Headline
     ctx.fillStyle = '#FFFFFF';
     ctx.font = '900 48px Inter, system-ui, sans-serif';
-    
-    // Wrap headline text
+
     const maxTextWidth = width - 160;
     const words = argument.headline.split(' ');
     let line = '';
-    let currentY = contentStartY + 70;
+    let currentY = contentStartY + 72;
     const lineHeight = 58;
 
     for (let n = 0; n < words.length; n++) {
@@ -111,26 +135,31 @@ export default function VisualCardGenerator({ argument, onClose }: VisualCardGen
     }
     ctx.fillText(line, 80, currentY);
 
-    // Decorative divider
-    currentY += 40;
+    // 7. Decorative line
+    currentY += 38;
     const lineGrad = ctx.createLinearGradient(80, currentY, width - 80, currentY);
-    lineGrad.addColorStop(0, '#14B8A6');
-    lineGrad.addColorStop(0.5, '#F59E0B');
-    lineGrad.addColorStop(1, 'transparent');
+    if (isCasa13) {
+      lineGrad.addColorStop(0, '#C52229');
+      lineGrad.addColorStop(0.5, '#FFCC00');
+      lineGrad.addColorStop(1, '#009B3A');
+    } else {
+      lineGrad.addColorStop(0, '#14B8A6');
+      lineGrad.addColorStop(0.5, '#F59E0B');
+      lineGrad.addColorStop(1, 'transparent');
+    }
     ctx.strokeStyle = lineGrad;
-    ctx.lineWidth = 4;
+    ctx.lineWidth = 5;
     ctx.beginPath();
     ctx.moveTo(80, currentY);
     ctx.lineTo(width - 80, currentY);
     ctx.stroke();
 
-    // Body Script / Argument Text
+    // 8. Body Script Text
     currentY += 50;
-    ctx.fillStyle = '#E2E8F0';
+    ctx.fillStyle = '#F1F5F9';
     ctx.font = '400 32px Inter, system-ui, sans-serif';
     const bodyLineHeight = 46;
-    
-    // Truncate or fit script
+
     const scriptWords = argument.scriptText.split(' ');
     line = '';
     const maxLines = format === 'square' ? 8 : 16;
@@ -154,34 +183,39 @@ export default function VisualCardGenerator({ argument, onClose }: VisualCardGen
     }
     ctx.fillText(line, 80, currentY);
 
-    // Footer Source Card
+    // 9. Footer Source Box
     const footerY = height - (format === 'square' ? 120 : 180);
-    
-    // Background pill for source
-    ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+
+    ctx.fillStyle = isCasa13 ? 'rgba(30, 15, 20, 0.92)' : 'rgba(15, 23, 42, 0.85)';
     ctx.beginPath();
     ctx.roundRect(80, footerY - 50, width - 160, 80, [16]);
     ctx.fill();
-    ctx.strokeStyle = 'rgba(148, 163, 184, 0.2)';
+    ctx.strokeStyle = isCasa13 ? 'rgba(255, 204, 0, 0.3)' : 'rgba(148, 163, 184, 0.2)';
     ctx.lineWidth = 2;
     ctx.stroke();
 
-    ctx.fillStyle = '#14B8A6';
+    ctx.fillStyle = isCasa13 ? '#FFCC00' : '#14B8A6';
     ctx.font = 'bold 22px Inter, system-ui, sans-serif';
     ctx.fillText('📎 Fonte Oficial:', 110, footerY);
 
-    ctx.fillStyle = '#CBD5E1';
+    ctx.fillStyle = '#FFFFFF';
     ctx.font = '500 22px Inter, system-ui, sans-serif';
     ctx.fillText(argument.sourceName, 290, footerY);
 
-    // App watermark on very bottom
-    ctx.fillStyle = '#64748B';
+    // 10. Watermark
+    ctx.fillStyle = '#94A3B8';
     ctx.font = '500 18px Inter, system-ui, sans-serif';
     ctx.textAlign = 'center';
-    ctx.fillText('Gerado via Bora App • Conversas que importam • Sem fake news', width / 2, height - (format === 'square' ? 30 : 50));
+    ctx.fillText(
+      isCasa13
+        ? 'Bora 13 • Conversas que importam • União e Reconstrução'
+        : 'Gerado via Bora App • Conversas que importam • Sem fake news',
+      width / 2,
+      height - (format === 'square' ? 30 : 50)
+    );
     ctx.textAlign = 'left';
 
-  }, [argument, format]);
+  }, [argument, format, theme]);
 
   useEffect(() => {
     drawCard();
@@ -195,7 +229,7 @@ export default function VisualCardGenerator({ argument, onClose }: VisualCardGen
 
     try {
       const link = document.createElement('a');
-      link.download = `bora-${argument.id}-${format}.png`;
+      link.download = `bora-${argument.id}-${theme}-${format}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
     } finally {
@@ -212,7 +246,7 @@ export default function VisualCardGenerator({ argument, onClose }: VisualCardGen
       canvas.toBlob(async (blob) => {
         if (!blob) return;
         const file = new File([blob], `bora-${argument.id}.png`, { type: 'image/png' });
-        
+
         if (navigator.canShare && navigator.canShare({ files: [file] })) {
           await navigator.share({
             title: `Bora: ${argument.headline}`,
@@ -228,20 +262,20 @@ export default function VisualCardGenerator({ argument, onClose }: VisualCardGen
         }
       }, 'image/png');
     } catch {
-      // User cancelled share
+      // User cancelled
     }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in">
       <div className="bg-[#0F1729] border border-slate-800 rounded-2xl max-w-lg w-full max-h-[95vh] overflow-y-auto p-5 shadow-2xl flex flex-col">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <div>
             <h3 className="text-lg font-bold text-slate-100 flex items-center gap-2">
-              <span>🎨</span> Card para Compartilhar
+              <span>🎨</span> Gerador de Card Visual
             </h3>
-            <p className="text-xs text-slate-400">Gere uma imagem com o fato verificado</p>
+            <p className="text-xs text-slate-400">Gere imagens oficiais prontas para stories e grupos</p>
           </div>
           <button
             onClick={onClose}
@@ -251,35 +285,64 @@ export default function VisualCardGenerator({ argument, onClose }: VisualCardGen
           </button>
         </div>
 
-        {/* Format Selector */}
-        <div className="flex gap-2 mb-4 bg-[#080F1A] p-1 rounded-xl border border-slate-800">
-          <button
-            onClick={() => setFormat('square')}
-            className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all ${
-              format === 'square'
-                ? 'bg-teal-500/20 text-teal-300 border border-teal-500/40'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            ⏹️ Feed / Zap (1:1)
-          </button>
-          <button
-            onClick={() => setFormat('story')}
-            className={`flex-1 py-2 text-xs font-semibold rounded-lg transition-all ${
-              format === 'story'
-                ? 'bg-teal-500/20 text-teal-300 border border-teal-500/40'
-                : 'text-slate-400 hover:text-slate-200'
-            }`}
-          >
-            📱 Stories / Status (9:16)
-          </button>
+        {/* Theme & Format Selectors */}
+        <div className="flex flex-col gap-2 mb-4">
+          {/* Theme Selector */}
+          <div className="flex gap-2 bg-[#080F1A] p-1 rounded-xl border border-slate-800">
+            <button
+              onClick={() => setTheme('casa13')}
+              className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+                theme === 'casa13'
+                  ? 'bg-[#C52229] text-white shadow-md shadow-red-950/60'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <span>⭐</span>
+              <span>Casa 13 (Oficial)</span>
+            </button>
+            <button
+              onClick={() => setTheme('modern')}
+              className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+                theme === 'modern'
+                  ? 'bg-teal-500/20 text-teal-300 border border-teal-500/40'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              <span>🌐</span>
+              <span>Neutro / Institucional</span>
+            </button>
+          </div>
+
+          {/* Format Selector */}
+          <div className="flex gap-2 bg-[#080F1A] p-1 rounded-xl border border-slate-800">
+            <button
+              onClick={() => setFormat('square')}
+              className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                format === 'square'
+                  ? 'bg-slate-800 text-white font-bold'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              ⏹️ Feed / Zap (1:1)
+            </button>
+            <button
+              onClick={() => setFormat('story')}
+              className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+                format === 'story'
+                  ? 'bg-slate-800 text-white font-bold'
+                  : 'text-slate-400 hover:text-slate-200'
+              }`}
+            >
+              📱 Stories / Status (9:16)
+            </button>
+          </div>
         </div>
 
         {/* Canvas Preview Container */}
-        <div className="flex justify-center items-center bg-[#080F1A] rounded-xl p-3 border border-slate-800/80 mb-5 overflow-hidden">
+        <div className="flex justify-center items-center bg-[#080F1A] rounded-xl p-3 border border-slate-800/80 mb-4 overflow-hidden">
           <canvas
             ref={canvasRef}
-            className={`w-full max-w-[340px] rounded-lg shadow-lg ${
+            className={`w-full max-w-[320px] rounded-lg shadow-xl ${
               format === 'story' ? 'aspect-[9/16]' : 'aspect-square'
             }`}
           />
@@ -292,16 +355,20 @@ export default function VisualCardGenerator({ argument, onClose }: VisualCardGen
               onClick={handleShare}
               className="w-full py-3 px-4 rounded-xl font-bold text-white flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] transition-all shadow-lg active:scale-95"
             >
-              <span>📲</span> Compartilhar Imagem Direto
+              <span>📲</span> Compartilhar no WhatsApp
             </button>
           )}
 
           <button
             onClick={handleDownload}
             disabled={downloading}
-            className="btn-primary w-full text-sm font-semibold flex items-center justify-center gap-2"
+            className={`w-full py-3 px-4 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+              theme === 'casa13'
+                ? 'bg-[#C52229] hover:bg-[#A81B21] text-white shadow-lg shadow-red-950/40'
+                : 'btn-primary'
+            }`}
           >
-            <span>⬇️</span> Baixar Imagem (PNG)
+            <span>⬇️</span> Baixar Imagem em Alta Resolução (PNG)
           </button>
 
           <button
