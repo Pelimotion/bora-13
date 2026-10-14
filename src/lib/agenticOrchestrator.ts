@@ -10,6 +10,7 @@ import { getStateByUF } from '@/data/brazilGeo';
 import {
   CONVERSION_FRONTS,
   MENOS_COM_FLAVIO_FACTS,
+  getRegionalTacticForUF,
   type ConversionFront,
 } from '@/data/electoralTactics';
 
@@ -25,9 +26,10 @@ export type AppSection =
   | 'simulador'       // Dojô de Conversas da Vida Real
   | 'estudio';        // Estúdio de Criação de Posts & Carrosséis Instagram
 
-export type PostFormat = 'carousel' | 'square' | 'story';
-export type VisualTheme = 'brasil-editorial' | 'brasil-vibrante' | 'dark-moderno' | 'concretismo-puro';
+export type PostFormat = 'portrait' | 'carousel' | 'square' | 'story';
+export type VisualTheme = 'brasil-editorial' | 'brasil-vibrante' | 'dark-moderno' | 'concretismo-puro' | 'jornalismo-investigativo';
 export type CopyPlatform = 'instagram' | 'whatsapp' | 'stories' | 'threads';
+export type SlideArchetype = 'editorial-cover' | 'big-stat-hero' | 'dialectic-split' | 'pocket-reality' | 'manifesto-cta';
 
 export interface StateStats {
   jobsCreated: string;
@@ -54,6 +56,10 @@ export interface PostPresetData {
   categoryTag: string;
   sourceOrigin: 'territory' | 'profile' | 'facts' | 'opportunities' | 'independent' | 'tactical';
   emoji: string;
+  // Campos de impacto visual e arquétipos
+  statNumber?: string;
+  statLabel?: string;
+  archetypeBySlide?: Record<number, SlideArchetype>;
   // Campos complementares para o carrossel de 5 atos
   act1Hook?: string;
   act2Proof?: string;
@@ -277,12 +283,14 @@ export function createPostPresetFromArgument(arg: Argument, memory?: AgenticWork
     rebuttal: arg.rebuttal,
     sourceName: arg.sourceName,
     sourceUrl: arg.sourceUrl,
-    format: 'carousel',
+    format: 'portrait',
     theme: 'brasil-editorial',
     slideIndex: 0,
     categoryTag: arg.category,
     sourceOrigin: 'facts',
     emoji: arg.emoji || '📌',
+    statNumber: arg.category.toUpperCase(),
+    statLabel: `Auditoria Oficial • ${arg.sourceName}`,
     act1Hook: `O que não te contaram sobre ${arg.title.toLowerCase()}`,
     act2Proof: arg.scriptText,
     act3Rebuttal: arg.rebuttal,
@@ -302,12 +310,14 @@ export function createPostPresetFromOpportunity(opp: Opportunity, memory?: Agent
     rebuttal: `Pelo contrário: o programa ${opp.title} está em vigor, com orçamento garantido e atendimento direto aos cidadãos.`,
     sourceName: opp.program,
     sourceUrl: opp.actionUrl,
-    format: 'carousel',
+    format: 'portrait',
     theme: 'brasil-vibrante',
     slideIndex: 0,
     categoryTag: 'oportunidade',
     sourceOrigin: 'opportunities',
     emoji: opp.icon,
+    statNumber: opp.badge || 'DIREITO',
+    statLabel: `Programa ${opp.program}`,
     act1Hook: `Você sabia que pode ter direito a este benefício hoje?`,
     act2Proof: `${opp.title} — ${opp.headline}`,
     act3Rebuttal: `Quem tem direito comprovado: ${opp.whoIsEligible}`,
@@ -332,12 +342,14 @@ export function createPostPresetFromTerritory(uf: string, cityName?: string): Po
     rebuttal: `Os números oficiais auditados pelo Ministério da Fazenda e Caged comprovam recorde de repasses e geração de empregos na região.`,
     sourceName: `Caged, MDS & Ministérios Oficiais (2024)`,
     sourceUrl: 'https://gov.br',
-    format: 'carousel',
+    format: 'portrait',
     theme: 'brasil-editorial',
     slideIndex: 0,
     categoryTag: 'territorio',
     sourceOrigin: 'territory',
     emoji: '📍',
+    statNumber: stats.jobsCreated.split(' ')[0] || uf,
+    statLabel: `Vagas formais criadas em ${uf}`,
     act1Hook: `O impacto real das medidas econômicas em ${locationLabel}`,
     act2Proof: stats.highlightText,
     act3Rebuttal: `${stats.jobsCreated} com carteira assinada e ${stats.pedeMeiaStudents} garantidos.`,
@@ -363,6 +375,8 @@ export function createDefaultPostPreset(): PostPresetData {
     categoryTag: 'alimentacao',
     sourceOrigin: 'independent',
     emoji: '🥩',
+    statNumber: '17 CAPITAIS',
+    statLabel: 'Queda comprovada no valor da cesta básica (DIEESE)',
     act1Hook: 'Você já reparou no preço do óleo e da carne este mês?',
     act2Proof: 'Queda comprovada no custo da cesta básica e aumento real do salário mínimo.',
     act3Rebuttal: 'Dados auditados pelo IBGE mostram desaceleração contínua da inflação de alimentos.',
@@ -385,12 +399,14 @@ export function createPostPresetFromConversionFront(
     rebuttal: front.conversationSteps[1]?.script || front.goldenRule,
     sourceName: 'Método 2º Turno 2026 (Normose & Sabrina Fernandes)',
     sourceUrl: '#',
-    format: 'carousel',
+    format: 'portrait',
     theme: front.id === 'ex_lula' ? 'brasil-editorial' : front.id === 'terceira_via' ? 'dark-moderno' : 'brasil-vibrante',
     slideIndex: 0,
     categoryTag: 'tatico',
     sourceOrigin: 'tactical',
     emoji: front.icon,
+    statNumber: front.electoralWeight,
+    statLabel: `Frente Estratégica ${front.number}`,
     act1Hook: `Como virar o voto de quem ${front.title.toLowerCase()}`,
     act2Proof: `Por que essa pessoa pensa assim:\n${front.rootCause}`,
     act3Rebuttal: `O que responder sem brigar:\n${front.conversationSteps[2]?.script || front.conversationSteps[0]?.script}`,
@@ -413,17 +429,276 @@ export function createPostPresetFromMenosFact(
     rebuttal: `Os registros históricos provam exatamente o oposto: os cortes atingiram em cheio quem mais precisa: ${fact.title}.`,
     sourceName: fact.source,
     sourceUrl: '#',
-    format: 'carousel',
+    format: 'portrait',
     theme: 'brasil-editorial',
     slideIndex: 0,
     categoryTag: 'menos_com_flavio',
     sourceOrigin: 'tactical',
     emoji: fact.icon,
+    statNumber: fact.highlight,
+    statLabel: 'Registro Histórico Auditado',
     act1Hook: `O que acontece se a gente comparar o que eles realmente fizeram?`,
     act2Proof: `${fact.title} — ${fact.highlight}`,
     act3Rebuttal: fact.detail,
     act4PocketImpact: `Quem paga essa conta no final do mês é o trabalhador que perde o direito e o remédio.`,
     act5Cta: `Envie no privado para quem pensa em anular ou votar na oposição buscando alívio!`,
+  };
+}
+
+// ─────────────────────────────────────────────────────────────
+// ARSENAL SOB MEDIDA (TERRITÓRIO + CIDADE + PERFIL DO ELEITOR)
+// O Motor Central de Persuasão que cruza Cidade, Categoria e Afeto
+// ─────────────────────────────────────────────────────────────
+
+export interface TailoredPocketFact {
+  icon: string;
+  title: string;
+  description: string;
+  source: string;
+}
+
+export interface TailoredConversationPlan {
+  uf: string;
+  stateName: string;
+  city: string;
+  locationLabel: string;
+  frontId: 'ex_lula' | 'terceira_via' | 'abstencao_70' | 'nulo_branco';
+  frontTitle: string;
+  frontIcon: string;
+  frontPriority: string;
+  frontTag: string;
+  occupation?: string;
+  profileSummary: string;
+  acolhimentoHook: string;
+  goldenRule: string;
+  whatNeverToSay: string;
+  localPocketFacts: TailoredPocketFact[];
+  objectionRebuttal: {
+    objection: string;
+    rebuttal: string;
+    source: string;
+  };
+  retrocessoAlert: {
+    title: string;
+    description: string;
+    statNumber: string;
+    source: string;
+  };
+  whatsappScript: string;
+  preset: PostPresetData;
+}
+
+export function createCustomizedConversationPlan(
+  uf: string = 'SP',
+  city?: string,
+  frontId: 'ex_lula' | 'terceira_via' | 'abstencao_70' | 'nulo_branco' = 'ex_lula',
+  occupation?: string,
+  familyFlags?: {
+    hasElderly?: boolean;
+    hasChildren?: boolean;
+    dependsSUS?: boolean;
+    receivesBenefit?: boolean;
+    hasPCD?: boolean;
+  }
+): TailoredConversationPlan {
+  const geo = getStateByUF(uf);
+  const stateName = geo ? geo.name : uf;
+  const cityName = city && city.trim() ? city.trim() : (geo ? geo.capital : 'sua cidade');
+  const locationLabel = `${cityName} (${uf})`;
+
+  const front = CONVERSION_FRONTS.find((f) => f.id === frontId) || CONVERSION_FRONTS[0];
+  const stats = getStateStats(uf);
+  const regionalTactic = getRegionalTacticForUF(uf);
+
+  // 1. Gancho de Acolhimento Personalizado por Frente
+  let acolhimentoHook = '';
+  if (frontId === 'ex_lula') {
+    acolhimentoHook = `Eu te entendo totalmente quando você fala que o carrinho de mercado tá pesado. Quem vive de salário sente no bolso e dá uma angústia danada ver o preço das coisas. A gente trabalhou a vida inteira e quer ver o país respirar melhor mais rápido.`;
+  } else if (frontId === 'terceira_via') {
+    acolhimentoHook = `Eu concordo com você que o Brasil precisa de menos briga partidária e de gente séria trabalhando. Antes de decidir na raiva, vamos olhar o que tá em jogo na prática para a nossa cidade e quem tem propostas reais de pé.`;
+  } else if (frontId === 'abstencao_70') {
+    acolhimentoHook = `Ir votar no domingo é um esforço enorme, ainda mais quando a gente tá cansado de tanta promessa. Mas você sabia que a sua presença na urna é o que garante que o remédio gratuito e a poupança dos nossos jovens continuem funcionando?`;
+  } else {
+    acolhimentoHook = `Eu compreendo quem quer anular porque tá desiludido com a política. Mas numa eleição tão apertada, quem anula deixa a decisão do nosso salário e dos nossos direitos na mão da oposição radical.`;
+  }
+
+  // 2. Fatos do Bolso Concretos na Cidade & Categoria
+  const localPocketFacts: TailoredPocketFact[] = [];
+
+  // Fato 1: Regional / Empregos do Caged
+  localPocketFacts.push({
+    icon: '💼',
+    title: `Geração de Empregos em ${stateName}`,
+    description: `${stats.jobsCreated}. O comércio e as pequenas empresas locais ganham força quando há renda circulando na praça.`,
+    source: 'Caged / Ministério do Trabalho',
+  });
+
+  // Fato 2: Família / Jovens / Pé-de-Meia
+  if (familyFlags?.hasChildren) {
+    localPocketFacts.push({
+      icon: '🎒',
+      title: `Poupança Pé-de-Meia para Estudantes`,
+      description: `Mais de ${stats.pedeMeiaStudents}. Até R$ 9.200 por aluno do ensino médio público para não precisar largar a escola e ajudar na renda de casa.`,
+      source: 'MEC / Caixa Econômica',
+    });
+  } else if (familyFlags?.hasElderly || familyFlags?.dependsSUS) {
+    localPocketFacts.push({
+      icon: '💊',
+      title: `Remédio 100% Gratuito no Farmácia Popular`,
+      description: `Mais de ${stats.farmaciaPopularBeneficiaries}. Medicamentos contínuos para pressão alta, diabetes e asma entregues de graça na farmácia credenciada em ${cityName}.`,
+      source: 'Ministério da Saúde',
+    });
+  } else {
+    localPocketFacts.push({
+      icon: '🥩',
+      title: `Comida no Prato e Deflação da Cesta Básica`,
+      description: `Queda confirmada no preço do óleo de soja, leite integral e cortes de carne popular pelo DIEESE e IBGE, com aumento real de 3% no salário mínimo pelo 2º ano seguido.`,
+      source: 'DIEESE / IBGE',
+    });
+  }
+
+  // Fato 3: Ocupação específica ou Habitação
+  if (occupation && (occupation.toLowerCase().includes('uber') || occupation.toLowerCase().includes('motorista') || occupation.toLowerCase().includes('entregador'))) {
+    localPocketFacts.push({
+      icon: '⛽',
+      title: `Petrobras Pública & Preço do Combustível`,
+      description: `Fim da paridade de importação em dólar (PPI). A gasolina e o gás de cozinha foram contidos sem disparar para os R$ 10 prometidos na privatização desenfreada.`,
+      source: 'ANP / Petrobras',
+    });
+  } else if (familyFlags?.receivesBenefit) {
+    localPocketFacts.push({
+      icon: '🏠',
+      title: `Minha Casa Minha Vida Quitado`,
+      description: `Mais de ${stats.mcmvHomes}. Famílias do CadÚnico e BPC têm isenção total de parcelas na Faixa 1, garantindo o teto da família em ${cityName}.`,
+      source: 'Ministério das Cidades',
+    });
+  } else {
+    localPocketFacts.push({
+      icon: '🛒',
+      title: `Isenção de Imposto de Renda & Cesta Básica Zero`,
+      description: `Isenção do IR subiu para 2 salários mínimos e na reforma tributária todos os itens da cesta básica essencial têm alíquota zero de imposto federal.`,
+      source: 'Receita Federal / Ministério da Fazenda',
+    });
+  }
+
+  // 3. Objeção & Rebuttal Adaptados
+  let objectionRebuttal = {
+    objection: 'Mas as coisas no mercado continuam caras e nada mudou!',
+    rebuttal: `A inflação oficial de alimentos caiu em 17 capitais e o poder de compra do salário mínimo subiu de verdade pelo 2º ano consecutivo. Não tá fácil, mas tá recuperando o que foi destruído na pandemia.`,
+    source: 'IBGE & DIEESE',
+  };
+
+  if (frontId === 'terceira_via') {
+    objectionRebuttal = {
+      objection: 'Eu quero renovação, não quero votar no Lula de novo.',
+      rebuttal: `A renovação com Flávio significa dar a presidência, a maioria do Senado e indicar mais 4 ministros no STF para a mesma família. Concentração total de poder sem oposição.`,
+      source: 'Análise Institucional do Senado',
+    };
+  } else if (frontId === 'abstencao_70') {
+    objectionRebuttal = {
+      objection: 'Para que eu vou me cansar indo votar se nada muda?',
+      rebuttal: `Muda a Farmácia Popular da sua rua e a bolsa do seu neto. Em 2022, 253 cidades viraram o resultado por menos de 5 votos por urna. O seu voto é o mais poderoso de todos.`,
+      source: 'TSE / Dados Eleitorais Auditados',
+    };
+  }
+
+  // 4. Alerta do Retrocesso (Mostrar o Menos com Flávio)
+  let retrocessoAlert = {
+    title: 'Corte de 59% na Farmácia Popular',
+    description: 'No governo anterior, cortaram mais da metade do orçamento de remédios gratuitos para pressão e diabetes. Se vencerem, o programa volta a ser sucateado.',
+    statNumber: '-59%',
+    source: 'Orçamento Geral da União',
+  };
+
+  if (familyFlags?.hasChildren) {
+    retrocessoAlert = {
+      title: 'Corte de 90% na Habitação & Veto à Merenda',
+      description: 'Cortaram 90% dos recursos do Minha Casa Minha Vida e vetaram o reajuste da merenda escolar de milhares de crianças.',
+      statNumber: '-90%',
+      source: 'MEC / Orçamento Federal',
+    };
+  } else if (occupation && occupation.toLowerCase().includes('clt')) {
+    retrocessoAlert = {
+      title: 'Voto Contra o Fim da Escala 6x1',
+      description: 'Flávio Bolsonaro se declarou contra a PEC que acaba com a escala 6x1, mantendo o trabalhador preso sem descanso digno com a família.',
+      statNumber: '6x1',
+      source: 'Senado Federal',
+    };
+  }
+
+  // 5. Script de WhatsApp Sob Medida
+  const bullets = localPocketFacts.map(f => `• ${f.icon} *${f.title}*: ${f.description}`).join('\n');
+  const whatsappScript = `Oi! Lembrei de você aqui em ${cityName} e de conversas que a gente já teve:
+
+${acolhimentoHook}
+
+Dá uma olhada no que já é realidade checada aqui pra gente em ${stateName}:
+${bullets}
+
+👉 *Se alguém falar que "${objectionRebuttal.objection}":*
+✅ A verdade com fontes auditadas é: ${objectionRebuttal.rebuttal} (${objectionRebuttal.source}).
+
+⚠️ *E o perigo real:* ${retrocessoAlert.title} — ${retrocessoAlert.description} (${retrocessoAlert.statNumber}).
+
+Sem briga nenhuma, só compartilhando o que tá em jogo pro nosso bolso e pra nossa família aqui em ${cityName}. Um forte abraço! 🇧🇷⭐`;
+
+  // 6. Post Preset para o Estúdio
+  const citySlug = (cityName || 'geral').toLowerCase().replace(/\s+/g, '-');
+  const preset: PostPresetData = {
+    id: `tailored-${uf.toLowerCase()}-${frontId}-${citySlug}`,
+    title: `${front.title} em ${locationLabel}`,
+    headline: `O que está em jogo para ${occupation || 'o trabalhador'} em ${cityName}`,
+    bodyText: `${acolhimentoHook}\n\n${localPocketFacts[0]?.description || ''}`,
+    proofData: localPocketFacts.map(f => `${f.title}: ${f.description}`).join(' | '),
+    counterArg: objectionRebuttal.objection,
+    rebuttal: objectionRebuttal.rebuttal,
+    sourceName: `${localPocketFacts[0]?.source || 'Dados Oficiais'} • IBGE / DIEESE`,
+    sourceUrl: 'https://gov.br',
+    format: 'portrait',
+    theme: frontId === 'ex_lula' ? 'brasil-editorial' : frontId === 'terceira_via' ? 'dark-moderno' : 'brasil-vibrante',
+    slideIndex: 0,
+    categoryTag: 'territorio_perfil',
+    sourceOrigin: 'tactical',
+    emoji: front.icon,
+    statNumber: retrocessoAlert.statNumber,
+    statLabel: retrocessoAlert.title,
+    act1Hook: `O que está em jogo para a nossa família em ${cityName}`,
+    act2Proof: localPocketFacts[1]?.description || localPocketFacts[0]?.description || stats.highlightText,
+    act3Rebuttal: objectionRebuttal.rebuttal,
+    act4PocketImpact: `Quem vive do próprio salário em ${cityName} não pode aceitar o corte de direitos e remédios.`,
+    act5Cta: `Mande no WhatsApp de quem mora em ${cityName} e tá em dúvida no 2º turno!`,
+  };
+
+  const profileSummary = [
+    cityName,
+    uf,
+    front.title,
+    occupation,
+    familyFlags?.hasChildren ? 'Com filhos' : null,
+    familyFlags?.hasElderly ? 'Com idoso' : null,
+    familyFlags?.dependsSUS ? 'Usa SUS' : null,
+  ].filter(Boolean).join(' • ');
+
+  return {
+    uf,
+    stateName,
+    city: cityName,
+    locationLabel,
+    frontId,
+    frontTitle: front.title,
+    frontIcon: front.icon,
+    frontPriority: front.priority,
+    frontTag: front.tag,
+    occupation,
+    profileSummary,
+    acolhimentoHook,
+    goldenRule: front.goldenRule,
+    whatNeverToSay: Array.isArray(front.whatNeverToSay) ? front.whatNeverToSay[0] : (front.whatNeverToSay || 'Nunca agrida ou ofenda a pessoa.'),
+    localPocketFacts,
+    objectionRebuttal,
+    retrocessoAlert,
+    whatsappScript,
+    preset,
   };
 }
 
@@ -438,12 +713,14 @@ export const TACTICAL_PRESET_TEMPLATES: PostPresetData[] = [
     rebuttal: 'Sem orçamento federal, as farmácias credenciadas suspendem a entrega gratuita e a família tem que tirar do próprio bolso.',
     sourceName: 'Orçamento da União',
     sourceUrl: '#',
-    format: 'carousel',
+    format: 'portrait',
     theme: 'brasil-editorial',
     slideIndex: 0,
     categoryTag: 'menos_com_flavio',
     sourceOrigin: 'tactical',
     emoji: '💊',
+    statNumber: '-59%',
+    statLabel: 'Corte na Farmácia Popular sob o bolsonarismo',
     act1Hook: 'Você sabe quanto custa o remédio de pressão e diabetes no mês?',
     act2Proof: 'No governo Bolsonaro, a Farmácia Popular perdeu 59% de verba.',
     act3Rebuttal: 'Com Lula, a gratuidade voltou para milhões de aposentados.',
@@ -460,12 +737,14 @@ export const TACTICAL_PRESET_TEMPLATES: PostPresetData[] = [
     rebuttal: 'Países desenvolvidos com jornadas de 4 a 5 dias tiveram aumento de produtividade e melhoria na saúde mental do trabalhador.',
     sourceName: 'Senado Federal & DIEESE',
     sourceUrl: '#',
-    format: 'carousel',
+    format: 'portrait',
     theme: 'dark-moderno',
     slideIndex: 0,
     categoryTag: 'trabalho',
     sourceOrigin: 'tactical',
     emoji: '⏰',
+    statNumber: '6x1',
+    statLabel: 'Flávio votou contra o descanso do trabalhador',
     act1Hook: 'Você aguenta continuar na escala 6x1 até se aposentar?',
     act2Proof: 'Flávio Bolsonaro se declarou formalmente contra acabar com a 6x1.',
     act3Rebuttal: 'O governo Lula apoia a revisão da jornada sem redução de salário.',
@@ -482,12 +761,14 @@ export const TACTICAL_PRESET_TEMPLATES: PostPresetData[] = [
     rebuttal: 'Com maioria no Congresso e 4 ministros no STF, não haverá freios para cortar direitos e privatizar serviços essenciais.',
     sourceName: 'Análise Institucional 2º Turno',
     sourceUrl: '#',
-    format: 'carousel',
+    format: 'portrait',
     theme: 'concretismo-puro',
     slideIndex: 0,
     categoryTag: 'institucional',
     sourceOrigin: 'tactical',
     emoji: '⚖️',
+    statNumber: '4 VAGAS',
+    statLabel: 'No STF entregues à mesma família',
     act1Hook: 'Você não precisa virar petista para defender o equilíbrio do Brasil.',
     act2Proof: 'Eles já têm maioria no Congresso. Se levarem o Planalto, indicam 4 no STF.',
     act3Rebuttal: 'Concentração total de poder em uma só família sem fiscalização.',
@@ -504,12 +785,14 @@ export const TACTICAL_PRESET_TEMPLATES: PostPresetData[] = [
     rebuttal: 'Em 2022, 253 cidades viraram de vencedor entre os dois turnos. A virada é matematicamente comprovada e viável.',
     sourceName: 'TSE / Felipe Bone Análise Eleitoral',
     sourceUrl: '#',
-    format: 'carousel',
+    format: 'portrait',
     theme: 'brasil-vibrante',
     slideIndex: 0,
     categoryTag: 'mobilizacao',
     sourceOrigin: 'tactical',
     emoji: '🎯',
+    statNumber: '4 VOTOS',
+    statLabel: 'A cada 318 pessoas decidem a eleição presidencial',
     act1Hook: 'Você acha que o seu voto ou a sua conversa não fazem diferença?',
     act2Proof: 'Mais da metade das urnas do Brasil foram decididas por menos de 5 votos.',
     act3Rebuttal: 'Em 2022, mais de 250 cidades trocaram de vencedor no 2º turno.',
@@ -598,3 +881,108 @@ export function playProceduralHaptic(type: 'click' | 'toggle' | 'card' | 'genera
     // Fail silently
   }
 }
+
+// ─────────────────────────────────────────────────────────────
+// MOTOR DE PRÓXIMO PASSO INTELIGENTE (ORQUESTRADOR CONTEXTUAL)
+// ─────────────────────────────────────────────────────────────
+
+export interface SmartNextStep {
+  badge: string;
+  contextTitle: string;
+  recommendationText: string;
+  primaryAction: {
+    label: string;
+    section: AppSection;
+    icon: string;
+  };
+  secondaryAction?: {
+    label: string;
+    section: AppSection;
+    icon: string;
+  };
+}
+
+export function getSmartNextStepRecommendation(memory?: AgenticWorkingMemory): SmartNextStep {
+  const uf = memory?.selectedUF || 'SP';
+  const state = getStateByUF(uf);
+  const stats = getStateStats(uf);
+  const stateName = state ? state.name : 'São Paulo';
+
+  // Cenário 1: Frente de Conversão Específica Ativa
+  if (memory?.activeFrontId) {
+    const front = CONVERSION_FRONTS.find((f) => f.id === memory.activeFrontId);
+    if (front) {
+      return {
+        badge: 'Diálogo Estratégico',
+        contextTitle: `Perfil em Foco: ${front.title}`,
+        recommendationText: `Você escolheu a conversa com ${front.title.toLowerCase()}. A regra de ouro é: "${front.goldenRule}". Deseja praticar esse diálogo no simulador da vida real?`,
+        primaryAction: {
+          label: 'Treinar Diálogo no Simulador',
+          section: 'simulador',
+          icon: '💬',
+        },
+        secondaryAction: {
+          label: 'Ver Provas de Alimentos',
+          section: 'fatos',
+          icon: '🥩',
+        },
+      };
+    }
+  }
+
+  // Cenário 2: Profissão Inspecionada
+  if (memory?.occupation) {
+    return {
+      badge: 'Perfil Profissional',
+      contextTitle: `Conversa com: ${memory.occupation}`,
+      recommendationText: `Identificamos a realidade de ${memory.occupation}. Temos argumentos checados sobre renda, autonomia e custo dos combustíveis prontos para usar.`,
+      primaryAction: {
+        label: 'Ver Roteiros de Acolhimento',
+        section: 'perfil',
+        icon: '👥',
+      },
+      secondaryAction: {
+        label: 'Mandar Peça no Zap',
+        section: 'estudio',
+        icon: '📲',
+      },
+    };
+  }
+
+  // Cenário 3: Estado Inspecionado
+  if (memory?.selectedUF) {
+    return {
+      badge: `Realidade Regional • ${uf}`,
+      contextTitle: `${stateName} (${uf}) no Radar`,
+      recommendationText: `${stats.highlightText} O que acha de enviar esse dado oficial para contatos de ${stateName} ou ver dicas de abordagem local?`,
+      primaryAction: {
+        label: `Mandar Conquistas de ${uf} no Zap`,
+        section: 'estudio',
+        icon: '📲',
+      },
+      secondaryAction: {
+        label: `Ver Dicas para ${stateName}`,
+        section: 'territorio',
+        icon: '🗺️',
+      },
+    };
+  }
+
+  // Cenário Padrão (Entrada Inicial)
+  return {
+    badge: 'Início Rápido',
+    contextTitle: 'Explore pelo seu Estado ou Assunto',
+    recommendationText: 'Toque em qualquer estado no mapa interativo para ver empregos, Farmácia Popular e o Pé-de-Meia na sua região, ou consulte temas do dia a dia.',
+    primaryAction: {
+      label: 'Explorar Mapa do Brasil',
+      section: 'territorio',
+      icon: '🗺️',
+    },
+    secondaryAction: {
+      label: 'Fatos do Seu Bolso',
+      section: 'fatos',
+      icon: '💡',
+    },
+  };
+}
+

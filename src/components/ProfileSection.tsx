@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react';
 import { runEngine, type UserProfile } from '@/lib/engine';
 import { searchOccupations, type Occupation } from '@/data/occupations';
 import { type Argument } from '@/data/arguments';
+import { getStateByUF } from '@/data/brazilGeo';
 import type { Opportunity } from '@/data/opportunities';
 import AudioPlayerButton from '@/components/AudioPlayerButton';
 import { playProceduralHaptic } from '@/lib/agenticOrchestrator';
@@ -23,6 +24,9 @@ interface ProfileSectionProps {
   onNavigateToSimulator: () => void;
   activeFrontId?: 'ex_lula' | 'terceira_via' | 'abstencao_70' | 'nulo_branco';
   onSelectFront?: (frontId: 'ex_lula' | 'terceira_via' | 'abstencao_70' | 'nulo_branco') => void;
+  selectedUF?: string;
+  selectedCity?: string;
+  onNavigateToTerritory?: () => void;
 }
 
 export default function ProfileSection({
@@ -35,7 +39,14 @@ export default function ProfileSection({
   onNavigateToSimulator,
   activeFrontId = 'ex_lula',
   onSelectFront,
+  selectedUF,
+  selectedCity,
+  onNavigateToTerritory,
 }: ProfileSectionProps) {
+  const currentUF = selectedUF || profile.state || 'SP';
+  const currentCity = selectedCity || profile.city || 'São Paulo';
+  const stateGeo = useMemo(() => getStateByUF(currentUF) || { name: 'São Paulo', uf: 'SP', capital: 'São Paulo' }, [currentUF]);
+
   const [occQuery, setOccQuery] = useState('');
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [expandedArg, setExpandedArg] = useState<string | null>(null);
@@ -139,6 +150,38 @@ export default function ProfileSection({
           <span>💬</span>
           <span>Treinar Conversa Sem Brigar</span>
         </button>
+      </div>
+
+      {/* ── BARRA DE CONTEXTO TERRITORIAL ATIVO ── */}
+      <div className="p-4 rounded-2xl bg-gradient-to-r from-red-50/80 via-white to-amber-50/50 dark:from-red-950/30 dark:via-slate-900 dark:to-amber-950/20 border border-red-200 dark:border-red-900/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-2xs">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-white dark:bg-slate-800 border border-red-200 dark:border-red-800 flex items-center justify-center text-xl shadow-2xs shrink-0">
+            📍
+          </div>
+          <div>
+            <div className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wider text-[#C52229] dark:text-red-300">
+              <span>Localização Ativa da Conversa:</span>
+              <span className="px-1.5 py-0.2 rounded bg-red-100 dark:bg-red-900/60 text-[9px] font-black">{currentUF}</span>
+            </div>
+            <h3 className="text-base font-black text-slate-900 dark:text-white">
+              {currentCity}, {stateGeo.name} ({currentUF})
+            </h3>
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">
+              O motor de decisão personaliza os dados de emprego, Pé-de-Meia e remédios para esta cidade.
+            </p>
+          </div>
+        </div>
+
+        {onNavigateToTerritory && (
+          <button
+            type="button"
+            onClick={onNavigateToTerritory}
+            className="px-3.5 py-2 rounded-xl text-xs font-bold bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-slate-700 flex items-center gap-1.5 transition-all shadow-2xs shrink-0"
+          >
+            <span>🗺️</span>
+            <span>Mudar Estado / Cidade no Mapa</span>
+          </button>
+        )}
       </div>
 
       {/* ── GRID PRINCIPAL: 5 COLUNAS CONFIGURAÇÃO & 7 COLUNAS ARSENAL ── */}

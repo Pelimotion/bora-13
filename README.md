@@ -19,23 +19,24 @@ src/
 ├── components/
 │   ├── AudioPlayerButton.tsx   # Botão acessível de síntese de voz (Web Speech API)
 │   ├── BrazilMap.tsx           # Mapa interativo em SVG dos 26 estados + DF
-│   ├── ConversationSimulator.tsx # Treinador de conversas do cotidiano
+│   ├── ConversationSimulator.tsx # Treinador de conversas do cotidiano com sincronização de personas
 │   ├── MobileDock.tsx          # Barra de navegação inferior estilo app nativo
 │   ├── NavigationHeader.tsx    # Cabeçalho com logo, status e botão "Baixar App"
-│   ├── PostStudioSection.tsx   # Gerador de imagens (Canvas 2D) e mensagens
-│   ├── ProfileSection.tsx      # Roteiros para os 4 perfis de eleitores
+│   ├── PostStudioSection.tsx   # Gerador de imagens (Canvas 2D) e carrosséis para Instagram
+│   ├── ProfileSection.tsx      # Roteiros para os 4 perfis de eleitores com âncora territorial
 │   ├── QuickArgumentView.tsx   # Roleta de Fatos, gamificação e modo texto grande
-│   ├── RadarSection.tsx        # Hero acolhedor, frentes e comparativos de dados
-│   ├── TerritorySection.tsx    # Filtro por estado com dados do governo e dicas
-│   └── VisualJourneyStepper.tsx # Régua numerada de 4 passos na página inicial
+│   ├── RadarSection.tsx        # Hero acolhedor, Funil da Virada e comparativos do bolso
+│   ├── TailoredMissionFunnel.tsx # Funil em 3 passos: Estado → Cidade → Perfil → Arsenal sob medida
+│   ├── TerritorySection.tsx    # Mapa estratégico com cidades e funil territorial integrado
+│   └── VisualJourneyStepper.tsx # Régua numerada de navegação fluida
 ├── data/
 │   ├── arguments.ts            # Banco de argumentos e dados oficiais auditados
-│   ├── brazilGeo.ts            # Dados demográficos e conquistas dos 27 estados
-│   ├── electoralTactics.ts     # As 4 frentes de conversa e fatos comparativos
+│   ├── brazilGeo.ts            # Dados demográficos e conquistas dos 27 estados e capitais
+│   ├── electoralTactics.ts     # As 4 frentes de conversa e fatos comparativos ("O Menos com Flávio")
 │   ├── occupations.ts          # Normalização de profissões e categorias sociais
-│   └── opportunities.ts        # Programas sociais (Farmácia Popular, Desenrola, etc.)
+│   └── opportunities.ts        # Programas sociais (Farmácia Popular, Desenrola, Pé-de-Meia)
 └── lib/
-    ├── agenticOrchestrator.ts  # Orquestrador de estado global e gerador de copy
+    ├── agenticOrchestrator.ts  # Orquestrador agêntico, planos personalizados e gerador de presets
     └── engine.ts               # Motor de recomendação contextual por UF/profissão
 ```
 
@@ -55,6 +56,11 @@ src/
 ### 3. PWA e Modo Offline
 - `public/sw.js`: Service worker configurado para cache de recursos estáticos e inicialização imediata.
 - `public/manifest.json`: Ícones 192px e 512px com suporte a "Adicionar à Tela de Início".
+
+### 4. Funil Narrativo Agêntico & Deep-linking
+- **Funil em 3 Passos**: Seleção do Estado (UF) $\rightarrow$ Escolha da Cidade $\rightarrow$ Seleção da Frente de Conversão, Profissão e Realidade Familiar $\rightarrow$ Geração do Arsenal Sob Medida.
+- **Deep-linking para Mobilização**: Parâmetros de URL (`?state=SP&city=Campinas&front=ex_lula&occ=Motorista`) permitem que links compartilhados em grupos recarreguem o caso exato em qualquer dispositivo.
+- **Integração com Simulador e Estúdio**: 1 clique para treinar o diálogo com a persona correspondente ou para carregar o carrossel de 5 lâminas para Instagram no Estúdio de Criação.
 
 ---
 

@@ -10,12 +10,12 @@ interface MobileDockProps {
 }
 
 const DOCK_ITEMS: { id: AppSection; label: string; icon: string; badge?: string }[] = [
-  { id: 'radar', label: 'Início', icon: '🏠' },
-  { id: 'territorio', label: '1. Estado', icon: '🗺️' },
-  { id: 'perfil', label: '2. Quem', icon: '👥' },
-  { id: 'simulador', label: '3. Diálogo', icon: '💬' },
-  { id: 'estudio', label: '4. Zap', icon: '📲', badge: 'Novo' },
-  { id: 'fatos', label: 'Dúvidas', icon: '💡' },
+  { id: 'radar', label: 'Início', icon: '🇧🇷' },
+  { id: 'territorio', label: 'Estado', icon: '🗺️' },
+  { id: 'perfil', label: 'Quem', icon: '👥' },
+  { id: 'simulador', label: 'Diálogo', icon: '💬' },
+  { id: 'fatos', label: 'Fatos', icon: '💡' },
+  { id: 'estudio', label: 'Zap', icon: '📲', badge: 'Novo' },
 ];
 
 export default function MobileDock({ currentSection, onSelectSection }: MobileDockProps) {

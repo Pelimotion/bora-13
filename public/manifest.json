@@ -2,8 +2,8 @@
   "name": "Bora — Conversas que Importam",
   "short_name": "Bora",
   "description": "Encontre os melhores argumentos baseados em dados reais para dialogar sobre o futuro do Brasil.",
-  "start_url": "/",
-  "id": "/",
+  "start_url": "/bora/",
+  "id": "/bora/",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#080F1A",
@@ -12,7 +12,7 @@
   "dir": "ltr",
   "icons": [
     {
-      "src": "/icon.svg",
+      "src": "/bora/icon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
@@ -24,8 +24,8 @@
       "name": "Argumento Rápido",
       "short_name": "Rápido",
       "description": "Obtenha argumentos imediatos para qualquer perfil",
-      "url": "/?mode=quick",
-      "icons": [{ "src": "/icon.svg", "sizes": "any" }]
+      "url": "/bora/?mode=quick",
+      "icons": [{ "src": "/bora/icon.svg", "sizes": "any" }]
     }
   ]
 }

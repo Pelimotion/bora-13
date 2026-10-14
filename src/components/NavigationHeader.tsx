@@ -16,12 +16,12 @@ interface NavigationHeaderProps {
 }
 
 const SECTIONS: { id: AppSection; label: string; icon: string; badge?: string }[] = [
-  { id: 'radar', label: 'Início', icon: '🏠' },
-  { id: 'territorio', label: '1. Meu Estado', icon: '🗺️' },
-  { id: 'perfil', label: '2. Com Quem Falar', icon: '👥' },
-  { id: 'simulador', label: '3. Treinar Conversa', icon: '💬' },
-  { id: 'estudio', label: '4. Mandar no Zap & Redes', icon: '📲', badge: 'Pronto' },
-  { id: 'fatos', label: 'Tirar Dúvidas', icon: '💡' },
+  { id: 'radar', label: 'Início & Mapa', icon: '🇧🇷' },
+  { id: 'territorio', label: 'Meu Estado', icon: '🗺️' },
+  { id: 'perfil', label: 'Quem Abordar', icon: '👥' },
+  { id: 'simulador', label: 'Treinar Diálogo', icon: '💬' },
+  { id: 'fatos', label: 'Fatos do Bolso', icon: '💡' },
+  { id: 'estudio', label: 'Mandar no Zap', icon: '📲', badge: 'Pronto' },
 ];
 
 export default function NavigationHeader({

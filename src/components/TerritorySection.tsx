@@ -2,8 +2,9 @@
 
 import React, { useState } from 'react';
 import BrazilMap from '@/components/BrazilMap';
+import TailoredMissionFunnel from '@/components/TailoredMissionFunnel';
 import { BRAZIL_STATES_GEO, getStateByUF, type StateGeo } from '@/data/brazilGeo';
-import { getStateStats, playProceduralHaptic } from '@/lib/agenticOrchestrator';
+import { getStateStats, playProceduralHaptic, type PostPresetData } from '@/lib/agenticOrchestrator';
 import { getRegionalTacticForUF } from '@/data/electoralTactics';
 
 interface TerritorySectionProps {
@@ -12,6 +13,8 @@ interface TerritorySectionProps {
   onSelectState: (uf: string, city?: string) => void;
   onGeneratePostFromTerritory: (uf: string, city?: string) => void;
   onNavigateToProfile: () => void;
+  onOpenStudioWithPreset?: (preset: PostPresetData) => void;
+  onNavigateToSimulator?: (frontId?: string, occupation?: string) => void;
 }
 
 export default function TerritorySection({
@@ -20,6 +23,8 @@ export default function TerritorySection({
   onSelectState,
   onGeneratePostFromTerritory,
   onNavigateToProfile,
+  onOpenStudioWithPreset,
+  onNavigateToSimulator,
 }: TerritorySectionProps) {
   const [activeUF, setActiveUF] = useState<string>(selectedUF);
   const [cityInput, setCityInput] = useState<string>(selectedCity || '');
@@ -48,13 +53,13 @@ export default function TerritorySection({
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 mb-2">
             <span>🗺️</span>
-            <span>Passo 1 • Dicas e Conquistas no Seu Estado</span>
+            <span>Realidade Regional • Fatos e Conquistas no Seu Estado</span>
           </div>
           <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
-            Veja o Que Tá Acontecendo no Seu Estado
+            Conquistas e Dados Auditados no Seu Estado
           </h2>
           <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mt-1 max-w-2xl font-medium">
-            Cada região tem uma realidade: no Nordeste a missão é ajudar quem precisa de carona para votar; em SP e MG é conversar sobre emprego e preços; no Sul e Centro-Oeste é a conversa calma de família no privado. Toque no mapa para ver o seu estado:
+            Cada região tem uma realidade concreta. Consulte os dados oficiais de {stateGeo.name}, descubra as prioridades locais e veja como conversar de forma respeitosa:
           </p>
         </div>
 
@@ -214,27 +219,57 @@ export default function TerritorySection({
             {/* Ações Rápidas */}
             <div className="flex flex-col gap-2 pt-2">
               <button
+                type="button"
+                onClick={() => {
+                  playProceduralHaptic('generate');
+                  const el = document.getElementById('funil-territorio');
+                  if (el) el.scrollIntoView({ behavior: 'smooth' });
+                }}
+                className="w-full py-3 rounded-xl bg-gradient-to-r from-[#C52229] to-[#991B1E] hover:from-[#a51b21] hover:to-[#7f1618] text-white font-black text-xs flex items-center justify-center gap-2 shadow-sm transition-all"
+              >
+                <span>🎯</span>
+                <span>Configurar Roteiro da Virada em {cityInput || stateGeo.capital} ↓</span>
+              </button>
+
+              <button
+                type="button"
                 onClick={() => {
                   playProceduralHaptic('generate');
                   onGeneratePostFromTerritory(activeUF, cityInput);
                 }}
-                className="w-full py-3 rounded-xl bg-[#C52229] hover:bg-[#a51b21] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm transition-all"
+                className="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-xs transition-all"
               >
-                <span>📲 Mandar Dados de {cityInput || stateGeo.name} no WhatsApp</span>
+                <span>📲</span>
+                <span>Mandar Dados no WhatsApp</span>
               </button>
 
               <button
+                type="button"
                 onClick={() => {
                   playProceduralHaptic('click');
                   onNavigateToProfile();
                 }}
-                className="w-full py-2.5 rounded-xl border-2 border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/20 text-[#C52229] dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-950/40 text-xs font-black flex items-center justify-center gap-2 transition-all shadow-sm"
+                className="w-full py-2.5 rounded-xl border border-red-200 dark:border-red-900/50 bg-red-50/50 dark:bg-red-950/20 text-[#C52229] dark:text-red-300 hover:bg-red-100 dark:hover:bg-red-950/40 text-xs font-black flex items-center justify-center gap-2 transition-all shadow-2xs"
               >
-                <span>👥 Passo 2: Escolher Com Quem Conversar →</span>
+                <span>👥</span>
+                <span>Explorar Todos os Perfis de Eleitores →</span>
               </button>
             </div>
           </div>
         </div>
+      </div>
+
+      {/* ── FUNIL COMPLETO DA VIRADA REGIONAL (ESTADO → CIDADE → PERFIL → ARSENAL) ── */}
+      <div id="funil-territorio" className="pt-4 scroll-mt-20">
+        <TailoredMissionFunnel
+          initialUF={activeUF}
+          initialCity={cityInput}
+          onSelectState={onSelectState}
+          onSelectCity={handleCitySelect}
+          onOpenStudio={onOpenStudioWithPreset}
+          onOpenSimulator={onNavigateToSimulator}
+          title={`QG Regional • Roteiro Sob Medida em ${cityInput || stateGeo.capital} (${activeUF})`}
+        />
       </div>
     </section>
   );

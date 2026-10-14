@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface Scenario {
   id: string;
@@ -131,12 +131,28 @@ const SCENARIOS: Scenario[] = [
 export default function ConversationSimulator({
   onClose,
   isEmbedded = false,
+  initialScenarioId,
 }: {
   onClose?: () => void;
   isEmbedded?: boolean;
+  initialScenarioId?: string;
 }) {
-  const [selectedScenarioIndex, setSelectedScenarioIndex] = useState(0);
+  const initialIndex = initialScenarioId
+    ? Math.max(0, SCENARIOS.findIndex((s) => s.id === initialScenarioId))
+    : 0;
+  const [selectedScenarioIndex, setSelectedScenarioIndex] = useState(initialIndex);
   const [chosenOptionId, setChosenOptionId] = useState<string | null>(null);
+
+  // Sincronizar se o initialScenarioId mudar
+  useEffect(() => {
+    if (initialScenarioId) {
+      const idx = SCENARIOS.findIndex((s) => s.id === initialScenarioId);
+      if (idx !== -1) {
+        setSelectedScenarioIndex(idx);
+        setChosenOptionId(null);
+      }
+    }
+  }, [initialScenarioId]);
 
   const scenario = SCENARIOS[selectedScenarioIndex];
   const chosenOption = scenario.options.find(o => o.id === chosenOptionId);

@@ -81,6 +81,9 @@ export default function BoraApp() {
   // Preset ativo no Estúdio de Posts
   const [activePostPreset, setActivePostPreset] = useState<PostPresetData | null>(null);
 
+  // Cenário ativo no Simulador de Conversa
+  const [simulatorScenarioId, setSimulatorScenarioId] = useState<string>('tio-almoco');
+
   // 1. Observador de Modo Escuro / Claro (para sincronizar WebGL Shaders e Tema)
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -147,8 +150,9 @@ export default function BoraApp() {
     const cityParam = params.get('city');
     const levelParam = params.get('level');
     const occParam = params.get('occ');
+    const frontParam = params.get('front');
 
-    if (stateParam || levelParam || occParam || cityParam) {
+    if (stateParam || levelParam || occParam || cityParam || frontParam) {
       const updatedProfile: UserProfile = {
         profileTags: [],
         rejectionLevel: levelParam ? Math.max(1, Math.min(4, parseInt(levelParam, 10))) : 2,
@@ -169,6 +173,9 @@ export default function BoraApp() {
         updatedProfile.profileTags = inferred;
       }
 
+      const validFronts = ['ex_lula', 'terceira_via', 'abstencao_70', 'nulo_branco'];
+      const parsedFront = (frontParam && validFronts.includes(frontParam)) ? (frontParam as any) : undefined;
+
       setProfile(updatedProfile);
       setMemory((prev) => ({
         ...prev,
@@ -177,10 +184,11 @@ export default function BoraApp() {
         occupation: updatedProfile.occupation,
         profileTags: updatedProfile.profileTags,
         rejectionLevel: updatedProfile.rejectionLevel,
+        ...(parsedFront ? { activeFrontId: parsedFront } : {}),
       }));
 
       if (!modeParam) {
-        setSection('perfil');
+        setSection('radar');
       }
     }
 
@@ -301,6 +309,35 @@ export default function BoraApp() {
     [memory]
   );
 
+  // Abertura Direta do Estúdio a partir do Funil da Virada
+  const handleOpenStudioWithPreset = useCallback((preset: PostPresetData) => {
+    playProceduralHaptic('generate');
+    setActivePostPreset(preset);
+    setSection('estudio');
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, []);
+
+  // Transição Contextualizada para o Simulador de Conversa
+  const handleOpenSimulator = useCallback((frontId?: string, occupation?: string) => {
+    playProceduralHaptic('click');
+    let targetScenario = 'tio-almoco';
+    const occ = (occupation || '').toLowerCase();
+    if (occ.includes('motorista') || occ.includes('uber') || occ.includes('app') || occ.includes('entregador')) {
+      targetScenario = 'amigo-uber';
+    } else if (frontId === 'abstencao_70' || frontId === 'frente-3-abstencao' || occ.includes('cuidador') || occ.includes('bpc') || occ.includes('aposentad')) {
+      targetScenario = 'vizinha-bpc';
+    } else {
+      targetScenario = 'tio-almoco';
+    }
+    setSimulatorScenarioId(targetScenario);
+    setSection('simulador');
+    if (typeof window !== 'undefined') {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  }, []);
+
   return (
     <div className="min-h-screen flex flex-col bg-[var(--bg-page)] text-[var(--text-primary)] transition-colors relative overflow-x-clip selection:bg-red-500 selection:text-white pb-20 md:pb-8">
       {/* ── CAMADA WEBGL ARTÍSTICA & FITA CINÉTICA (THREE.JS + SHADERS GLSL) ── */}
@@ -326,6 +363,10 @@ export default function BoraApp() {
             onInstall={handleInstallApp}
             memory={memory}
             onSelectFront={handleSelectFront}
+            onSelectState={handleSelectTerritory}
+            onGeneratePostFromTerritory={handleGeneratePostFromTerritory}
+            onOpenStudioWithPreset={handleOpenStudioWithPreset}
+            onNavigateToSimulator={handleOpenSimulator}
           />
         )}
 
@@ -336,18 +377,23 @@ export default function BoraApp() {
             onSelectState={handleSelectTerritory}
             onGeneratePostFromTerritory={handleGeneratePostFromTerritory}
             onNavigateToProfile={() => setSection('perfil')}
+            onOpenStudioWithPreset={handleOpenStudioWithPreset}
+            onNavigateToSimulator={handleOpenSimulator}
           />
         )}
 
         {section === 'perfil' && (
           <ProfileSection
             profile={profile}
+            selectedUF={memory.selectedUF}
+            selectedCity={memory.selectedCity}
+            onNavigateToTerritory={() => setSection('territorio')}
             onUpdateProfile={handleUpdateProfile}
             onGeneratePostFromArgument={handleGeneratePostFromArgument}
             onGeneratePostFromOpportunity={handleGeneratePostFromOpportunity}
             onGeneratePostFromConversionFront={handleGeneratePostFromConversionFront}
             onGeneratePostFromMenosFact={handleGeneratePostFromMenosFact}
-            onNavigateToSimulator={() => setSection('simulador')}
+            onNavigateToSimulator={() => handleOpenSimulator(memory.activeFrontId, profile.occupation)}
             activeFrontId={memory.activeFrontId}
             onSelectFront={handleSelectFront}
           />
@@ -362,7 +408,7 @@ export default function BoraApp() {
 
         {section === 'simulador' && (
           <div className="py-6">
-            <ConversationSimulator isEmbedded={true} />
+            <ConversationSimulator isEmbedded={true} initialScenarioId={simulatorScenarioId} />
           </div>
         )}
 

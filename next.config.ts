@@ -46,6 +46,28 @@ const nextConfig: NextConfig = {
       },
     },
   },
+  async redirects() {
+    return [
+      {
+        source: "/",
+        destination: "/bora",
+        basePath: false,
+        permanent: false,
+      },
+      {
+        source: "/icon.svg",
+        destination: "/bora/icon.svg",
+        basePath: false,
+        permanent: false,
+      },
+      {
+        source: "/manifest.json",
+        destination: "/bora/manifest.json",
+        basePath: false,
+        permanent: false,
+      },
+    ];
+  },
   async headers() {
     return [
       {

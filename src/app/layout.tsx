@@ -60,7 +60,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -70,7 +70,10 @@ export default function RootLayout({
         />
         <meta name="mobile-web-app-capable" content="yes" />
       </head>
-      <body className="antialiased min-h-screen flex flex-col bg-[var(--bg-page)] text-[var(--text-primary)]">
+      <body
+        suppressHydrationWarning
+        className="antialiased min-h-screen flex flex-col bg-[var(--bg-page)] text-[var(--text-primary)]"
+      >
         {/* Ribbon Oficial Multicolorida Casa 13 */}
         <div className="casa-ribbon" />
 
