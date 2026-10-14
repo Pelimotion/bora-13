@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 
 interface ArtisticCanvasProps {
-  currentStep: 'hero' | 'location' | 'profile' | 'results';
+  currentStep: 'hero' | 'location' | 'profile' | 'results' | 'quick';
   isDarkMode?: boolean;
 }
 
@@ -363,6 +363,27 @@ export default function ArtisticCanvas({ currentStep, isDarkMode = false }: Arti
         gsap.to(mesh.position, {
           y: -0.8,
           duration: 1.4,
+          ease: 'power3.inOut',
+        });
+        break;
+
+      case 'quick':
+        // Câmera dinâmica e enérgica com leve elevação para foco no cartão do argumento
+        gsap.to(camera.position, {
+          z: 7.4,
+          y: 0.3,
+          duration: 1.0,
+          ease: 'power3.inOut',
+        });
+        gsap.to(mesh.rotation, {
+          x: -0.3,
+          z: -0.08,
+          duration: 1.0,
+          ease: 'power3.inOut',
+        });
+        gsap.to(mesh.position, {
+          y: -0.3,
+          duration: 1.0,
           ease: 'power3.inOut',
         });
         break;

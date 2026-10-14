@@ -12,13 +12,14 @@ import AudioPlayerButton from '@/components/AudioPlayerButton';
 import BrazilMap from '@/components/BrazilMap';
 import ThemeToggle from '@/components/ThemeToggle';
 import ArtisticCanvas from '@/components/ArtisticCanvas';
+import QuickArgumentView from '@/components/QuickArgumentView';
 
 // ═══════════════════════════════════════════════════════════════
 // BORA APP — O QG do Diálogo e da Esperança
 // Identidade Oficial Casa 13 • Caminho Único & Narrativa Intuitiva
 // ═══════════════════════════════════════════════════════════════
 
-type AppStep = 'hero' | 'location' | 'profile' | 'results';
+type AppStep = 'hero' | 'location' | 'profile' | 'results' | 'quick';
 
 export default function BoraApp() {
   const [step, setStep] = useState<AppStep>('hero');
@@ -60,9 +61,7 @@ export default function BoraApp() {
   }, []);
 
   const handleQuickMode = useCallback(() => {
-    const quickResults = runQuickMode();
-    setResults(quickResults);
-    goToStep('results');
+    goToStep('quick');
   }, [goToStep]);
 
   const handleGenerateResults = useCallback(() => {
@@ -83,9 +82,7 @@ export default function BoraApp() {
 
     const params = new URLSearchParams(window.location.search);
     if (params.get('mode') === 'quick') {
-      const quickRes = runQuickMode();
-      setResults(quickRes);
-      setStep('results');
+      setStep('quick');
       return () => window.removeEventListener('beforeinstallprompt', installHandler);
     }
 
@@ -191,7 +188,7 @@ export default function BoraApp() {
         </div>
 
         {/* Linha de Progresso Visual da Narrativa */}
-        {step !== 'hero' && (
+        {step !== 'hero' && step !== 'quick' && (
           <div className="max-w-xl mx-auto px-4 pb-2 pt-1">
             <div className="flex items-center justify-between text-[11px] font-bold text-slate-500 dark:text-slate-400 mb-1">
               <span className={step === 'location' ? 'text-[#C52229]' : ''}>
@@ -211,6 +208,16 @@ export default function BoraApp() {
             </div>
           </div>
         )}
+
+        {step === 'quick' && (
+          <div className="max-w-xl mx-auto px-4 pb-2 pt-1">
+            <div className="flex items-center justify-between text-[11px] font-bold text-amber-700 dark:text-amber-400 mb-1">
+              <span>⚡ Modo Rápido: Fato na Mesa</span>
+              <span>🎲 Girar Dados para Sortear</span>
+            </div>
+            <div className="h-1 rounded-full bg-gradient-to-r from-[#C52229] via-[#F59E0B] to-[#10B981]" />
+          </div>
+        )}
       </header>
 
       {/* Conteúdo Principal da Narrativa */}
@@ -222,6 +229,12 @@ export default function BoraApp() {
             onOpenSimulator={() => setShowSimulator(true)}
             canInstall={!!installPrompt}
             onInstall={handleInstallApp}
+          />
+        )}
+        {step === 'quick' && (
+          <QuickArgumentView
+            onBack={() => goToStep('hero')}
+            onOpenCardGenerator={(arg) => setActiveCardArg(arg)}
           />
         )}
         {step === 'location' && (
@@ -325,17 +338,39 @@ function HeroSection({
         Conecte fatos comprovados do IBGE, DIEESE e ministérios à realidade da profissão e da cidade de quem você quer conversar. Sem briga, com respeito e foco no bolso.
       </p>
 
+      {/* Missão Cidadã Gamificada do Dia */}
+      <div className="w-full max-w-sm mb-5 p-3.5 rounded-2xl bg-gradient-to-r from-red-50 to-amber-50 dark:from-red-950/30 dark:to-amber-950/30 border border-red-200/80 dark:border-red-800/40 text-left flex items-start gap-3 shadow-sm">
+        <div className="w-9 h-9 rounded-xl bg-[#C52229] text-white flex items-center justify-center font-black text-lg shrink-0 shadow-sm">
+          🎯
+        </div>
+        <div className="flex-1">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] font-black uppercase tracking-wider text-[#C52229]">
+              Missão Cidadã do Dia
+            </span>
+            <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/50 text-amber-800 dark:text-amber-200">
+              +50 XP
+            </span>
+          </div>
+          <p className="text-xs font-semibold text-slate-800 dark:text-slate-200 mt-0.5 leading-snug">
+            Gire os dados, domine 1 fato com fonte oficial e compartilhe sem briga.
+          </p>
+        </div>
+      </div>
+
       {/* Botões de Ação da Jornada */}
       <div className="flex flex-col gap-3 w-full max-w-sm mb-8 animate-slide-up stagger-1">
         <button className="btn-pt text-base font-bold shadow-md" onClick={onStart}>
           <span className="flex items-center justify-center gap-2">
-            🚀 Iniciar Diálogo Personalizado
+            🚀 Iniciar Diálogo Personalizado (Cidade & Profissão)
           </span>
         </button>
 
-        <button className="btn-secondary text-sm font-semibold" onClick={onQuickMode}>
-          <span className="flex items-center justify-center gap-2">
-            ⚡ Argumento Rápido (Qualquer Perfil)
+        <button className="btn-secondary text-sm font-bold flex items-center justify-center gap-2" onClick={onQuickMode}>
+          <span className="text-lg">🎲</span>
+          <span>Roleta de Fatos & Argumento Rápido</span>
+          <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-200">
+            Novo
           </span>
         </button>
 
