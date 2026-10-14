@@ -52,6 +52,8 @@ export const viewport: Viewport = {
   themeColor: "#C52229",
 };
 
+import SmoothScroll from "@/components/SmoothScroll";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -72,9 +74,11 @@ export default function RootLayout({
         {/* Ribbon Oficial Multicolorida Casa 13 */}
         <div className="casa-ribbon" />
 
-        <main className="flex-1 w-full relative">
-          {children}
-        </main>
+        <SmoothScroll>
+          <main className="flex-1 w-full relative">
+            {children}
+          </main>
+        </SmoothScroll>
 
         {/* Service Worker registration */}
         <script

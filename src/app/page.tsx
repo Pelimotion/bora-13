@@ -11,6 +11,7 @@ import ConversationSimulator from '@/components/ConversationSimulator';
 import AudioPlayerButton from '@/components/AudioPlayerButton';
 import BrazilMap from '@/components/BrazilMap';
 import ThemeToggle from '@/components/ThemeToggle';
+import ArtisticCanvas from '@/components/ArtisticCanvas';
 
 // ═══════════════════════════════════════════════════════════════
 // BORA APP — O QG do Diálogo e da Esperança
@@ -21,6 +22,7 @@ type AppStep = 'hero' | 'location' | 'profile' | 'results';
 
 export default function BoraApp() {
   const [step, setStep] = useState<AppStep>('hero');
+  const [isDark, setIsDark] = useState(false);
   const [profile, setProfile] = useState<UserProfile>({
     profileTags: [],
     rejectionLevel: 2,
@@ -33,6 +35,19 @@ export default function BoraApp() {
     },
   });
   const [results, setResults] = useState<EngineResult | null>(null);
+
+  // Observador de modo escuro/claro para sincronizar Three.js
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const checkDark = () => {
+      setIsDark(document.documentElement.classList.contains('dark'));
+    };
+    checkDark();
+
+    const observer = new MutationObserver(checkDark);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    return () => observer.disconnect();
+  }, []);
 
   // Modais
   const [activeCardArg, setActiveCardArg] = useState<Argument | null>(null);
@@ -119,9 +134,12 @@ export default function BoraApp() {
   }, [installPrompt]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[var(--bg-page)] text-[var(--text-primary)] transition-colors">
+    <div className="min-h-screen flex flex-col bg-[var(--bg-page)] text-[var(--text-primary)] transition-colors relative overflow-x-hidden">
+      {/* Camada WebGL Artística & Espacial (Three.js + GLSL Shaders) */}
+      <ArtisticCanvas currentStep={step} isDarkMode={isDark} />
+
       {/* Barra de Navegação Superior Fixa */}
-      <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#0B0F19]/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
+      <header className="sticky top-0 z-40 bg-white/90 dark:bg-[#0B0F19]/90 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
         <div className="max-w-xl mx-auto px-4 py-2.5 flex items-center justify-between">
           {/* Logo e Identidade */}
           <button
@@ -196,7 +214,7 @@ export default function BoraApp() {
       </header>
 
       {/* Conteúdo Principal da Narrativa */}
-      <main className="flex-1 w-full">
+      <main className="flex-1 w-full relative z-10">
         {step === 'hero' && (
           <HeroSection
             onStart={() => goToStep('location')}
