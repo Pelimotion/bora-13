@@ -8,15 +8,15 @@ export const metadata: Metadata = {
   keywords: ["eleições 2026", "argumentos", "dados", "diálogo", "Brasil", "conversa", "economia", "fatos verificados", "Casa 13"],
   authors: [{ name: "Casa 13 / Bora" }],
   applicationName: "Bora 13",
-  manifest: "/manifest.json",
+  manifest: "/bora/manifest.json",
   appleWebApp: {
     capable: true,
     statusBarStyle: "default",
     title: "Bora 13",
   },
   icons: {
-    icon: "/icon.svg",
-    apple: "/icon.svg",
+    icon: "/bora/icon.svg",
+    apple: "/bora/icon.svg",
   },
   openGraph: {
     title: "Bora 13 — Conversas que Importam",
@@ -26,7 +26,7 @@ export const metadata: Metadata = {
     siteName: "Bora 13",
     images: [
       {
-        url: "/icon.svg",
+        url: "/bora/icon.svg",
         width: 512,
         height: 512,
         alt: "Bora 13 — Conversas que Importam",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
     card: "summary",
     title: "Bora 13 — Conversas que Importam",
     description: "Argumentos baseados em dados reais para dialogar com quem pensa diferente.",
-    images: ["/icon.svg"],
+    images: ["/bora/icon.svg"],
   },
   robots: {
     index: true,
@@ -86,7 +86,7 @@ export default function RootLayout({
             __html: `
               if ('serviceWorker' in navigator && window.location.protocol === 'https:') {
                 window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js').catch(function(err) {
+                  navigator.serviceWorker.register('/bora/sw.js').catch(function(err) {
                     console.log('SW registration skipped:', err);
                   });
                 });

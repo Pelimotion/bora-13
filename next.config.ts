@@ -32,6 +32,7 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
+  basePath: "/bora",
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,

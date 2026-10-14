@@ -6,8 +6,9 @@ import AudioPlayerButton from '@/components/AudioPlayerButton';
 import gsap from 'gsap';
 
 interface QuickArgumentViewProps {
-  onBack: () => void;
+  onBack?: () => void;
   onOpenCardGenerator: (arg: Argument) => void;
+  className?: string;
 }
 
 const CATEGORIES = [
@@ -110,6 +111,7 @@ function playProceduralSound(type: 'dice' | 'ping' | 'levelUp') {
 export default function QuickArgumentView({
   onBack,
   onOpenCardGenerator,
+  className = '',
 }: QuickArgumentViewProps) {
   // Pool de argumentos substantivos e auditados
   const poolOfArguments = useRef<Argument[]>(
@@ -355,7 +357,7 @@ export default function QuickArgumentView({
   };
 
   return (
-    <section className="min-h-[calc(100vh-80px)] flex flex-col px-4 py-6 max-w-xl mx-auto w-full animate-fade-in relative z-10">
+    <section className={`min-h-[calc(100vh-80px)] flex flex-col px-4 py-6 max-w-4xl mx-auto w-full animate-fade-in relative z-10 ${className}`}>
       {/* Notificação Flutuante de Level Up / Gamificação */}
       {levelUpToast && (
         <div className="fixed top-16 left-1/2 -translate-x-1/2 z-50 bg-[#C52229] text-white px-5 py-2.5 rounded-full shadow-2xl font-black text-xs md:text-sm flex items-center gap-2 border-2 border-amber-300 animate-bounce">
@@ -364,10 +366,19 @@ export default function QuickArgumentView({
       )}
 
       {/* Top Header & Navegação */}
-      <div className="flex items-center justify-between mb-3">
-        <button onClick={onBack} className="btn-ghost -ml-2 text-xs">
-          ← Voltar ao Início
-        </button>
+      <div className="flex items-center justify-between mb-4">
+        {onBack ? (
+          <button onClick={onBack} className="btn-ghost -ml-2 text-xs">
+            ← Voltar ao Início
+          </button>
+        ) : (
+          <div className="flex items-center gap-2">
+            <span className="text-xl">⚡</span>
+            <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
+              Biblioteca de Fatos & Roleta da Verdade
+            </span>
+          </div>
+        )}
         <span className="badge-casa13">
           ⚡ Fato na Mesa • Modo Rápido
         </span>

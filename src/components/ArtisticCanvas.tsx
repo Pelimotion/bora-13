@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import gsap from 'gsap';
 
 interface ArtisticCanvasProps {
-  currentStep: 'hero' | 'location' | 'profile' | 'results' | 'quick';
+  currentStep: string;
   isDarkMode?: boolean;
 }
 
@@ -285,6 +285,7 @@ export default function ArtisticCanvas({ currentStep, isDarkMode = false }: Arti
 
     switch (currentStep) {
       case 'hero':
+      case 'radar':
         gsap.to(camera.position, {
           z: 7,
           y: 0,
@@ -305,6 +306,7 @@ export default function ArtisticCanvas({ currentStep, isDarkMode = false }: Arti
         break;
 
       case 'location':
+      case 'territorio':
         // Câmera sobe suavemente e a fita gira levemente para dar espaço ao mapa interativo
         gsap.to(camera.position, {
           z: 8.2,
@@ -326,6 +328,7 @@ export default function ArtisticCanvas({ currentStep, isDarkMode = false }: Arti
         break;
 
       case 'profile':
+      case 'perfil':
         // Câmera aproxima com foco no perfil humano
         gsap.to(camera.position, {
           z: 6.8,
@@ -347,6 +350,7 @@ export default function ArtisticCanvas({ currentStep, isDarkMode = false }: Arti
         break;
 
       case 'results':
+      case 'estudio':
         // Câmera abre em perspectiva ampla para visualização de arsenal e cards
         gsap.to(camera.position, {
           z: 8.8,
@@ -368,6 +372,8 @@ export default function ArtisticCanvas({ currentStep, isDarkMode = false }: Arti
         break;
 
       case 'quick':
+      case 'fatos':
+      case 'simulador':
         // Câmera dinâmica e enérgica com leve elevação para foco no cartão do argumento
         gsap.to(camera.position, {
           z: 7.4,

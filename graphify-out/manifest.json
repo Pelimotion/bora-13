@@ -1,0 +1,152 @@
+{
+  "eslint.config.mjs": {
+    "mtime": 1791930606.3120236,
+    "ast_hash": "dfa1f5f6a7037bf39dc510f30b180002",
+    "semantic_hash": "dfa1f5f6a7037bf39dc510f30b180002"
+  },
+  "next.config.ts": {
+    "mtime": 1791931234.7173285,
+    "ast_hash": "6e52c7dfb50ca370c4e482f2ecc47e79",
+    "semantic_hash": "6e52c7dfb50ca370c4e482f2ecc47e79"
+  },
+  "package.json": {
+    "mtime": 1791942020.7320268,
+    "ast_hash": "d1de64b9b58bf2920fa4a37730365c26",
+    "semantic_hash": "d1de64b9b58bf2920fa4a37730365c26"
+  },
+  "public/manifest.json": {
+    "mtime": 1791931217.8244,
+    "ast_hash": "80159704aed2585dd55b2d3cd4fa4639",
+    "semantic_hash": "80159704aed2585dd55b2d3cd4fa4639"
+  },
+  "public/sw.js": {
+    "mtime": 1791931226.804,
+    "ast_hash": "b17259c4d52efba8a7331323b0d20da6",
+    "semantic_hash": "b17259c4d52efba8a7331323b0d20da6"
+  },
+  "src/app/layout.tsx": {
+    "mtime": 1791942176.5142365,
+    "ast_hash": "e0f383ebf95d29cbd2a7e9dc2eb4a155",
+    "semantic_hash": "e0f383ebf95d29cbd2a7e9dc2eb4a155"
+  },
+  "src/app/page.tsx": {
+    "mtime": 1791949731.7457345,
+    "ast_hash": "8c7687d9020931e0e90e4d12ebc197bc",
+    "semantic_hash": "8c7687d9020931e0e90e4d12ebc197bc"
+  },
+  "src/components/ArtisticCanvas.tsx": {
+    "mtime": 1791947268.8470592,
+    "ast_hash": "68dfcbdf78339fd22167e6b983771116",
+    "semantic_hash": "68dfcbdf78339fd22167e6b983771116"
+  },
+  "src/components/AudioPlayerButton.tsx": {
+    "mtime": 1791931323.1034791,
+    "ast_hash": "0991a768e60e5f02318d509f8c56636f",
+    "semantic_hash": "0991a768e60e5f02318d509f8c56636f"
+  },
+  "src/components/BrazilMap.tsx": {
+    "mtime": 1791938880.5620837,
+    "ast_hash": "5d28b88356b29bcf0e5529371b7dd543",
+    "semantic_hash": "5d28b88356b29bcf0e5529371b7dd543"
+  },
+  "src/components/ConversationSimulator.tsx": {
+    "mtime": 1791988226.6552718,
+    "ast_hash": "3d94fa3b80b95b862641c8b422d61830",
+    "semantic_hash": "3d94fa3b80b95b862641c8b422d61830"
+  },
+  "src/components/MobileDock.tsx": {
+    "mtime": 1791987085.653182,
+    "ast_hash": "4b4727466c2bdd7d31f2defcade2f966",
+    "semantic_hash": "4b4727466c2bdd7d31f2defcade2f966"
+  },
+  "src/components/NavigationHeader.tsx": {
+    "mtime": 1791987040.3052604,
+    "ast_hash": "a4463f1368bcb07385ea260e8edaa940",
+    "semantic_hash": "a4463f1368bcb07385ea260e8edaa940"
+  },
+  "src/components/PostStudioSection.tsx": {
+    "mtime": 1791988427.6511726,
+    "ast_hash": "b0c04df1c7874cb6d208ddbeab8ac22d",
+    "semantic_hash": "b0c04df1c7874cb6d208ddbeab8ac22d"
+  },
+  "src/components/ProfileSection.tsx": {
+    "mtime": 1791988020.2796364,
+    "ast_hash": "984521834047089bb8bfc23b1e31d78a",
+    "semantic_hash": "984521834047089bb8bfc23b1e31d78a"
+  },
+  "src/components/QuickArgumentView.tsx": {
+    "mtime": 1791947373.6133769,
+    "ast_hash": "591132ea11ba089d80842b3580b9cf21",
+    "semantic_hash": "591132ea11ba089d80842b3580b9cf21"
+  },
+  "src/components/RadarSection.tsx": {
+    "mtime": 1791987404.2192836,
+    "ast_hash": "551029d7f6a559e28e5993f4b7da7030",
+    "semantic_hash": "551029d7f6a559e28e5993f4b7da7030"
+  },
+  "src/components/SmoothScroll.tsx": {
+    "mtime": 1791942126.5258162,
+    "ast_hash": "1d2422991778d68dfbd4ffb05d66cfb3",
+    "semantic_hash": "1d2422991778d68dfbd4ffb05d66cfb3"
+  },
+  "src/components/TerritorySection.tsx": {
+    "mtime": 1791987717.1236126,
+    "ast_hash": "dcd6ceec8ba7ba2c1ecebe8f8efabbc5",
+    "semantic_hash": "dcd6ceec8ba7ba2c1ecebe8f8efabbc5"
+  },
+  "src/components/ThemeToggle.tsx": {
+    "mtime": 1791938891.6421819,
+    "ast_hash": "a10c8e0e6749d5e90cf6acca750ee021",
+    "semantic_hash": "a10c8e0e6749d5e90cf6acca750ee021"
+  },
+  "src/components/VisualCardGenerator.tsx": {
+    "mtime": 1791944785.0489113,
+    "ast_hash": "209e4ed292de5fd126a0ea7c64b7f5ba",
+    "semantic_hash": "209e4ed292de5fd126a0ea7c64b7f5ba"
+  },
+  "src/components/VisualJourneyStepper.tsx": {
+    "mtime": 1791987246.644469,
+    "ast_hash": "36d8b5458a4d31c477635e7707ed1d35",
+    "semantic_hash": "36d8b5458a4d31c477635e7707ed1d35"
+  },
+  "src/data/arguments.ts": {
+    "mtime": 1791931860.239983,
+    "ast_hash": "0b9c6c5e3d22c49224240ac26ba80305",
+    "semantic_hash": "0b9c6c5e3d22c49224240ac26ba80305"
+  },
+  "src/data/brazilGeo.ts": {
+    "mtime": 1791936217.8150928,
+    "ast_hash": "cdc678c33c44189405e39f730dea7f9f",
+    "semantic_hash": "cdc678c33c44189405e39f730dea7f9f"
+  },
+  "src/data/electoralTactics.ts": {
+    "mtime": 1791986970.9891148,
+    "ast_hash": "d0661b85f5485c542292925bcf0e0152",
+    "semantic_hash": "d0661b85f5485c542292925bcf0e0152"
+  },
+  "src/data/occupations.ts": {
+    "mtime": 1791936288.631054,
+    "ast_hash": "5a3f1461b90574fb1713e0a953cffc9c",
+    "semantic_hash": "5a3f1461b90574fb1713e0a953cffc9c"
+  },
+  "src/data/opportunities.ts": {
+    "mtime": 1791936353.451295,
+    "ast_hash": "d44a3768e8a9762af219b7aff5aafcd0",
+    "semantic_hash": "d44a3768e8a9762af219b7aff5aafcd0"
+  },
+  "src/lib/agenticOrchestrator.ts": {
+    "mtime": 1791949326.8881772,
+    "ast_hash": "a7cb65ccddec40ed9dec18c0faa64f65",
+    "semantic_hash": "a7cb65ccddec40ed9dec18c0faa64f65"
+  },
+  "src/lib/engine.ts": {
+    "mtime": 1791936435.0963984,
+    "ast_hash": "6c12c22e5a90e340e99d92a9b0258407",
+    "semantic_hash": "6c12c22e5a90e340e99d92a9b0258407"
+  },
+  "tsconfig.json": {
+    "mtime": 1791930606.3144884,
+    "ast_hash": "ee17fd1c97c735e9f3564e3f5251f125",
+    "semantic_hash": "ee17fd1c97c735e9f3564e3f5251f125"
+  }
+}

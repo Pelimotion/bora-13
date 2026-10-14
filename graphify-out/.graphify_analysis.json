@@ -1,0 +1,408 @@
+{
+  "communities": {
+    "0": [
+      "ref_dom",
+      "ref_dom_iterable",
+      "ref_esnext",
+      "ref_mts",
+      "ref_next_dev_types_ts",
+      "ref_next_env_d_ts",
+      "ref_next_types_ts",
+      "ref_node_modules",
+      "ref_ts",
+      "ref_tsx",
+      "tsconfig",
+      "tsconfig_compileroptions",
+      "tsconfig_compileroptions_allowjs",
+      "tsconfig_compileroptions_esmoduleinterop",
+      "tsconfig_compileroptions_incremental",
+      "tsconfig_compileroptions_isolatedmodules",
+      "tsconfig_compileroptions_jsx",
+      "tsconfig_compileroptions_lib",
+      "tsconfig_compileroptions_module",
+      "tsconfig_compileroptions_moduleresolution",
+      "tsconfig_compileroptions_noemit",
+      "tsconfig_compileroptions_paths",
+      "tsconfig_compileroptions_plugins",
+      "tsconfig_compileroptions_resolvejsonmodule",
+      "tsconfig_compileroptions_skiplibcheck",
+      "tsconfig_compileroptions_strict",
+      "tsconfig_compileroptions_target",
+      "tsconfig_exclude",
+      "tsconfig_include"
+    ],
+    "1": [
+      "src_components_profilesection",
+      "src_components_profilesection_profilesection",
+      "src_components_profilesection_profilesectionprops",
+      "src_data_arguments",
+      "src_data_arguments_acolhimento_scripts",
+      "src_data_arguments_persuasionstage",
+      "src_data_arguments_profiletag",
+      "src_data_arguments_route",
+      "src_data_electoraltactics_conversionfront",
+      "src_data_occupations",
+      "src_data_occupations_infertagsfromcustomoccupation",
+      "src_data_occupations_normalizetext",
+      "src_data_occupations_occupation",
+      "src_data_occupations_occupations",
+      "src_data_occupations_searchoccupations",
+      "src_data_opportunities",
+      "src_data_opportunities_getopportunitiesforprofile",
+      "src_data_opportunities_opportunity",
+      "src_lib_engine",
+      "src_lib_engine_detectprofilelabel",
+      "src_lib_engine_engineresult",
+      "src_lib_engine_filterbyeligibility",
+      "src_lib_engine_generateinstructions",
+      "src_lib_engine_runengine",
+      "src_lib_engine_runquickmode",
+      "src_lib_engine_scoreargument",
+      "src_lib_engine_userprofile",
+      "src_lib_engine_weights"
+    ],
+    "2": [
+      "eslint",
+      "eslint_config_next",
+      "package",
+      "package_devdependencies",
+      "package_devdependencies_eslint",
+      "package_devdependencies_eslint_config_next",
+      "package_devdependencies_tailwindcss",
+      "package_devdependencies_tailwindcss_turbopack",
+      "package_devdependencies_types_node",
+      "package_devdependencies_types_react",
+      "package_devdependencies_types_react_dom",
+      "package_devdependencies_typescript",
+      "package_name",
+      "package_private",
+      "package_scripts",
+      "package_scripts_build",
+      "package_scripts_dev",
+      "package_scripts_lint",
+      "package_scripts_start",
+      "package_version",
+      "tailwindcss",
+      "tailwindcss_turbopack",
+      "types_node",
+      "types_react",
+      "types_react_dom",
+      "typescript"
+    ],
+    "3": [
+      "src_app_page",
+      "src_app_page_boraapp",
+      "src_components_artisticcanvas",
+      "src_components_artisticcanvas_artisticcanvas",
+      "src_components_artisticcanvas_artisticcanvasprops",
+      "src_components_poststudiosection",
+      "src_components_poststudiosection_poststudiosection",
+      "src_components_poststudiosection_poststudiosectionprops",
+      "src_data_arguments_arguments_database",
+      "src_data_opportunities_opportunities_database",
+      "src_lib_agenticorchestrator",
+      "src_lib_agenticorchestrator_copybundle",
+      "src_lib_agenticorchestrator_copyplatform",
+      "src_lib_agenticorchestrator_createdefaultpostpreset",
+      "src_lib_agenticorchestrator_createpostpresetfromargument",
+      "src_lib_agenticorchestrator_createpostpresetfromconversionfront",
+      "src_lib_agenticorchestrator_createpostpresetfrommenosfact",
+      "src_lib_agenticorchestrator_createpostpresetfromopportunity",
+      "src_lib_agenticorchestrator_createpostpresetfromterritory",
+      "src_lib_agenticorchestrator_generatesmartcopy",
+      "src_lib_agenticorchestrator_postformat",
+      "src_lib_agenticorchestrator_postpresetdata",
+      "src_lib_agenticorchestrator_state_official_stats",
+      "src_lib_agenticorchestrator_statestats",
+      "src_lib_agenticorchestrator_tactical_preset_templates",
+      "src_lib_agenticorchestrator_visualtheme"
+    ],
+    "4": [
+      "src_components_mobiledock",
+      "src_components_mobiledock_dock_items",
+      "src_components_mobiledock_mobiledock",
+      "src_components_mobiledock_mobiledockprops",
+      "src_components_navigationheader",
+      "src_components_navigationheader_navigationheader",
+      "src_components_navigationheader_navigationheaderprops",
+      "src_components_navigationheader_sections",
+      "src_components_radarsection",
+      "src_components_radarsection_radarsection",
+      "src_components_radarsection_radarsectionprops",
+      "src_components_themetoggle",
+      "src_components_themetoggle_themetoggle",
+      "src_components_visualjourneystepper",
+      "src_components_visualjourneystepper_stepdef",
+      "src_components_visualjourneystepper_steps",
+      "src_components_visualjourneystepper_visualjourneystepper",
+      "src_components_visualjourneystepper_visualjourneystepperprops",
+      "src_data_electoraltactics",
+      "src_data_electoraltactics_conversion_fronts",
+      "src_data_electoraltactics_menos_com_flavio_facts",
+      "src_data_electoraltactics_regional_directives",
+      "src_data_electoraltactics_regionaltactic",
+      "src_lib_agenticorchestrator_agenticworkingmemory",
+      "src_lib_agenticorchestrator_appsection",
+      "src_lib_agenticorchestrator_playproceduralhaptic"
+    ],
+    "5": [
+      "gsap",
+      "lenis",
+      "next",
+      "package_dependencies",
+      "package_dependencies_gsap",
+      "package_dependencies_lenis",
+      "package_dependencies_next",
+      "package_dependencies_react",
+      "package_dependencies_react_dom",
+      "package_dependencies_three",
+      "package_dependencies_types_three",
+      "react",
+      "react_dom",
+      "src_app_layout",
+      "src_app_layout_metadata",
+      "src_app_layout_rootlayout",
+      "src_app_layout_viewport",
+      "src_components_smoothscroll",
+      "src_components_smoothscroll_smoothscroll",
+      "three",
+      "types_three"
+    ],
+    "6": [
+      "src_components_audioplayerbutton",
+      "src_components_audioplayerbutton_audioplayerbutton",
+      "src_components_audioplayerbutton_audioplayerbuttonprops",
+      "src_components_quickargumentview",
+      "src_components_quickargumentview_badgelevel",
+      "src_components_quickargumentview_badges",
+      "src_components_quickargumentview_categories",
+      "src_components_quickargumentview_dice_faces",
+      "src_components_quickargumentview_playproceduralsound",
+      "src_components_quickargumentview_quickargumentview",
+      "src_components_quickargumentview_quickargumentviewprops",
+      "src_components_visualcardgenerator",
+      "src_components_visualcardgenerator_cardformat",
+      "src_components_visualcardgenerator_copyplatform",
+      "src_components_visualcardgenerator_visualcardgenerator",
+      "src_components_visualcardgenerator_visualcardgeneratorprops",
+      "src_components_visualcardgenerator_visualtheme",
+      "src_data_arguments_argument",
+      "src_lib_engine_scoredargument"
+    ],
+    "7": [
+      "public_manifest",
+      "public_manifest_background_color",
+      "public_manifest_categories",
+      "public_manifest_description",
+      "public_manifest_dir",
+      "public_manifest_display",
+      "public_manifest_icons",
+      "public_manifest_id",
+      "public_manifest_lang",
+      "public_manifest_name",
+      "public_manifest_orientation",
+      "public_manifest_short_name",
+      "public_manifest_shortcuts",
+      "public_manifest_start_url",
+      "public_manifest_theme_color",
+      "ref_news",
+      "ref_productivity",
+      "ref_social"
+    ],
+    "8": [
+      "src_components_brazilmap",
+      "src_components_brazilmap_brazilmap",
+      "src_components_brazilmap_brazilmapprops",
+      "src_components_territorysection",
+      "src_components_territorysection_territorysection",
+      "src_components_territorysection_territorysectionprops",
+      "src_data_brazilgeo",
+      "src_data_brazilgeo_brazil_states_geo",
+      "src_data_brazilgeo_getstatebyuf",
+      "src_data_brazilgeo_regions",
+      "src_data_brazilgeo_stategeo",
+      "src_data_electoraltactics_getregionaltacticforuf",
+      "src_lib_agenticorchestrator_getstatestats"
+    ],
+    "9": [
+      "src_components_conversationsimulator",
+      "src_components_conversationsimulator_conversationsimulator",
+      "src_components_conversationsimulator_scenario",
+      "src_components_conversationsimulator_scenarios"
+    ],
+    "10": [
+      "next_config",
+      "next_config_nextconfig",
+      "next_config_securityheaders"
+    ],
+    "11": [
+      "eslint_config",
+      "eslint_config_eslintconfig"
+    ],
+    "12": [
+      "public_sw",
+      "public_sw_precache_urls"
+    ]
+  },
+  "cohesion": {
+    "0": 0.06896551724137931,
+    "1": 0.164021164021164,
+    "2": 0.07692307692307693,
+    "3": 0.19076923076923077,
+    "4": 0.16,
+    "5": 0.1,
+    "6": 0.13450292397660818,
+    "7": 0.1111111111111111,
+    "8": 0.3333333333333333,
+    "9": 0.5,
+    "10": 0.6666666666666666,
+    "11": 1.0,
+    "12": 1.0
+  },
+  "gods": [
+    {
+      "id": "src_lib_agenticorchestrator_playproceduralhaptic",
+      "label": "playProceduralHaptic()",
+      "degree": 17
+    },
+    {
+      "id": "tsconfig_compileroptions",
+      "label": "compilerOptions",
+      "degree": 16
+    },
+    {
+      "id": "src_data_arguments_argument",
+      "label": "Argument",
+      "degree": 13
+    },
+    {
+      "id": "src_lib_agenticorchestrator_agenticworkingmemory",
+      "label": "AgenticWorkingMemory",
+      "degree": 13
+    },
+    {
+      "id": "src_components_poststudiosection_poststudiosection",
+      "label": "PostStudioSection()",
+      "degree": 12
+    },
+    {
+      "id": "src_lib_agenticorchestrator_appsection",
+      "label": "AppSection",
+      "degree": 11
+    },
+    {
+      "id": "src_data_opportunities_opportunity",
+      "label": "Opportunity",
+      "degree": 10
+    },
+    {
+      "id": "src_lib_engine_runengine",
+      "label": "runEngine()",
+      "degree": 10
+    },
+    {
+      "id": "src_data_arguments_profiletag",
+      "label": "ProfileTag",
+      "degree": 9
+    },
+    {
+      "id": "src_app_page_boraapp",
+      "label": "BoraApp()",
+      "degree": 8
+    }
+  ],
+  "surprises": [
+    {
+      "source": "SmoothScroll()",
+      "target": "lenis",
+      "source_files": [
+        "src/components/SmoothScroll.tsx",
+        "package.json"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "connects across different repos/directories"
+    },
+    {
+      "source": "BoraApp()",
+      "target": "inferTagsFromCustomOccupation()",
+      "source_files": [
+        "src/app/page.tsx",
+        "src/data/occupations.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "BoraApp()",
+      "target": "playProceduralHaptic()",
+      "source_files": [
+        "src/app/page.tsx",
+        "src/lib/agenticOrchestrator.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "calls",
+      "why": "bridges separate communities"
+    },
+    {
+      "source": "BrazilMap()",
+      "target": "BRAZIL_STATES_GEO",
+      "source_files": [
+        "src/components/BrazilMap.tsx",
+        "src/data/brazilGeo.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "peripheral node `BrazilMap()` unexpectedly reaches hub `BRAZIL_STATES_GEO`"
+    },
+    {
+      "source": "MobileDockProps",
+      "target": "AppSection",
+      "source_files": [
+        "src/components/MobileDock.tsx",
+        "src/lib/agenticOrchestrator.ts"
+      ],
+      "confidence": "EXTRACTED",
+      "relation": "references",
+      "why": "peripheral node `MobileDockProps` unexpectedly reaches hub `AppSection`"
+    }
+  ],
+  "questions": [
+    {
+      "type": "bridge_node",
+      "question": "Why does `dependencies` connect `dependencies` to `devDependencies`?",
+      "why": "High betweenness centrality (0.029) - this node is a cross-community bridge."
+    },
+    {
+      "type": "bridge_node",
+      "question": "Why does `Argument` connect `QuickArgumentView.tsx` to `ProfileSection.tsx`, `page.tsx`, `playProceduralHaptic`?",
+      "why": "High betweenness centrality (0.027) - this node is a cross-community bridge."
+    },
+    {
+      "type": "isolated_nodes",
+      "question": "What connects `eslintConfig`, `securityHeaders`, `nextConfig` to the rest of the system?",
+      "why": "88 weakly-connected nodes found - possible documentation gaps or missing edges."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `compilerOptions` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.06896551724137931 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `devDependencies` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.07692307692307693 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `dependencies` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.1 - nodes in this community are weakly interconnected."
+    },
+    {
+      "type": "low_cohesion",
+      "question": "Should `QuickArgumentView.tsx` be split into smaller, more focused modules?",
+      "why": "Cohesion score 0.13450292397660818 - nodes in this community are weakly interconnected."
+    }
+  ]
+}

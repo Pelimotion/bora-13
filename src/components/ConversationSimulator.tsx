@@ -35,24 +35,24 @@ const SCENARIOS: Scenario[] = [
         text: '“Tio, você tá sendo manipulado pelas fake news do WhatsApp. A inflação baixou, o desemprego caiu e o Flávio que é o verdadeiro corrupto com as rachadinhas!”',
         tone: 'confrontador',
         score: 20,
-        feedback: '❌ Efeito Tiro Pela Culatra (Backfire Effect)! Chamar de "manipulado" ativou o sistema de defesa dele. Ele vai gritar, cruzar os braços e se fechar totalmente para qualquer dado.',
-        tacticalTip: 'Nunca comece invalidando a inteligência da pessoa. O cérebro responde ao ataque como uma ameaça física.',
+        feedback: '❌ Isso afasta a pessoa na hora! Se você chamar de "manipulado", a pessoa se ofende, fecha os ouvidos e não quer nem saber de dados. A conversa vira briga de família.',
+        tacticalTip: 'Nunca comece chamando a pessoa de desinformada. Quando a gente ataca, a pessoa se fecha pra se defender.',
       },
       {
         id: 'opt-2',
         text: '“Tio, eu te entendo perfeitamente. O dinheiro no final do mês aperta mesmo e dá uma angústia danada ver o carrinho do mercado caro. Mas você reparou que o óleo, o leite e as carnes caíram mais de 15% esse ano? E o salário mínimo teve aumento real de 3% acima da inflação pelo segundo ano consecutivo. Não tá perfeito, mas tá respirando mais que em 2021.”',
         tone: 'acolhedor',
         score: 95,
-        feedback: '🎯 Resposta de Mestre! Você validou a dor genuína dele (reduzindo o cortisol e a defensiva) e depois ancorou em dados materiais do dia a dia (óleo, carne, aumento real).',
-        tacticalTip: 'Acolher a frustração é a chave que abre a porta da razão. Falar do bolso desarma a ideologia abstrata.',
+        feedback: '🎯 Resposta Nota 10! Você concordou com a dor dele primeiro (tirando o clima de briga) e depois trouxe dados reais do dia a dia (óleo, carne, aumento real).',
+        tacticalTip: 'Concordar com o aperto das contas é a chave que abre o ouvido da pessoa. Falar de comida e compras do mês desarma discussões vazias.',
       },
       {
         id: 'opt-3',
         text: '“É verdade, tá difícil mesmo... melhor a gente nem falar de política pra não estragar o domingo.”',
         tone: 'passivo',
         score: 40,
-        feedback: '⚠️ Evasão Pacífica. Evita briga no momento, mas confirma na cabeça dele que a narrativa dele está certa e perde uma oportunidade preciosa de plantar uma reflexão equilibrada.',
-        tacticalTip: 'Se não puder debater tudo, lance apenas uma pergunta de reflexão com carinho em vez de fugir.',
+        feedback: '⚠️ Fuga compreensível, mas perde uma chance. Evita briga no almoço, mas deixa o boato vencer sozinho e não planta nenhuma dúvida saudável na cabeça dele.',
+        tacticalTip: 'Se não der pra falar tudo, faça apenas uma pergunta calma com carinho em vez de fugir.',
       },
     ],
   },
@@ -70,24 +70,24 @@ const SCENARIOS: Scenario[] = [
         text: '“Você tá completamente errado, Marcos. Sem CLT você não tem direito a nada, se quebrar a perna vai passar fome porque o app não paga nem o conserto da moto.”',
         tone: 'confrontador',
         score: 30,
-        feedback: '❌ Confrontação com tom paternalista. Para ele, autonomia e liberdade são valores sagrados de identidade. Dizer que ele "não tem nada" soa ofensivo ao esforço diário dele.',
-        tacticalTip: 'Respeite a identidade empreendedora do trabalhador autônomo. Ele não quer voltar ao modelo antigo com intermediários sindicais.',
+        feedback: '❌ Tom de bronca que irrita o trabalhador. Quem rala 12h por dia na rua tem orgulho do seu trabalho. Dizer que ele "não tem nada" soa desrespeitoso com o suor dele.',
+        tacticalTip: 'Respeite a vontade de autonomia do trabalhador. Quem trabalha por conta própria quer apoio, não sermão de ninguém.',
       },
       {
         id: 'opt-2',
         text: '“Total razão na sua preocupação, Marcos! Quem roda 12 horas por dia na rua não aguenta mais gente de terno querendo dar palpite no seu ganho. O que ninguém fala é que a proposta nunca foi CLT obrigatória, e sim garantir que o MEI tenha desconto no combustível e previdência barata caso bata o carro. E o combustível hoje, com a Petrobras parando de dolarizar, tá quase R$ 2 mais barato que na época da pandemia.”',
         tone: 'acolhedor',
         score: 98,
-        feedback: '🎯 Conexão Imediata! Você reafirmou o valor da liberdade dele, desmistificou o boato do confisco e trouxe a vitória concreta do preço do combustível na bomba.',
-        tacticalTip: 'Mostre que defender direitos não é burocratizar, e sim proteger o patrimônio e a ferramenta de trabalho do profissional autônomo.',
+        feedback: '🎯 Conexão de Confiança! Você valorizou a independência dele, explicou que ninguém quer forçar CLT e lembrou do preço do combustível mais baixo no tanque.',
+        tacticalTip: 'Mostre que proteger direitos não é burocracia, e sim garantir socorro se a ferramenta de trabalho quebrar.',
       },
       {
         id: 'opt-3',
         text: '“Pois é, esses políticos só querem roubar mesmo. Não confio em nenhum.”',
         tone: 'passivo',
         score: 45,
-        feedback: '⚠️ Niilismo Político. Fortalece a ideia de que "nada adianta", o que historicamente favorece candidatos populistas radicais.',
-        tacticalTip: 'Diferencie política partidária de políticas públicas que mexem no tanque de combustível.',
+        feedback: '⚠️ Desânimo geral. Falar que "nada adianta" só favorece quem quer cortar direitos e privatizar tudo.',
+        tacticalTip: 'Diferencie brigas partidárias de medidas práticas que colocam dinheiro no bolso do motorista.',
       },
     ],
   },
@@ -105,30 +105,36 @@ const SCENARIOS: Scenario[] = [
         text: '“Dona Neide, isso é a maior mentira do mundo! Quem fez o BPC e o Bolsa Família foi o próprio Lula. Quem queria desvincular o benefício da inflação era o Paulo Guedes!”',
         tone: 'confrontador',
         score: 60,
-        feedback: '⚡ Fato correto, mas choque emocional alto. Atacar a filha dela ("mandou mentira") causa dissonância cognitiva e ansiedade.',
-        tacticalTip: 'Pessoas idosas são vulneráveis ao medo. Traga acolhimento e documentos ou regras claras em vez de embate sobre familiares.',
+        feedback: '⚡ O fato é verdadeiro, mas falar que a filha mandou mentira assusta a senhora e gera aflição.',
+        tacticalTip: 'Pessoas mais velhas sentem medo real de perder o remédio e a comida. Acalme o coração dela antes de qualquer debate.',
       },
       {
         id: 'opt-2',
         text: '“Dona Neide, respira funda! Eu imagino o aperto no coração que dá ouvir uma coisa dessas cuidando da sua mãe. Pode ficar em paz: o BPC é uma lei federal protegida pela Constituição de 1988 e nunca foi tão garantido. O salário que ela recebe acompanha o aumento do mínimo com ganho real. Quem falou em desvincular a aposentadoria do mínimo no passado foi o governo anterior. Aqui a senhora e sua mãe tão seguras.”',
         tone: 'acolhedor',
         score: 100,
-        feedback: '🌟 Empatia Absoluta & Alívio Imediato! Você tirou o medo do peito dela, explicou a proteção constitucional sem juridiquês e garantiu a dignidade da mãe dela.',
-        tacticalTip: 'Acalmar o medo antes de falar de votos é o ato humano mais poderoso do diálogo democrático.',
+        feedback: '🌟 Acolhimento e Paz! Você tirou o medo do peito dela com carinho, explicou que a lei protege o benefício e devolveu a tranquilidade.',
+        tacticalTip: 'Acalmar o pânico antes de falar em voto é o gesto mais bonito e humano que existe.',
       },
       {
         id: 'opt-3',
         text: '“Ah, cada dia dizem uma coisa na internet, né? Nem sei mais em quem acreditar.”',
         tone: 'passivo',
         score: 35,
-        feedback: '❌ A Dona Neide continuará com medo e ansiedade, podendo votar levada pelo pânico fabricado.',
-        tacticalTip: 'Diante do medo de perder o sustento vital, a verdade empática é um dever moral.',
+        feedback: '❌ A Dona Neide continuará com medo e pode votar assustada por uma mentira que ninguém desmentiu.',
+        tacticalTip: 'Diante do medo de perder o sustento da família, a verdade dita com carinho traz alívio imediato.',
       },
     ],
   },
 ];
 
-export default function ConversationSimulator({ onClose }: { onClose: () => void }) {
+export default function ConversationSimulator({
+  onClose,
+  isEmbedded = false,
+}: {
+  onClose?: () => void;
+  isEmbedded?: boolean;
+}) {
   const [selectedScenarioIndex, setSelectedScenarioIndex] = useState(0);
   const [chosenOptionId, setChosenOptionId] = useState<string | null>(null);
 
@@ -144,28 +150,29 @@ export default function ConversationSimulator({ onClose }: { onClose: () => void
     setSelectedScenarioIndex((prev) => (prev + 1) % SCENARIOS.length);
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/85 backdrop-blur-md animate-fade-in">
-      <div className="bg-white dark:bg-[#0F1729] border border-slate-200 dark:border-slate-800 rounded-3xl max-w-xl w-full max-h-[92vh] overflow-y-auto p-5 md:p-6 shadow-2xl flex flex-col transition-colors">
-        {/* Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-4">
-          <div className="flex items-center gap-3">
-            <span className="text-3xl">🥋</span>
-            <div>
-              <h2 className="text-lg font-black text-slate-900 dark:text-slate-100">Simulador de Conversa</h2>
-              <p className="text-xs text-slate-500 dark:text-slate-400">Treine suas respostas com psicologia do diálogo</p>
-            </div>
+  const innerContent = (
+    <div className={`bg-white dark:bg-[#0F1729] border border-slate-200 dark:border-slate-800 rounded-3xl ${isEmbedded ? 'w-full shadow-lg p-6 md:p-8' : 'max-w-xl w-full max-h-[92vh] overflow-y-auto p-5 md:p-6 shadow-2xl'} flex flex-col transition-colors`}>
+      {/* Header */}
+      <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-4">
+        <div className="flex items-center gap-3">
+          <span className="text-3xl">🥋</span>
+          <div>
+            <h2 className="text-lg md:text-xl font-black text-slate-900 dark:text-slate-100">Dojô de Conversas da Vida Real</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Treine suas respostas com psicologia do diálogo e neurociência</p>
           </div>
+        </div>
+        {onClose && !isEmbedded && (
           <button
             onClick={onClose}
             className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center font-bold transition-colors"
           >
             ✕
           </button>
-        </div>
+        )}
+      </div>
 
-        {/* Scenario Selector Pills */}
-        <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-none">
+      {/* Scenario Selector Pills */}
+      <div className="flex gap-2 overflow-x-auto pb-2 mb-4 scrollbar-none">
           {SCENARIOS.map((s, idx) => (
             <button
               key={s.id}
@@ -283,14 +290,29 @@ export default function ConversationSimulator({ onClose }: { onClose: () => void
             <span>Próximo Cenário</span>
             <span>→</span>
           </button>
-          <button
-            onClick={onClose}
-            className="btn-ghost px-4 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
-          >
-            Concluir Treino
-          </button>
+          {onClose && (
+            <button
+              onClick={onClose}
+              className="btn-ghost px-4 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+            >
+              Concluir Treino
+            </button>
+          )}
         </div>
       </div>
+  );
+
+  if (isEmbedded) {
+    return (
+      <div className="w-full max-w-4xl mx-auto px-4 py-8 animate-fade-in">
+        {innerContent}
+      </div>
+    );
+  }
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/85 backdrop-blur-md animate-fade-in">
+      {innerContent}
     </div>
   );
 }
