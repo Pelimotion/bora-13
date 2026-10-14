@@ -46,7 +46,7 @@ const ribbonFragmentShader = `
   varying float vElevation;
 
   void main() {
-    // Paleta Oficial Casa 13 (Vermelho Rubro, Amarelo Sol, Verde Esperança, Azul Brasil)
+    // Paleta Visual Brasil (Vermelho Rubro, Amarelo Sol, Verde Esperança, Azul Brasil)
     vec3 cRed    = vec3(0.773, 0.133, 0.161); // #C52229
     vec3 cGold   = vec3(0.961, 0.620, 0.043); // #F59E0B
     vec3 cGreen  = vec3(0.063, 0.725, 0.506); // #10B981

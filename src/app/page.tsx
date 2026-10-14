@@ -9,16 +9,20 @@ import type { Opportunity } from '@/data/opportunities';
 import ArtisticCanvas from '@/components/ArtisticCanvas';
 import NavigationHeader from '@/components/NavigationHeader';
 import MobileDock from '@/components/MobileDock';
-import RadarSection from '@/components/RadarSection';
-import TerritorySection from '@/components/TerritorySection';
-import ProfileSection from '@/components/ProfileSection';
-import QuickArgumentView from '@/components/QuickArgumentView';
+import HomeEditorialSection from '@/components/HomeEditorialSection';
+import PrepareWorkspaceSection from '@/components/PrepareWorkspaceSection';
+import ExploreHubSection from '@/components/ExploreHubSection';
 import ConversationSimulator from '@/components/ConversationSimulator';
 import PostStudioSection from '@/components/PostStudioSection';
 import {
   type AppSection,
+  type CanonicalAppSection,
   type AgenticWorkingMemory,
   type PostPresetData,
+  normalizeAppSection,
+  loadWorkingMemory,
+  saveWorkingMemory,
+  clearWorkingMemory,
   createPostPresetFromArgument,
   createPostPresetFromOpportunity,
   createPostPresetFromTerritory,
@@ -34,11 +38,11 @@ import {
 
 // ═══════════════════════════════════════════════════════════════
 // BORA APP — O QG DO DIÁLOGO POPULAR & ESPERANÇA
-// Identidade Oficial Casa 13 • Arquitetura Fluida & Concretismo
+// Identidade Cidadã Bora 13 • Arquitetura Fluida & Concretismo
 // ═══════════════════════════════════════════════════════════════
 
 export default function BoraApp() {
-  const [section, setSection] = useState<AppSection>('radar');
+  const [section, setSection] = useState<AppSection>('inicio');
   const [isDark, setIsDark] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [installPrompt, setInstallPrompt] = useState<any>(null);
@@ -108,6 +112,68 @@ export default function BoraApp() {
     }
   }, []);
 
+  // 2.1 Hidratação da Memória de Trabalho Agêntica Persistida
+  useEffect(() => {
+    const saved = loadWorkingMemory();
+    if (saved) {
+      setMemory((prev) => ({
+        ...prev,
+        ...saved,
+      }));
+      setProfile((prev) => ({
+        ...prev,
+        state: saved.selectedUF || prev.state,
+        city: saved.selectedCity || prev.city,
+        occupation: saved.occupation || prev.occupation,
+        profileTags: saved.profileTags || prev.profileTags,
+        rejectionLevel: saved.rejectionLevel ?? prev.rejectionLevel,
+        familyFlags: saved.familyFlags || prev.familyFlags,
+      }));
+    }
+  }, []);
+
+  // 2.2 Auto-salvamento da Memória de Trabalho Agêntica
+  useEffect(() => {
+    saveWorkingMemory(memory);
+  }, [memory]);
+
+  const handleResetContext = useCallback(() => {
+    clearWorkingMemory();
+    const defaultMemory: AgenticWorkingMemory = {
+      selectedUF: 'SP',
+      selectedCity: 'São Paulo',
+      occupation: undefined,
+      profileTags: [],
+      rejectionLevel: 2,
+      familyFlags: {
+        hasElderly: false,
+        hasChildren: false,
+        dependsSUS: false,
+        receivesBenefit: false,
+        hasPCD: false,
+      },
+      activeArgument: null,
+      activeOpportunity: null,
+      currentPreset: null,
+      soundEnabled: true,
+    };
+    setMemory(defaultMemory);
+    setProfile({
+      state: 'SP',
+      city: 'São Paulo',
+      profileTags: [],
+      rejectionLevel: 2,
+      familyFlags: {
+        hasElderly: false,
+        hasChildren: false,
+        dependsSUS: false,
+        receivesBenefit: false,
+        hasPCD: false,
+      },
+    });
+    playProceduralHaptic('toggle');
+  }, []);
+
   const handleToggleSound = useCallback(() => {
     setSoundEnabled((prev) => {
       const next = !prev;
@@ -134,16 +200,23 @@ export default function BoraApp() {
     window.addEventListener('beforeinstallprompt', installHandler);
 
     const params = new URLSearchParams(window.location.search);
+    const tabParam = params.get('tab') || params.get('section');
     const modeParam = params.get('mode');
 
-    if (modeParam === 'quick' || modeParam === 'fatos') {
+    if (tabParam) {
+      setSection(normalizeAppSection(tabParam));
+    } else if (modeParam === 'quick' || modeParam === 'fatos') {
       setSection('fatos');
     } else if (modeParam === 'studio' || modeParam === 'estudio' || modeParam === 'post') {
       setSection('estudio');
     } else if (modeParam === 'territorio' || modeParam === 'mapa') {
       setSection('territorio');
     } else if (modeParam === 'simulador' || modeParam === 'dojo') {
-      setSection('simulador');
+      setSection('treinar');
+    } else if (modeParam === 'preparar' || modeParam === 'perfil') {
+      setSection('preparar');
+    } else if (modeParam === 'inicio' || modeParam === 'radar') {
+      setSection('inicio');
     }
 
     const stateParam = params.get('state');
@@ -187,8 +260,8 @@ export default function BoraApp() {
         ...(parsedFront ? { activeFrontId: parsedFront } : {}),
       }));
 
-      if (!modeParam) {
-        setSection('radar');
+      if (!modeParam && !tabParam) {
+        setSection('preparar');
       }
     }
 
@@ -338,6 +411,8 @@ export default function BoraApp() {
     }
   }, []);
 
+  const activeCanonical = normalizeAppSection(section);
+
   return (
     <div className="min-h-screen flex flex-col bg-[var(--bg-page)] text-[var(--text-primary)] transition-colors relative overflow-x-clip selection:bg-red-500 selection:text-white pb-20 md:pb-8">
       {/* ── CAMADA WEBGL ARTÍSTICA & FITA CINÉTICA (THREE.JS + SHADERS GLSL) ── */}
@@ -352,67 +427,54 @@ export default function BoraApp() {
         onToggleSound={handleToggleSound}
         canInstall={!!installPrompt}
         onInstall={handleInstallApp}
+        onResetContext={handleResetContext}
       />
 
-      {/* ── CONTEÚDO PRINCIPAL DIVIDIDO EM SESSÕES ELEGANTES ── */}
+      {/* ── CONTEÚDO PRINCIPAL DIVIDIDO EM 5 DESTINOS FOCADOS ── */}
       <main className="flex-1 w-full relative z-10">
-        {section === 'radar' && (
-          <RadarSection
+        {activeCanonical === 'inicio' && (
+          <HomeEditorialSection
             onNavigate={setSection}
+            memory={memory}
+            onResetContext={handleResetContext}
             canInstall={!!installPrompt}
             onInstall={handleInstallApp}
+            onSelectFront={handleSelectFront}
+            onOpenStudioWithPreset={handleOpenStudioWithPreset}
+          />
+        )}
+
+        {activeCanonical === 'preparar' && (
+          <PrepareWorkspaceSection
             memory={memory}
-            onSelectFront={handleSelectFront}
+            onNavigate={setSection}
             onSelectState={handleSelectTerritory}
-            onGeneratePostFromTerritory={handleGeneratePostFromTerritory}
+            onSelectFront={handleSelectFront}
             onOpenStudioWithPreset={handleOpenStudioWithPreset}
             onNavigateToSimulator={handleOpenSimulator}
           />
         )}
 
-        {section === 'territorio' && (
-          <TerritorySection
-            selectedUF={memory.selectedUF}
-            selectedCity={memory.selectedCity}
-            onSelectState={handleSelectTerritory}
-            onGeneratePostFromTerritory={handleGeneratePostFromTerritory}
-            onNavigateToProfile={() => setSection('perfil')}
-            onOpenStudioWithPreset={handleOpenStudioWithPreset}
-            onNavigateToSimulator={handleOpenSimulator}
-          />
-        )}
-
-        {section === 'perfil' && (
-          <ProfileSection
-            profile={profile}
-            selectedUF={memory.selectedUF}
-            selectedCity={memory.selectedCity}
-            onNavigateToTerritory={() => setSection('territorio')}
-            onUpdateProfile={handleUpdateProfile}
-            onGeneratePostFromArgument={handleGeneratePostFromArgument}
-            onGeneratePostFromOpportunity={handleGeneratePostFromOpportunity}
-            onGeneratePostFromConversionFront={handleGeneratePostFromConversionFront}
-            onGeneratePostFromMenosFact={handleGeneratePostFromMenosFact}
-            onNavigateToSimulator={() => handleOpenSimulator(memory.activeFrontId, profile.occupation)}
-            activeFrontId={memory.activeFrontId}
-            onSelectFront={handleSelectFront}
-          />
-        )}
-
-        {section === 'fatos' && (
-          <QuickArgumentView
-            onOpenCardGenerator={handleGeneratePostFromArgument}
-            className="py-8"
-          />
-        )}
-
-        {section === 'simulador' && (
-          <div className="py-6">
+        {activeCanonical === 'treinar' && (
+          <div className="py-6 max-w-5xl mx-auto px-4">
             <ConversationSimulator isEmbedded={true} initialScenarioId={simulatorScenarioId} />
           </div>
         )}
 
-        {section === 'estudio' && (
+        {activeCanonical === 'explorar' && (
+          <ExploreHubSection
+            memory={memory}
+            onNavigate={setSection}
+            onSelectState={handleSelectTerritory}
+            onGeneratePostFromTerritory={handleGeneratePostFromTerritory}
+            onOpenStudioWithPreset={handleOpenStudioWithPreset}
+            onNavigateToSimulator={handleOpenSimulator}
+            onOpenCardGenerator={handleGeneratePostFromArgument}
+            initialTab={section === 'territorio' ? 'territorio' : section === 'fatos' ? 'fatos' : 'mapa'}
+          />
+        )}
+
+        {activeCanonical === 'estudio' && (
           <PostStudioSection
             initialPreset={activePostPreset}
             memory={memory}
@@ -430,25 +492,18 @@ export default function BoraApp() {
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
             <span className="font-bold text-slate-700 dark:text-slate-300">
-              Bora 13 • QG do Diálogo e da Esperança
+              Bora 13 • Guia Cidadão de Diálogo
             </span>
           </div>
 
           <p className="text-slate-500 font-medium">
-            ⭐ Identidade Oficial Casa 13 • Zero rastreamento. 100% anônimo.
+            ⭐ Iniciativa Popular Independente • Feita para Somar na Causa • Sem Vínculo Oficial Partidário • 100% Anônimo
           </p>
 
-          <div className="flex items-center gap-3 text-[11px] font-semibold text-slate-400">
-            <span>Fontes: IBGE • DIEESE • Caged • BC</span>
+          <div className="flex flex-wrap items-center justify-center gap-3 text-[11px] font-semibold text-slate-400">
+            <span>Fontes Públicas Oficiais: IBGE • DIEESE • Caged • Banco Central</span>
             <span>•</span>
-            <a
-              href="https://casa13.pt.org.br"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-[#C52229] hover:underline"
-            >
-              casa13.pt.org.br
-            </a>
+            <span className="text-slate-500 font-bold">100% Voluntário & Sem Vínculo Partidário</span>
           </div>
         </div>
       </footer>

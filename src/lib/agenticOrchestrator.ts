@@ -18,13 +18,37 @@ import {
 // TIPOS DO ORQUESTRADOR AGÊNTICO
 // ─────────────────────────────────────────────────────────────
 
+export type CanonicalAppSection = 'inicio' | 'preparar' | 'treinar' | 'explorar' | 'estudio';
+
 export type AppSection = 
-  | 'radar'          // Painel Panorâmico & Missão Cidadã
-  | 'territorio'      // Mapa Interativo & Realidade Regional
-  | 'perfil'          // Assistente de Empatia & Roteiro Tático
-  | 'fatos'           // Biblioteca de Provas & Roleta da Verdade
-  | 'simulador'       // Dojô de Conversas da Vida Real
-  | 'estudio';        // Estúdio de Criação de Posts & Carrosséis Instagram
+  | CanonicalAppSection
+  | 'radar'          // Alias para 'inicio'
+  | 'perfil'         // Alias para 'preparar'
+  | 'simulador'      // Alias para 'treinar'
+  | 'territorio'     // Alias para 'explorar'
+  | 'fatos';         // Alias para 'explorar'
+
+export function normalizeAppSection(section: AppSection | string): CanonicalAppSection {
+  switch (section) {
+    case 'radar':
+    case 'inicio':
+      return 'inicio';
+    case 'perfil':
+    case 'preparar':
+      return 'preparar';
+    case 'simulador':
+    case 'treinar':
+      return 'treinar';
+    case 'territorio':
+    case 'fatos':
+    case 'explorar':
+      return 'explorar';
+    case 'estudio':
+      return 'estudio';
+    default:
+      return 'inicio';
+  }
+}
 
 export type PostFormat = 'portrait' | 'carousel' | 'square' | 'story';
 export type VisualTheme = 'brasil-editorial' | 'brasil-vibrante' | 'dark-moderno' | 'concretismo-puro' | 'jornalismo-investigativo';
@@ -221,7 +245,7 @@ ${igRebuttal}
 
 ${igPocket}
 
-📌 FONTE OFICIAL:
+📌 FONTE PÚBLICA AUDITADA:
 ${preset.sourceName} ${preset.sourceUrl && preset.sourceUrl !== '#' ? `• (${preset.sourceUrl})` : ''}
 
 💬 Salve este carrossel para consultar e compartilhe nos stories com quem precisa de informação sem polarização raivosa!
@@ -245,7 +269,7 @@ Sem briga nenhuma, só compartilhando informação checada pra gente saber do qu
 
 "${preset.headline}"
 
-📊 Dado oficial checado (${preset.sourceName}):
+📊 Dado público checado (${preset.sourceName}):
 ${preset.proofData ? preset.proofData.slice(0, 160) : preset.bodyText.slice(0, 160)}...
 
 👉 Responda na caixinha: você já sentiu o reflexo disso no seu bolso ou na sua cidade este ano?`;
@@ -290,7 +314,7 @@ export function createPostPresetFromArgument(arg: Argument, memory?: AgenticWork
     sourceOrigin: 'facts',
     emoji: arg.emoji || '📌',
     statNumber: arg.category.toUpperCase(),
-    statLabel: `Auditoria Oficial • ${arg.sourceName}`,
+    statLabel: `Fonte Pública • ${arg.sourceName}`,
     act1Hook: `O que não te contaram sobre ${arg.title.toLowerCase()}`,
     act2Proof: arg.scriptText,
     act3Rebuttal: arg.rebuttal,
@@ -305,7 +329,7 @@ export function createPostPresetFromOpportunity(opp: Opportunity, memory?: Agent
     title: opp.title,
     headline: opp.headline,
     bodyText: `${opp.description}\n\n🎯 Quem tem direito: ${opp.whoIsEligible}\n👉 Como acessar: ${opp.howToAccess}`,
-    proofData: `Programa Oficial: ${opp.program}. Acesse em: ${opp.actionUrl}`,
+    proofData: `Programa Público: ${opp.program}. Acesse em: ${opp.actionUrl}`,
     counterArg: 'Dizem que o governo cortou benefícios e programas sociais',
     rebuttal: `Pelo contrário: o programa ${opp.title} está em vigor, com orçamento garantido e atendimento direto aos cidadãos.`,
     sourceName: opp.program,
@@ -424,7 +448,7 @@ export function createPostPresetFromMenosFact(
     title: `Mostrar o Menos: ${fact.title}`,
     headline: `Virar voto é mostrar o MENOS: ${fact.highlight}`,
     bodyText: fact.detail,
-    proofData: `Fonte Oficial Comprovada: ${fact.source}`,
+    proofData: `Fonte Pública Comprovada: ${fact.source}`,
     counterArg: 'Dizem que mudar para Flávio é buscar "mais" para o trabalhador',
     rebuttal: `Os registros históricos provam exatamente o oposto: os cortes atingiram em cheio quem mais precisa: ${fact.title}.`,
     sourceName: fact.source,
@@ -918,12 +942,12 @@ export function getSmartNextStepRecommendation(memory?: AgenticWorkingMemory): S
         recommendationText: `Você escolheu a conversa com ${front.title.toLowerCase()}. A regra de ouro é: "${front.goldenRule}". Deseja praticar esse diálogo no simulador da vida real?`,
         primaryAction: {
           label: 'Treinar Diálogo no Simulador',
-          section: 'simulador',
+          section: 'treinar',
           icon: '💬',
         },
         secondaryAction: {
           label: 'Ver Provas de Alimentos',
-          section: 'fatos',
+          section: 'explorar',
           icon: '🥩',
         },
       };
@@ -938,7 +962,7 @@ export function getSmartNextStepRecommendation(memory?: AgenticWorkingMemory): S
       recommendationText: `Identificamos a realidade de ${memory.occupation}. Temos argumentos checados sobre renda, autonomia e custo dos combustíveis prontos para usar.`,
       primaryAction: {
         label: 'Ver Roteiros de Acolhimento',
-        section: 'perfil',
+        section: 'preparar',
         icon: '👥',
       },
       secondaryAction: {
@@ -962,7 +986,7 @@ export function getSmartNextStepRecommendation(memory?: AgenticWorkingMemory): S
       },
       secondaryAction: {
         label: `Ver Dicas para ${stateName}`,
-        section: 'territorio',
+        section: 'explorar',
         icon: '🗺️',
       },
     };
@@ -974,15 +998,62 @@ export function getSmartNextStepRecommendation(memory?: AgenticWorkingMemory): S
     contextTitle: 'Explore pelo seu Estado ou Assunto',
     recommendationText: 'Toque em qualquer estado no mapa interativo para ver empregos, Farmácia Popular e o Pé-de-Meia na sua região, ou consulte temas do dia a dia.',
     primaryAction: {
-      label: 'Explorar Mapa do Brasil',
-      section: 'territorio',
-      icon: '🗺️',
+      label: 'Preparar uma Conversa',
+      section: 'preparar',
+      icon: '🎯',
     },
     secondaryAction: {
-      label: 'Fatos do Seu Bolso',
-      section: 'fatos',
-      icon: '💡',
+      label: 'Explorar Território e Fatos',
+      section: 'explorar',
+      icon: '🗺️',
     },
   };
 }
+
+// ─────────────────────────────────────────────────────────────
+// PERSISTÊNCIA EM TRÊS CAMADAS DE MEMÓRIA (localStorage)
+// ─────────────────────────────────────────────────────────────
+const STORAGE_KEY_MEMORY = 'bora_app_working_memory_v2';
+
+export function loadWorkingMemory(): Partial<AgenticWorkingMemory> | null {
+  if (typeof window === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY_MEMORY);
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (err) {
+    console.warn('[Orchestrator] Falha ao carregar memória de trabalho:', err);
+    return null;
+  }
+}
+
+export function saveWorkingMemory(memory: AgenticWorkingMemory): void {
+  if (typeof window === 'undefined') return;
+  try {
+    // Persistimos o essencial para manter privacidade e economia
+    const payload: Partial<AgenticWorkingMemory> = {
+      selectedUF: memory.selectedUF,
+      selectedCity: memory.selectedCity,
+      occupation: memory.occupation,
+      activeFrontId: memory.activeFrontId,
+      profileTags: memory.profileTags,
+      rejectionLevel: memory.rejectionLevel,
+      familyFlags: memory.familyFlags,
+      soundEnabled: memory.soundEnabled,
+    };
+    localStorage.setItem(STORAGE_KEY_MEMORY, JSON.stringify(payload));
+  } catch (err) {
+    console.warn('[Orchestrator] Falha ao salvar memória de trabalho:', err);
+  }
+}
+
+export function clearWorkingMemory(): void {
+  if (typeof window === 'undefined') return;
+  try {
+    localStorage.removeItem(STORAGE_KEY_MEMORY);
+  } catch (err) {
+    console.warn('[Orchestrator] Falha ao limpar memória de trabalho:', err);
+  }
+}
+
 

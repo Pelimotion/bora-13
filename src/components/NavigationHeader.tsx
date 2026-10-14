@@ -1,9 +1,27 @@
 'use client';
 
 import React from 'react';
-import type { AppSection, AgenticWorkingMemory } from '@/lib/agenticOrchestrator';
-import { playProceduralHaptic } from '@/lib/agenticOrchestrator';
+import {
+  type AppSection,
+  type CanonicalAppSection,
+  type AgenticWorkingMemory,
+  normalizeAppSection,
+  playProceduralHaptic,
+} from '@/lib/agenticOrchestrator';
 import ThemeToggle from '@/components/ThemeToggle';
+import {
+  IconStar,
+  IconHome,
+  IconPrepare,
+  IconDojo,
+  IconExplore,
+  IconStudio,
+  IconMapPin,
+  IconUser,
+  IconVolumeOn,
+  IconVolumeOff,
+  IconSmartphone,
+} from '@/components/icons/CasaIcons';
 
 interface NavigationHeaderProps {
   currentSection: AppSection;
@@ -13,15 +31,42 @@ interface NavigationHeaderProps {
   onToggleSound: () => void;
   canInstall?: boolean;
   onInstall?: () => void;
+  onResetContext?: () => void;
 }
 
-const SECTIONS: { id: AppSection; label: string; icon: string; badge?: string }[] = [
-  { id: 'radar', label: 'Início & Mapa', icon: '🇧🇷' },
-  { id: 'territorio', label: 'Meu Estado', icon: '🗺️' },
-  { id: 'perfil', label: 'Quem Abordar', icon: '👥' },
-  { id: 'simulador', label: 'Treinar Diálogo', icon: '💬' },
-  { id: 'fatos', label: 'Fatos do Bolso', icon: '💡' },
-  { id: 'estudio', label: 'Mandar no Zap', icon: '📲', badge: 'Pronto' },
+const SECTIONS: {
+  id: CanonicalAppSection;
+  label: string;
+  icon: (active: boolean) => React.ReactNode;
+  badge?: string;
+}[] = [
+  {
+    id: 'inicio',
+    label: 'Início',
+    icon: (active) => <IconHome className={`w-4 h-4 ${active ? 'text-[#C52229]' : 'text-slate-500'}`} />,
+  },
+  {
+    id: 'preparar',
+    label: 'Preparar',
+    icon: (active) => <IconPrepare className={`w-4 h-4 ${active ? 'text-[#C52229]' : 'text-slate-500'}`} />,
+    badge: '3 Passos',
+  },
+  {
+    id: 'treinar',
+    label: 'Treinar',
+    icon: (active) => <IconDojo className={`w-4 h-4 ${active ? 'text-[#C52229]' : 'text-slate-500'}`} />,
+  },
+  {
+    id: 'explorar',
+    label: 'Explorar',
+    icon: (active) => <IconExplore className={`w-4 h-4 ${active ? 'text-[#C52229]' : 'text-slate-500'}`} />,
+  },
+  {
+    id: 'estudio',
+    label: 'Estúdio',
+    icon: (active) => <IconStudio className={`w-4 h-4 ${active ? 'text-[#C52229]' : 'text-slate-500'}`} />,
+    badge: '1080p',
+  },
 ];
 
 export default function NavigationHeader({
@@ -32,7 +77,10 @@ export default function NavigationHeader({
   onToggleSound,
   canInstall,
   onInstall,
+  onResetContext,
 }: NavigationHeaderProps) {
+  const activeCanonical = normalizeAppSection(currentSection);
+
   const handleTabClick = (sectionId: AppSection) => {
     playProceduralHaptic('click');
     onSelectSection(sectionId);
@@ -45,69 +93,84 @@ export default function NavigationHeader({
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 dark:bg-[#0B0F19]/95 backdrop-blur-md border-b border-slate-200/90 dark:border-slate-800/90 transition-colors shadow-xs">
+      {/* Top Ribbon Bora 13 */}
+      <div className="h-1 w-full bg-gradient-to-r from-[#C52229] via-[#C52229] to-[#991B1E]" />
+
       <div className="max-w-7xl mx-auto px-4 py-2.5 flex items-center justify-between gap-3">
-        {/* LADO ESQUERDO: LOGO & IDENTIDADE CASA 13 */}
+        {/* LADO ESQUERDO: LOGO & IDENTIDADE BORA 13 */}
         <div className="flex items-center gap-3">
           <button
-            onClick={() => handleTabClick('radar')}
-            className="flex items-center gap-2.5 text-left group shrink-0"
+            onClick={() => handleTabClick('inicio')}
+            className="flex items-center gap-3 text-left group shrink-0"
             title="Ir para a página inicial"
           >
-            <div className="w-10 h-10 rounded-xl overflow-hidden border border-red-200 dark:border-red-800/50 shadow-sm group-hover:scale-105 transition-transform bg-white shrink-0 p-0.5">
-              <img
-                src="/bora/brand/logo-emblem.jpg"
-                alt="Bora 13 • Identidade Oficial"
-                className="w-full h-full object-cover rounded-lg"
-              />
+            {/* Emblema Estrela Bora 13 */}
+            <div className="w-10 h-10 rounded-xl bg-[#C52229] group-hover:bg-[#a51b21] text-white flex items-center justify-center shadow-md group-hover:scale-105 transition-all">
+              <IconStar className="w-5 h-5 text-white" />
             </div>
+
             <div className="hidden sm:block">
               <div className="flex items-center gap-1.5">
                 <span className="text-base font-black tracking-tight text-slate-900 dark:text-white leading-none">
                   Bora 13
                 </span>
-                <span className="text-[10px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded bg-red-100 dark:bg-red-950/60 text-[#C52229] dark:text-red-300">
-                  Guia do Diálogo
+                <span className="text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full bg-red-100 dark:bg-red-950/60 text-[#C52229] dark:text-red-300 border border-red-200/50">
+                  Iniciativa Cidadã
                 </span>
               </div>
-              <p className="text-[11px] font-medium text-slate-500 dark:text-slate-400 leading-tight">
-                Conversas que Viram Voto
+              <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 leading-tight mt-0.5">
+                Guia Cidadão • Feito pra Somar na Causa
               </p>
             </div>
           </button>
 
           {/* Quick Context Pill (se houver estado ou profissão ativos) */}
           {hasContext && (
-            <div className="hidden lg:flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-[11px] font-bold text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-              {memory.selectedUF && <span>📍 {memory.selectedUF}</span>}
-              {memory.selectedCity && <span className="text-slate-400">• {memory.selectedCity}</span>}
-              {memory.occupation && (
-                <>
-                  <span className="text-slate-400">•</span>
-                  <span>👤 {memory.occupation}</span>
-                </>
+            <button
+              onClick={() => handleTabClick('preparar')}
+              title="Contexto ativo salvo. Clique para ajustar a preparação."
+              className="hidden lg:flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-100 hover:bg-red-50 dark:bg-slate-800 dark:hover:bg-red-950/40 text-[11px] font-bold text-slate-700 hover:text-[#C52229] dark:text-slate-300 dark:hover:text-red-300 border border-slate-200 dark:border-slate-700 transition-all cursor-pointer"
+            >
+              {memory.selectedUF && (
+                <span className="flex items-center gap-1">
+                  <IconMapPin className="w-3 h-3 text-[#C52229]" />
+                  <span>{memory.selectedUF}</span>
+                </span>
               )}
-            </div>
+              {memory.selectedCity && <span className="text-slate-400 font-normal">• {memory.selectedCity}</span>}
+              {memory.occupation && (
+                <span className="flex items-center gap-1 ml-1 text-slate-600 dark:text-slate-300">
+                  <span className="text-slate-400">•</span>
+                  <IconUser className="w-3 h-3 text-slate-500" />
+                  <span>{memory.occupation}</span>
+                </span>
+              )}
+            </button>
           )}
         </div>
 
         {/* CENTRO: NAVEGAÇÃO EM TABS DE ALTO NÍVEL (DESKTOP) */}
         <nav className="hidden md:flex items-center gap-1 bg-slate-100/90 dark:bg-slate-800/70 p-1.5 rounded-2xl border border-slate-200/70 dark:border-slate-700/70 shadow-inner">
           {SECTIONS.map((sec) => {
-            const isActive = currentSection === sec.id;
+            const isActive = activeCanonical === sec.id;
             return (
               <button
                 key={sec.id}
                 onClick={() => handleTabClick(sec.id)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all relative flex items-center gap-1.5 ${
+                className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all relative flex items-center gap-2 ${
                   isActive
                     ? 'bg-white dark:bg-slate-900 text-[#C52229] dark:text-red-300 shadow-sm'
                     : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-white/60 dark:hover:bg-slate-800/60'
                 }`}
               >
-                <span>{sec.icon}</span>
+                {sec.icon(isActive)}
                 <span>{sec.label}</span>
                 {sec.badge && (
-                  <span className="text-[9px] font-black uppercase px-1.5 py-0.2 rounded-full bg-emerald-600 text-white">
+                  <span className={`text-[9px] font-black uppercase px-1.5 py-0.5 rounded-full ${
+                    isActive 
+                      ? 'bg-red-100 dark:bg-red-950/60 text-[#C52229] dark:text-red-300' 
+                      : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-slate-400'
+                  }`}>
                     {sec.badge}
                   </span>
                 )}
@@ -122,9 +185,13 @@ export default function NavigationHeader({
           <button
             onClick={onToggleSound}
             title={soundEnabled ? 'Desativar sons do aplicativo' : 'Ativar sons do aplicativo'}
-            className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-xs font-bold hover:scale-105 active:scale-95 transition-all text-slate-700 dark:text-slate-300 shadow-sm"
+            className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:scale-105 active:scale-95 transition-all text-slate-700 dark:text-slate-300 shadow-sm"
           >
-            {soundEnabled ? '🔊' : '🔇'}
+            {soundEnabled ? (
+              <IconVolumeOn className="w-4 h-4 text-[#C52229]" />
+            ) : (
+              <IconVolumeOff className="w-4 h-4 text-slate-400" />
+            )}
           </button>
 
           {/* Theme Toggle (Light / Dark) */}
@@ -134,10 +201,10 @@ export default function NavigationHeader({
           {canInstall && onInstall && (
             <button
               onClick={onInstall}
-              className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-[#C52229] hover:bg-[#a51b21] text-white transition-all shadow-sm active:scale-95"
+              className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#C52229] hover:bg-[#a51b21] text-white transition-all shadow-sm active:scale-95"
             >
-              <span>📲</span>
-              <span>Baixar App</span>
+              <IconSmartphone className="w-3.5 h-3.5" />
+              <span>Instalar</span>
             </button>
           )}
         </div>

@@ -5,7 +5,6 @@ import { BRAZIL_STATES_GEO, getStateByUF, type StateGeo } from '@/data/brazilGeo
 import {
   CONVERSION_FRONTS,
   MENOS_COM_FLAVIO_FACTS,
-  getRegionalTacticForUF,
   type ConversionFront,
 } from '@/data/electoralTactics';
 import {
@@ -14,6 +13,23 @@ import {
   type TailoredConversationPlan,
   type PostPresetData,
 } from '@/lib/agenticOrchestrator';
+import {
+  IconStar,
+  IconPrepare,
+  IconDojo,
+  IconExplore,
+  IconStudio,
+  IconShield,
+  IconCheck,
+  IconArrowRight,
+  IconMapPin,
+  IconUser,
+  IconEducation,
+  IconHealth,
+  IconEconomy,
+  IconCopy,
+  IconShareWhatsApp,
+} from '@/components/icons/CasaIcons';
 
 interface TailoredMissionFunnelProps {
   initialUF?: string;
@@ -52,7 +68,7 @@ export default function TailoredMissionFunnel({
   onOpenStudio,
   onOpenSimulator,
   className = '',
-  title = 'QG da Virada • Seu Roteiro Sob Medida em 3 Passos',
+  title = 'Guia do Diálogo • Seu Roteiro Sob Medida em 3 Passos',
   compact = false,
 }: TailoredMissionFunnelProps) {
   // ── ESTADO DO FUNIL ──
@@ -90,7 +106,7 @@ export default function TailoredMissionFunnel({
   const [copiedZap, setCopiedZap] = useState<boolean>(false);
   const [copiedScript, setCopiedScript] = useState<boolean>(false);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
-  const [activeTabSub, setActiveTabSub] = useState<'roteiro' | 'zap' | 'provas'>('roteiro');
+  const [activeTabSub, setActiveTabSub] = useState<'roteiro' | 'zap'>('roteiro');
 
   // Sincroniza se a UF externa mudar
   useEffect(() => {
@@ -157,7 +173,6 @@ export default function TailoredMissionFunnel({
       setCopiedZap(true);
       setTimeout(() => setCopiedZap(false), 2200);
     } catch {
-      // Fallback
       const ta = document.createElement('textarea');
       ta.value = plan.whatsappScript;
       document.body.appendChild(ta);
@@ -177,13 +192,14 @@ export default function TailoredMissionFunnel({
 
   const handleCopyScriptOnly = async () => {
     playProceduralHaptic('copy');
-    const fullScript = `*⭐ ROTEIRO DE CONVERSA EM ${plan.locationLabel.toUpperCase()}*\n\n` +
-      `💚 *COMO INICIAR (ACOLHIMENTO):*\n"${plan.acolhimentoHook}"\n\n` +
-      `📊 *PROVAS DO BOLSO:*\n` +
-      plan.localPocketFacts.map(f => `${f.icon} *${f.title}*: ${f.description}`).join('\n') +
-      `\n\n🤔 *SE FALAR:* "${plan.objectionRebuttal.objection}"\n` +
-      `✅ *O QUE RESPONDER:* ${plan.objectionRebuttal.rebuttal}\n\n` +
-      `⚠️ *O MENOS COM FLÁVIO:* ${plan.retrocessoAlert.title} (${plan.retrocessoAlert.description})`;
+    const fullScript = `*⭐ ROTEIRO CIDADÃO DE DIÁLOGO EM ${plan.locationLabel.toUpperCase()} (INICIATIVA INDEPENDENTE)*\n\n` +
+      `*1. COMO INICIAR (ACOLHIMENTO):*\n"${plan.acolhimentoHook}"\n\n` +
+      `*2. PROVAS DO BOLSO:*\n` +
+      plan.localPocketFacts.map(f => `• *${f.title}*: ${f.description}`).join('\n') +
+      `\n\n*3. SE A PESSOA FALAR:* "${plan.objectionRebuttal.objection}"\n` +
+      `*O QUE RESPONDER:* ${plan.objectionRebuttal.rebuttal}\n\n` +
+      `*4. O RISCO DO RETROCESSO:* ${plan.retrocessoAlert.title} (${plan.retrocessoAlert.description})\n\n` +
+      `_Iniciativa popular independente e voluntária • Feita para somar na causa • Dados públicos auditados_`;
 
     try {
       await navigator.clipboard.writeText(fullScript);
@@ -223,17 +239,14 @@ export default function TailoredMissionFunnel({
 
   return (
     <div
-      className={`w-full bg-white dark:bg-[#0E1524] border border-red-200/90 dark:border-slate-800 rounded-3xl p-5 md:p-7 shadow-sm space-y-6 relative overflow-hidden transition-all ${className}`}
+      className={`w-full bg-white dark:bg-[#0E1524] border border-red-200/90 dark:border-slate-800 rounded-3xl p-5 md:p-8 shadow-sm space-y-7 relative overflow-hidden transition-all ${className}`}
     >
-      {/* Detalhes de Concretismo no Fundo */}
-      <div className="absolute top-0 right-0 w-80 h-80 bg-gradient-to-bl from-red-500/5 via-amber-500/5 to-transparent pointer-events-none rounded-full" />
-
       {/* ── CABEÇALHO DO FUNIL INTERATIVO ── */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100 dark:border-slate-800 relative z-10">
         <div>
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider bg-red-100 dark:bg-red-950/60 text-[#C52229] dark:text-red-300 mb-1.5 shadow-2xs">
-            <span>🎯</span>
-            <span>Funil Guiado da Virada • Passo a Passo</span>
+            <IconStar className="w-3.5 h-3.5 text-[#C52229]" />
+            <span>Guia Cidadão • Passo a Passo da Conversa</span>
           </div>
           <h3 className="text-xl md:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
             {title}
@@ -246,17 +259,17 @@ export default function TailoredMissionFunnel({
         {/* Resumo Territorial Ativo */}
         <div className="flex items-center gap-2 shrink-0">
           <div className="px-3.5 py-1.5 rounded-xl bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900/40 text-xs font-black text-[#C52229] dark:text-red-300 flex items-center gap-1.5 shadow-2xs">
-            <span>📍</span>
+            <IconMapPin className="w-3.5 h-3.5 text-[#C52229]" />
             <span>{plan.locationLabel}</span>
           </div>
         </div>
       </div>
 
       {/* ── PASSO 1: ESCOLHA DA CIDADE NO ESTADO SELECIONADO ── */}
-      <div className="space-y-2.5 relative z-10">
+      <div className="space-y-3 relative z-10">
         <div className="flex items-center justify-between">
-          <span className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
-            <span className="w-5 h-5 rounded-full bg-[#C52229] text-white flex items-center justify-center text-[10px]">1</span>
+          <span className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-[#C52229] text-white flex items-center justify-center text-xs font-black">1</span>
             <span>Em qual cidade de {stateGeo.name} você vai conversar?</span>
           </span>
           <span className="text-[11px] font-bold text-slate-500">
@@ -268,18 +281,23 @@ export default function TailoredMissionFunnel({
         <div className="flex flex-wrap items-center gap-1.5">
           {stateGeo.majorCities.map((city) => {
             const isSelected = activeCity === city;
+            const isCapital = city === stateGeo.capital;
             return (
               <button
                 key={city}
                 type="button"
                 onClick={() => handleCityPick(city)}
-                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1 ${
+                className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                   isSelected
                     ? 'bg-[#C52229] text-white shadow-xs scale-102 ring-2 ring-[#C52229]/30'
                     : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200/80 dark:border-slate-700'
                 }`}
               >
-                <span>{city === stateGeo.capital ? '⭐' : '🏙️'}</span>
+                {isCapital ? (
+                  <IconStar className={`w-3 h-3 ${isSelected ? 'text-[#FFE234]' : 'text-amber-500'}`} />
+                ) : (
+                  <IconMapPin className={`w-3 h-3 ${isSelected ? 'text-white' : 'text-slate-400'}`} />
+                )}
                 <span>{city}</span>
               </button>
             );
@@ -290,10 +308,9 @@ export default function TailoredMissionFunnel({
             <button
               type="button"
               onClick={() => setShowCustomCityInput(true)}
-              className="px-3 py-1.5 rounded-xl text-xs font-bold border border-dashed border-slate-300 dark:border-slate-700 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-400 transition-all flex items-center gap-1"
+              className="px-3 py-1.5 rounded-xl text-xs font-bold border border-dashed border-slate-300 dark:border-slate-700 text-slate-500 hover:text-slate-800 dark:hover:text-slate-200 hover:border-slate-400 transition-all flex items-center gap-1 cursor-pointer"
             >
-              <span>➕</span>
-              <span>Outro município...</span>
+              <span>+ Outro município</span>
             </button>
           ) : (
             <div className="flex items-center gap-1.5 animate-fade-in">
@@ -309,14 +326,14 @@ export default function TailoredMissionFunnel({
               <button
                 type="button"
                 onClick={handleApplyCustomCity}
-                className="px-2.5 py-1 bg-[#C52229] text-white text-xs font-bold rounded-lg shadow-2xs hover:bg-[#a51b21]"
+                className="px-2.5 py-1 bg-[#C52229] text-white text-xs font-bold rounded-lg shadow-2xs hover:bg-[#a51b21] cursor-pointer"
               >
                 Definir
               </button>
               <button
                 type="button"
                 onClick={() => setShowCustomCityInput(false)}
-                className="text-xs text-slate-400 hover:text-slate-600 px-1"
+                className="text-xs text-slate-400 hover:text-slate-600 px-1 cursor-pointer"
               >
                 ✕
               </button>
@@ -326,19 +343,19 @@ export default function TailoredMissionFunnel({
       </div>
 
       {/* ── PASSO 2: QUEM É ESSA PESSOA EM {activeCity}? (AS 4 FRENTES + FILTROS) ── */}
-      <div className="space-y-3 pt-2 border-t border-slate-100 dark:border-slate-800 relative z-10">
+      <div className="space-y-3 pt-3 border-t border-slate-100 dark:border-slate-800 relative z-10">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1">
-          <span className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
-            <span className="w-5 h-5 rounded-full bg-[#C52229] text-white flex items-center justify-center text-[10px]">2</span>
-            <span>Quem é essa pessoa no 2º Turno? (A Lista dos 4 Votos)</span>
+          <span className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+            <span className="w-6 h-6 rounded-full bg-[#C52229] text-white flex items-center justify-center text-xs font-black">2</span>
+            <span>Quem é essa pessoa? (Perfil de Diálogo)</span>
           </span>
-          <span className="text-[11px] font-bold text-amber-600 dark:text-amber-400">
-            ⚡ Método 2º Turno Normose & Sabrina Fernandes
+          <span className="text-[11px] font-bold text-slate-500">
+            Frentes Prioritárias
           </span>
         </div>
 
         {/* Grid das 4 Frentes de Conversão */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           {CONVERSION_FRONTS.map((front) => {
             const isSelected = activeFrontId === front.id;
             return (
@@ -346,17 +363,21 @@ export default function TailoredMissionFunnel({
                 key={front.id}
                 type="button"
                 onClick={() => handleFrontPick(front.id)}
-                className={`p-3.5 rounded-2xl border text-left transition-all relative flex items-start gap-3 ${
+                className={`p-4 rounded-2xl border text-left transition-all relative flex items-start gap-3 cursor-pointer ${
                   isSelected
-                    ? 'border-[#C52229] bg-gradient-to-r from-red-50/90 to-amber-50/40 dark:from-red-950/50 dark:to-slate-900 shadow-md ring-2 ring-[#C52229]/40'
+                    ? 'border-[#C52229] bg-red-50/70 dark:bg-red-950/40 shadow-sm ring-2 ring-[#C52229]/40'
                     : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 hover:border-slate-300'
                 }`}
               >
-                <span className="text-2xl shrink-0 mt-0.5">{front.icon}</span>
+                <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-black text-xs shrink-0 mt-0.5 ${
+                  isSelected ? 'bg-[#C52229] text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                }`}>
+                  {front.number}
+                </div>
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-1 mb-0.5">
                     <span className="text-xs font-black text-slate-900 dark:text-white truncate">
-                      {front.number}. {front.title}
+                      {front.title}
                     </span>
                     <span className={`text-[9px] font-black px-2 py-0.5 rounded-full border shrink-0 ${front.badgeColor}`}>
                       {front.priority}
@@ -366,7 +387,7 @@ export default function TailoredMissionFunnel({
                     {front.subtitle}
                   </p>
                   <span className="text-[10px] font-bold text-[#C52229] dark:text-red-400 mt-1 block">
-                    ⚡ {front.electoralWeight}
+                    {front.electoralWeight}
                   </span>
                 </div>
               </button>
@@ -375,17 +396,17 @@ export default function TailoredMissionFunnel({
         </div>
 
         {/* Filtros Opcionais de Refinamento (Profissão & Família) */}
-        <div className="p-3.5 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 space-y-2.5">
+        <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200/80 dark:border-slate-700/80 space-y-3">
           <div className="flex items-center justify-between">
-            <span className="text-[11px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400 flex items-center gap-1.5">
-              <span>💼</span>
-              <span>Ocupação da Pessoa (Opcional — Toca no Bolso):</span>
+            <span className="text-[11px] font-black uppercase tracking-wider text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
+              <IconUser className="w-3.5 h-3.5 text-slate-500" />
+              <span>Ocupação da Pessoa (Toca no Bolso):</span>
             </span>
             {selectedOccupation && (
               <button
                 type="button"
                 onClick={() => setSelectedOccupation(undefined)}
-                className="text-[10px] text-red-600 font-bold hover:underline"
+                className="text-[10px] text-[#C52229] font-bold hover:underline cursor-pointer"
               >
                 Limpar profissão
               </button>
@@ -398,9 +419,9 @@ export default function TailoredMissionFunnel({
                 key={occ}
                 type="button"
                 onClick={() => handleOccupationPick(occ)}
-                className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all ${
+                className={`px-3 py-1 rounded-lg text-[11px] font-bold transition-all cursor-pointer ${
                   selectedOccupation === occ
-                    ? 'bg-red-600 text-white shadow-2xs'
+                    ? 'bg-[#C52229] text-white shadow-2xs'
                     : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-slate-300'
                 }`}
               >
@@ -412,10 +433,10 @@ export default function TailoredMissionFunnel({
           {/* Flags Familiares */}
           <div className="pt-2 border-t border-slate-200/60 dark:border-slate-700/60 flex flex-wrap gap-2">
             {[
-              { key: 'hasChildren' as const, label: 'Tem filhos na escola (Pé-de-Meia)', icon: '🎒' },
-              { key: 'hasElderly' as const, label: 'Idoso em casa', icon: '🧓' },
-              { key: 'dependsSUS' as const, label: 'Usa remédios do SUS', icon: '💊' },
-              { key: 'receivesBenefit' as const, label: 'Bolsa Família / BPC', icon: '💳' },
+              { key: 'hasChildren' as const, label: 'Filhos na escola (Pé-de-Meia)', icon: <IconEducation className="w-3.5 h-3.5" /> },
+              { key: 'hasElderly' as const, label: 'Idoso em casa', icon: <IconUser className="w-3.5 h-3.5" /> },
+              { key: 'dependsSUS' as const, label: 'Usa remédios do SUS', icon: <IconHealth className="w-3.5 h-3.5" /> },
+              { key: 'receivesBenefit' as const, label: 'Bolsa Família / BPC', icon: <IconEconomy className="w-3.5 h-3.5" /> },
             ].map((f) => {
               const active = familyFlags[f.key];
               return (
@@ -423,13 +444,13 @@ export default function TailoredMissionFunnel({
                   key={f.key}
                   type="button"
                   onClick={() => handleToggleFamily(f.key)}
-                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1.5 ${
+                  className={`px-2.5 py-1 rounded-lg text-[11px] font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                     active
                       ? 'bg-emerald-600 text-white shadow-2xs'
                       : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700'
                   }`}
                 >
-                  <span>{f.icon}</span>
+                  {f.icon}
                   <span>{f.label}</span>
                 </button>
               );
@@ -438,13 +459,13 @@ export default function TailoredMissionFunnel({
         </div>
       </div>
 
-      {/* ── PASSO 3: O ARSENAL SOB MEDIDA GERADO (MUNIÇÃO EXATA PARA ESSE CASO) ── */}
-      <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-4 relative z-10">
+      {/* ── PASSO 3: O ARSENAL SOB MEDIDA GERADO ── */}
+      <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-4 relative z-10">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
-            <span className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-1.5">
-              <span className="w-5 h-5 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px]">3</span>
-              <span>Arsenal Sob Medida para Conversar em {plan.locationLabel}</span>
+            <span className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
+              <span className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-black">3</span>
+              <span>Arsenal de Diálogo em {plan.locationLabel}</span>
             </span>
             <p className="text-[11px] text-slate-500 mt-0.5">
               Roteiro testado, provas no bolso e mensagem formatada para WhatsApp:
@@ -459,13 +480,14 @@ export default function TailoredMissionFunnel({
                 playProceduralHaptic('click');
                 setActiveTabSub('roteiro');
               }}
-              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                 activeTabSub === 'roteiro'
                   ? 'bg-white dark:bg-slate-900 text-[#C52229] shadow-xs'
                   : 'text-slate-600 dark:text-slate-400'
               }`}
             >
-              💬 Roteiro de Conversa
+              <IconDojo className="w-3.5 h-3.5" />
+              <span>Roteiro de Diálogo</span>
             </button>
             <button
               type="button"
@@ -473,26 +495,27 @@ export default function TailoredMissionFunnel({
                 playProceduralHaptic('click');
                 setActiveTabSub('zap');
               }}
-              className={`px-3 py-1 rounded-lg text-xs font-bold transition-all ${
+              className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 cursor-pointer ${
                 activeTabSub === 'zap'
                   ? 'bg-emerald-600 text-white shadow-xs'
                   : 'text-slate-600 dark:text-slate-400'
               }`}
             >
-              📲 Mensagem Zap Pronta
+              <IconShareWhatsApp className="w-3.5 h-3.5 text-white" />
+              <span>Mensagem WhatsApp</span>
             </button>
           </div>
         </div>
 
         {/* ── CONTEÚDO DA ABA SELECIONADA ── */}
         {activeTabSub === 'roteiro' && (
-          <div className="space-y-3.5 animate-fade-in">
+          <div className="space-y-4 animate-fade-in">
             {/* Bloco 1: Acolhimento & O Que Jamais Dizer */}
-            <div className="p-4 rounded-2xl bg-gradient-to-r from-red-50/70 to-amber-50/50 dark:from-red-950/30 dark:to-slate-900 border border-red-200 dark:border-red-900/40 space-y-2">
+            <div className="p-5 rounded-2xl bg-red-50/60 dark:bg-red-950/30 border border-red-200 dark:border-red-900/40 space-y-3">
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-black uppercase tracking-wider text-[#C52229] dark:text-red-300 flex items-center gap-1.5">
-                  <span>💚</span>
-                  <span>Como Iniciar a Conversa (Os Primeiros 30 Segundos):</span>
+                  <IconCheck className="w-4 h-4 text-emerald-600" />
+                  <span>Como Iniciar a Conversa (Acolhimento):</span>
                 </span>
                 <span className="text-[10px] font-bold text-amber-800 dark:text-amber-300 bg-amber-100 dark:bg-amber-900/60 px-2 py-0.5 rounded-full">
                   Sem Julgar
@@ -503,17 +526,19 @@ export default function TailoredMissionFunnel({
                 &ldquo;{plan.acolhimentoHook}&rdquo;
               </blockquote>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-1 text-[11px]">
-                <div className="p-2.5 rounded-xl bg-white/90 dark:bg-slate-900/90 border border-emerald-200 dark:border-emerald-800/40">
-                  <strong className="text-emerald-700 dark:text-emerald-400 block mb-0.5">
-                    💡 Regra de Ouro:
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-1 text-[11px]">
+                <div className="p-3 rounded-xl bg-white/90 dark:bg-slate-900/90 border border-emerald-200 dark:border-emerald-800/40">
+                  <strong className="text-emerald-700 dark:text-emerald-400 block mb-0.5 flex items-center gap-1">
+                    <IconStar className="w-3 h-3 text-emerald-600" />
+                    <span>Regra de Ouro:</span>
                   </strong>
                   <span className="text-slate-700 dark:text-slate-300">{plan.goldenRule}</span>
                 </div>
 
-                <div className="p-2.5 rounded-xl bg-white/90 dark:bg-slate-900/90 border border-red-200 dark:border-red-800/40">
-                  <strong className="text-red-700 dark:text-red-400 block mb-0.5">
-                    ⚠️ O Que NUNCA Dizer:
+                <div className="p-3 rounded-xl bg-white/90 dark:bg-slate-900/90 border border-red-200 dark:border-red-800/40">
+                  <strong className="text-red-700 dark:text-red-400 block mb-0.5 flex items-center gap-1">
+                    <IconShield className="w-3 h-3 text-red-600" />
+                    <span>O Que NUNCA Dizer:</span>
                   </strong>
                   <span className="text-slate-700 dark:text-slate-300">{plan.whatNeverToSay}</span>
                 </div>
@@ -521,22 +546,21 @@ export default function TailoredMissionFunnel({
             </div>
 
             {/* Bloco 2: As 3 Provas do Bolso em {activeCity} */}
-            <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2.5">
+            <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3">
               <span className="text-[11px] font-black uppercase tracking-wider text-slate-600 dark:text-slate-400 flex items-center gap-1.5">
-                <span>📊</span>
-                <span>Provas Concretas para Quem Vive em {plan.locationLabel}:</span>
+                <IconShield className="w-4 h-4 text-slate-600" />
+                <span>Provas Concretas em {plan.locationLabel}:</span>
               </span>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 {plan.localPocketFacts.map((fact, idx) => (
                   <div
                     key={idx}
-                    className="p-3 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 flex flex-col justify-between space-y-1.5"
+                    className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200/80 dark:border-slate-700 flex flex-col justify-between space-y-2"
                   >
                     <div>
-                      <div className="flex items-center gap-1.5 text-xs font-black text-slate-900 dark:text-white mb-1">
-                        <span className="text-base">{fact.icon}</span>
-                        <span>{fact.title}</span>
+                      <div className="text-xs font-black text-slate-900 dark:text-white mb-1">
+                        {fact.title}
                       </div>
                       <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-snug">
                         {fact.description}
@@ -555,15 +579,16 @@ export default function TailoredMissionFunnel({
               {/* Objeção */}
               <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2">
                 <span className="text-[10px] font-black uppercase tracking-wider text-amber-700 dark:text-amber-400 flex items-center gap-1">
-                  <span>🤔</span>
+                  <IconDojo className="w-3.5 h-3.5 text-amber-600" />
                   <span>Se a Pessoa Disser:</span>
                 </span>
                 <p className="text-xs font-bold text-slate-900 dark:text-white leading-snug">
                   &ldquo;{plan.objectionRebuttal.objection}&rdquo;
                 </p>
-                <div className="p-2.5 rounded-xl bg-white dark:bg-slate-800 text-[11px] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
-                  <strong className="text-emerald-600 dark:text-emerald-400 block mb-0.5">
-                    ✅ O que responder com calma:
+                <div className="p-3 rounded-xl bg-white dark:bg-slate-800 text-[11px] text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
+                  <strong className="text-emerald-600 dark:text-emerald-400 block mb-0.5 flex items-center gap-1">
+                    <IconCheck className="w-3 h-3 text-emerald-600" />
+                    <span>O que responder com calma:</span>
                   </strong>
                   <span>{plan.objectionRebuttal.rebuttal}</span>
                 </div>
@@ -573,7 +598,7 @@ export default function TailoredMissionFunnel({
               <div className="p-4 rounded-2xl bg-red-50/60 dark:bg-red-950/30 border border-red-200 dark:border-red-900/50 space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="text-[10px] font-black uppercase tracking-wider text-red-700 dark:text-red-400 flex items-center gap-1">
-                    <span>⚠️</span>
+                    <IconShield className="w-3.5 h-3.5 text-red-600" />
                     <span>O Que a Família Perde com a Oposição:</span>
                   </span>
                   <span className="text-xs font-black text-red-600 bg-red-100 dark:bg-red-900/60 px-2 py-0.5 rounded-full">
@@ -594,10 +619,10 @@ export default function TailoredMissionFunnel({
         {/* ── ABA DE MENSAGEM DO WHATSAPP PRONTA ── */}
         {activeTabSub === 'zap' && (
           <div className="space-y-3 animate-fade-in">
-            <div className="p-4 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 space-y-3">
+            <div className="p-5 rounded-2xl bg-emerald-50/70 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/60 space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <span className="text-xl">📲</span>
+                  <IconShareWhatsApp className="w-5 h-5 text-emerald-600" />
                   <div>
                     <span className="text-xs font-black text-emerald-900 dark:text-emerald-300 block">
                       Mensagem Pronta para WhatsApp ({plan.locationLabel})
@@ -612,25 +637,25 @@ export default function TailoredMissionFunnel({
                   <button
                     type="button"
                     onClick={handleCopyZap}
-                    className="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 shadow-2xs flex items-center gap-1"
+                    className="px-3 py-1.5 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 text-slate-700 dark:text-slate-200 text-xs font-bold border border-slate-200 dark:border-slate-700 shadow-2xs flex items-center gap-1.5 cursor-pointer"
                   >
-                    <span>{copiedZap ? '✓' : '📋'}</span>
+                    {copiedZap ? <IconCheck className="w-3.5 h-3.5 text-emerald-600" /> : <IconCopy className="w-3.5 h-3.5" />}
                     <span>{copiedZap ? 'Copiado!' : 'Copiar'}</span>
                   </button>
 
                   <button
                     type="button"
                     onClick={handleSendWhatsApp}
-                    className="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-xs active:scale-95 transition-all flex items-center gap-1.5"
+                    className="px-4 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold shadow-xs active:scale-95 transition-all flex items-center gap-1.5 cursor-pointer"
                   >
-                    <span>🚀</span>
+                    <IconShareWhatsApp className="w-3.5 h-3.5 text-white" />
                     <span>Abrir no Zap</span>
                   </button>
                 </div>
               </div>
 
               {/* Prévia da Mensagem Formatada */}
-              <div className="p-3.5 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200/80 dark:border-emerald-800/40 text-xs text-slate-800 dark:text-slate-200 whitespace-pre-wrap font-sans leading-relaxed select-all">
+              <div className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-emerald-200/80 dark:border-emerald-800/40 text-xs text-slate-800 dark:text-slate-200 whitespace-pre-wrap font-sans leading-relaxed select-all">
                 {plan.whatsappScript}
               </div>
             </div>
@@ -638,15 +663,15 @@ export default function TailoredMissionFunnel({
         )}
 
         {/* ── BARRA DE AÇÕES INTEGRADAS DO FUNIL ── */}
-        <div className="flex flex-col sm:flex-row items-center gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
+        <div className="flex flex-col sm:flex-row items-center gap-2.5 pt-3 border-t border-slate-100 dark:border-slate-800">
           {/* Ação 1: Mandar no Zap Direto */}
           <button
             type="button"
             onClick={handleSendWhatsApp}
-            className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all"
+            className="w-full sm:flex-1 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all cursor-pointer"
           >
-            <span>📲</span>
-            <span>Mandar Mensagem de {plan.city} no WhatsApp</span>
+            <IconShareWhatsApp className="w-4 h-4 text-white" />
+            <span>Enviar Mensagem de {plan.city} no WhatsApp</span>
           </button>
 
           {/* Ação 2: Gerar Post no Estúdio */}
@@ -657,10 +682,10 @@ export default function TailoredMissionFunnel({
                 playProceduralHaptic('generate');
                 onOpenStudio(plan.preset);
               }}
-              className="w-full sm:w-auto py-3 px-4 rounded-xl bg-[#C52229] hover:bg-[#a51b21] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all shrink-0"
+              className="w-full sm:w-auto py-3 px-4 rounded-xl bg-[#C52229] hover:bg-[#a51b21] text-white font-bold text-xs flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all shrink-0 cursor-pointer"
             >
-              <span>🎨</span>
-              <span>Criar Card & Carrossel deste Perfil</span>
+              <IconStudio className="w-4 h-4 text-white" />
+              <span>Criar Card 1080p deste Perfil</span>
             </button>
           )}
 
@@ -672,9 +697,9 @@ export default function TailoredMissionFunnel({
                 playProceduralHaptic('click');
                 onOpenSimulator(plan.frontId, plan.occupation);
               }}
-              className="w-full sm:w-auto py-3 px-4 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all shrink-0"
+              className="w-full sm:w-auto py-3 px-4 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs flex items-center justify-center gap-2 shadow-sm active:scale-95 transition-all shrink-0 cursor-pointer"
             >
-              <span>💬</span>
+              <IconDojo className="w-4 h-4" />
               <span>Treinar Conversa</span>
             </button>
           )}
@@ -684,9 +709,9 @@ export default function TailoredMissionFunnel({
             type="button"
             onClick={handleCopyScriptOnly}
             title="Copiar roteiro completo em texto"
-            className="w-full sm:w-auto py-3 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all shrink-0"
+            className="w-full sm:w-auto py-3 px-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all shrink-0 cursor-pointer"
           >
-            <span>{copiedScript ? '✓' : '📋'}</span>
+            {copiedScript ? <IconCheck className="w-3.5 h-3.5 text-emerald-600" /> : <IconCopy className="w-3.5 h-3.5" />}
             <span>{copiedScript ? 'Copiado!' : 'Copiar Dossiê'}</span>
           </button>
 
@@ -695,9 +720,9 @@ export default function TailoredMissionFunnel({
             type="button"
             onClick={handleCopyShareLink}
             title="Copiar link direto para este perfil e cidade"
-            className="w-full sm:w-auto py-3 px-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all shrink-0"
+            className="w-full sm:w-auto py-3 px-3.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-all shrink-0 cursor-pointer"
           >
-            <span>{copiedLink ? '✓' : '🔗'}</span>
+            {copiedLink ? <IconCheck className="w-3.5 h-3.5 text-emerald-600" /> : <IconCopy className="w-3.5 h-3.5" />}
             <span>{copiedLink ? 'Link Copiado!' : 'Compartilhar Link'}</span>
           </button>
         </div>

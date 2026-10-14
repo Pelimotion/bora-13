@@ -316,12 +316,12 @@ export default function QuickArgumentView({
       lines.push('');
     }
 
-    lines.push(`📊 *Fonte Oficial Auditada:* ${currentArg.sourceName}`);
+    lines.push(`📊 *Fonte Pública Auditada:* ${currentArg.sourceName}`);
     if (currentArg.sourceUrl && currentArg.sourceUrl !== '#') {
       lines.push(`📎 ${currentArg.sourceUrl}`);
     }
     lines.push('');
-    lines.push(`_Via Bora 13 • Argumentos Reais • casa13.pt.org.br_`);
+    lines.push(`_Bora 13 • Iniciativa Cidadã • Feita pra Somar na Causa • gigantera.xyz/bora_`);
 
     return lines.join('\n');
   }, [currentArg]);
@@ -507,7 +507,7 @@ export default function QuickArgumentView({
               <span className="text-[10px] font-black uppercase tracking-wider text-[#C52229] block">
                 {currentArg.category.toUpperCase()}
               </span>
-              <span className="seal-verified">Fato Verificado Oficial</span>
+              <span className="seal-verified">Fato Público Auditado</span>
             </div>
           </div>
 
@@ -580,7 +580,7 @@ export default function QuickArgumentView({
                 rel="noopener noreferrer"
                 className="text-xs font-bold text-[#C52229] hover:underline flex items-center gap-1"
               >
-                <span>🔗 Checar Fonte Oficial</span>
+                <span>🔗 Checar Fonte Pública</span>
               </a>
             )}
           </div>

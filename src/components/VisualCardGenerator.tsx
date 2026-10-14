@@ -48,7 +48,7 @@ ${
     ? `🤔 "Mas e quem diz que ${argument.counterArgument}?"\n✅ A resposta com provas na mesa: ${argument.rebuttal}\n`
     : ''
 }
-📊 Fonte Oficial Auditada: ${argument.sourceName}
+📊 Fonte Pública Auditada: ${argument.sourceName}
 ${argument.sourceUrl && argument.sourceUrl !== '#' ? `📎 Documento completo: ${argument.sourceUrl}\n` : ''}
 💬 Conversar ouvindo o outro transforma mais do que brigar. Salve este carrossel para consultar e compartilhe nos stories!
 
@@ -63,10 +63,10 @@ ${argument.scriptText}
 
 ${
   argument.counterArgument && argument.rebuttal
-    ? `👉 Se comentarem que "${argument.counterArgument}":\n✅ O número oficial na prática é: ${argument.rebuttal}\n`
+    ? `👉 Se comentarem que "${argument.counterArgument}":\n✅ O número apurado na prática é: ${argument.rebuttal}\n`
     : ''
 }
-📊 Fonte auditada pelo governo/institutos: *${argument.sourceName}*
+📊 Fonte pública auditada: *${argument.sourceName}*
 
 Sem briga nenhuma, só compartilhando informação checada pra gente saber dos nossos direitos e do que tá acontecendo de verdade. Um abraço!`;
 
@@ -75,7 +75,7 @@ Sem briga nenhuma, só compartilhando informação checada pra gente saber dos n
 
 "${argument.headline}"
 
-📊 Dado oficial do ${argument.sourceName}:
+📊 Dado público checado (${argument.sourceName}):
 ${argument.scriptText.slice(0, 150)}...
 
 👉 Responda aqui na caixinha: você sentiu essa melhora na sua vida ou na sua feira este ano?`;
@@ -85,7 +85,7 @@ ${argument.scriptText.slice(0, 150)}...
 
 ${argument.scriptText}
 
-2/3 📊 Órgão oficial auditado: ${argument.sourceName}.
+2/3 📊 Órgão público auditado: ${argument.sourceName}.
 ${argument.counterArgument ? `O fato documentado: ${argument.rebuttal}` : ''}
 
 3/3 O Brasil avança quando colocamos o trabalho e a comida no centro do debate. Bora dialogar com respeito. 🇧🇷`;
@@ -418,9 +418,7 @@ ${argument.counterArgument ? `O fato documentado: ${argument.rebuttal}` : ''}
           ctx.font = '900 24px Inter, system-ui, sans-serif';
           ctx.fillText('📌 Salve este carrossel e compartilhe com um amigo!', 110, height - 250);
 
-          ctx.fillStyle = textSecondary;
-          ctx.font = 'bold 20px Inter, system-ui, sans-serif';
-          ctx.fillText('Bora 13 • Conversas que Importam • casa13.pt.org.br', 110, height - 200);
+          ctx.fillText('Bora 13 • Iniciativa Cidadã • Feito pra Somar', 110, height - 200);
         }
       } else {
         // ─── MODO ÚNICO: FEED (1:1) OU STORY (9:16) ───
@@ -477,18 +475,18 @@ ${argument.counterArgument ? `O fato documentado: ${argument.rebuttal}` : ''}
       }
 
       // ═══════════════════════════════════════════════════════════════
-      // RODAPÉ AUDITADO OFICIAL
+      // RODAPÉ AUDITADO PÚBLICO
       // ═══════════════════════════════════════════════════════════════
       const footerY = height - (format === 'story' ? 140 : 85);
 
       ctx.fillStyle = isDark ? '#FFFFFF' : '#0F172A';
       ctx.font = 'bold 18px Inter, system-ui, sans-serif';
-      ctx.fillText(`📎 Fonte Oficial: ${argument.sourceName}`, 80, footerY);
+      ctx.fillText(`📎 Fonte Pública: ${argument.sourceName}`, 80, footerY);
 
       ctx.fillStyle = textSecondary;
       ctx.font = '500 16px Inter, system-ui, sans-serif';
       ctx.textAlign = 'right';
-      ctx.fillText('Bora 13 • União e Reconstrução', width - 80, footerY);
+      ctx.fillText('Bora 13 • Iniciativa Cidadã', width - 80, footerY);
       ctx.textAlign = 'left';
     },
     [argument, carouselSlide, format, theme]

@@ -34,10 +34,10 @@ interface PostStudioSectionProps {
 // BIBLIOTECA DE SELOS INSTITUCIONAIS & ADESIVOS DE AUDITORIA
 // ─────────────────────────────────────────────────────────────
 const OFFICIAL_SEALS = [
-  { id: 'selo-casa13', label: '⭐ Bora 13 Oficial', text: '⭐ BORA 13 • CASA 13 OFICIAL' },
-  { id: 'selo-ibge', label: '🏛️ Auditoria IBGE', text: '🏛️ FONTE OFICIAL AUDITADA • IBGE' },
+  { id: 'selo-casa13', label: '⭐ Bora 13 Cidadão', text: '⭐ BORA 13 • INICIATIVA CIDADÃ' },
+  { id: 'selo-ibge', label: '🏛️ Dados IBGE', text: '🏛️ FONTE PÚBLICA AUDITADA • IBGE' },
   { id: 'selo-dieese', label: '📊 Estudo DIEESE', text: '📊 DADOS AUDITADOS • DIEESE' },
-  { id: 'selo-comprovado', label: '🛡️ Fato Comprovado', text: '🛡️ FATO COMPROVADO EM DIÁRIO OFICIAL' },
+  { id: 'selo-comprovado', label: '🛡️ Fato Comprovado', text: '🛡️ FATO COMPROVADO EM DIÁRIO PÚBLICO' },
   { id: 'selo-menos-flavio', label: '📉 O Menos com Flávio', text: '📉 O MENOS COM FLÁVIO • REGISTRO HISTÓRICO' },
   { id: 'selo-pe-de-meia', label: '🎒 Programa Pé-de-Meia', text: '🎒 POUPANÇA DO ENSINO MÉDIO • MEC / CAIXA' },
 ];
@@ -542,12 +542,12 @@ export default function PostStudioSection({
           46
         );
 
-        // Selo Final Casa 13
+        // Selo Final Bora 13 Cidadão
         const badgeY = height - 170;
         ctx.fillStyle = accentRed;
         ctx.font = 'bold 30px Inter, -apple-system, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('🇧🇷 BORA 13 • casa13.pt.org.br', width / 2, badgeY);
+        ctx.fillText('⭐ BORA 13 • INICIATIVA CIDADÃ', width / 2, badgeY);
         ctx.textAlign = 'left';
       }
 
@@ -555,10 +555,10 @@ export default function PostStudioSection({
       const footerY = height - 60;
       ctx.fillStyle = textMuted;
       ctx.font = 'bold 20px Inter, -apple-system, sans-serif';
-      ctx.fillText(`Auditoria Oficial • ${preset.sourceName}`, margin, footerY);
+      ctx.fillText(`Fonte Pública • ${preset.sourceName}`, margin, footerY);
 
       ctx.textAlign = 'right';
-      ctx.fillText('Bora 13 • Fatos Reais', width - margin, footerY);
+      ctx.fillText('Bora 13 • Feito pra Somar', width - margin, footerY);
       ctx.textAlign = 'left';
 
       // 5. OVERLAY VISUAL DE SAFE ZONE DO INSTAGRAM (Se ativo no Modo Avançado)
@@ -1220,7 +1220,7 @@ export default function PostStudioSection({
 
             <div>
               <label className="text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1 block">
-                Dado ou Prova Material Oficial:
+                Dado ou Prova Pública Auditada:
               </label>
               <textarea
                 rows={2}
@@ -1260,7 +1260,7 @@ export default function PostStudioSection({
             <div className="grid grid-cols-2 gap-3">
               <div>
                 <label className="text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1 block">
-                  Fonte Oficial:
+                  Fonte Pública:
                 </label>
                 <input
                   type="text"

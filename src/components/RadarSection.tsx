@@ -162,7 +162,7 @@ export default function RadarSection({
                   <div className="flex items-center justify-between mb-1.5">
                     <span className="text-2xl p-1.5 rounded-xl bg-emerald-50 dark:bg-emerald-950/40">🥩</span>
                     <span className="text-[10px] font-black uppercase tracking-wider text-emerald-700 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-full">
-                      Oficial
+                      Dados IBGE
                     </span>
                   </div>
                   <h2 className="text-sm font-black text-slate-900 dark:text-white group-hover:text-emerald-600 transition-colors">

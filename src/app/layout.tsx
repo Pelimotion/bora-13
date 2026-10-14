@@ -3,10 +3,10 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://gigantera.xyz/bora"),
-  title: "Bora 13 — Conversas que Importam | Guia Oficial de Diálogo",
-  description: "Encontre os melhores argumentos baseados em dados reais para dialogar com respeito e eficácia sobre o futuro do Brasil. Ferramenta gratuita, anônima e sem cadastro.",
-  keywords: ["eleições 2026", "argumentos", "dados", "diálogo", "Brasil", "conversa", "economia", "fatos verificados", "Casa 13"],
-  authors: [{ name: "Casa 13 / Bora" }],
+  title: "Bora 13 — Conversas que Importam | Guia Cidadão de Diálogo",
+  description: "Iniciativa cidadã e voluntária criada para ajudar e somar na causa: roteiros de diálogo acolhedor, dados públicos auditados do seu estado e mensagens para WhatsApp. Ferramenta independente, sem vínculo institucional oficial com o PT ou Casa 13.",
+  keywords: ["eleições 2026", "argumentos", "dados públicos", "diálogo cidadão", "Brasil", "conversa", "economia", "fatos verificados", "iniciativa voluntária", "Bora 13"],
+  authors: [{ name: "Iniciativa Cidadã Bora 13" }],
   applicationName: "Bora 13",
   manifest: "/bora/manifest.json",
   appleWebApp: {
@@ -19,8 +19,8 @@ export const metadata: Metadata = {
     apple: "/bora/icon.svg",
   },
   openGraph: {
-    title: "Bora 13 — Conversas que Importam",
-    description: "Argumentos baseados em dados reais para conversas que mudam o Brasil.",
+    title: "Bora 13 — Conversas que Importam | Guia Cidadão",
+    description: "Iniciativa cidadã e independente: argumentos baseados em dados públicos auditados para conversas que somam no Brasil.",
     type: "website",
     locale: "pt_BR",
     siteName: "Bora 13",
@@ -74,7 +74,7 @@ export default function RootLayout({
         suppressHydrationWarning
         className="antialiased min-h-screen flex flex-col bg-[var(--bg-page)] text-[var(--text-primary)]"
       >
-        {/* Ribbon Oficial Multicolorida Casa 13 */}
+        {/* Ribbon Multicolorida Bora 13 */}
         <div className="casa-ribbon" />
 
         <SmoothScroll>
