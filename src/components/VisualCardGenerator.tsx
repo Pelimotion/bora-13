@@ -267,19 +267,19 @@ export default function VisualCardGenerator({ argument, onClose }: VisualCardGen
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md animate-fade-in">
-      <div className="bg-[#0F1729] border border-slate-800 rounded-2xl max-w-lg w-full max-h-[95vh] overflow-y-auto p-5 shadow-2xl flex flex-col">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 dark:bg-black/85 backdrop-blur-md animate-fade-in">
+      <div className="bg-white dark:bg-[#0F1729] border border-slate-200 dark:border-slate-800 rounded-3xl max-w-lg w-full max-h-[95vh] overflow-y-auto p-5 shadow-2xl flex flex-col transition-colors">
         {/* Header */}
-        <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center justify-between mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
           <div>
-            <h3 className="text-lg font-bold text-slate-100 flex items-center gap-2">
+            <h3 className="text-lg font-black text-slate-900 dark:text-slate-100 flex items-center gap-2">
               <span>🎨</span> Gerador de Card Visual
             </h3>
-            <p className="text-xs text-slate-400">Gere imagens oficiais prontas para stories e grupos</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Gere imagens oficiais prontas para stories e grupos</p>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-slate-800 text-slate-300 hover:bg-slate-700 flex items-center justify-center font-bold"
+            className="w-8 h-8 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 flex items-center justify-center font-bold transition-colors"
           >
             ✕
           </button>
@@ -288,13 +288,13 @@ export default function VisualCardGenerator({ argument, onClose }: VisualCardGen
         {/* Theme & Format Selectors */}
         <div className="flex flex-col gap-2 mb-4">
           {/* Theme Selector */}
-          <div className="flex gap-2 bg-[#080F1A] p-1 rounded-xl border border-slate-800">
+          <div className="flex gap-2 bg-slate-100 dark:bg-[#080F1A] p-1 rounded-2xl border border-slate-200 dark:border-slate-800">
             <button
               onClick={() => setTheme('casa13')}
-              className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+              className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${
                 theme === 'casa13'
-                  ? 'bg-[#C52229] text-white shadow-md shadow-red-950/60'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-[#C52229] text-white shadow-md'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
               }`}
             >
               <span>⭐</span>
@@ -302,10 +302,10 @@ export default function VisualCardGenerator({ argument, onClose }: VisualCardGen
             </button>
             <button
               onClick={() => setTheme('modern')}
-              className={`flex-1 py-2 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+              className={`flex-1 py-2 text-xs font-bold rounded-xl transition-all flex items-center justify-center gap-1.5 ${
                 theme === 'modern'
-                  ? 'bg-teal-500/20 text-teal-300 border border-teal-500/40'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
               }`}
             >
               <span>🌐</span>
@@ -314,23 +314,23 @@ export default function VisualCardGenerator({ argument, onClose }: VisualCardGen
           </div>
 
           {/* Format Selector */}
-          <div className="flex gap-2 bg-[#080F1A] p-1 rounded-xl border border-slate-800">
+          <div className="flex gap-2 bg-slate-100 dark:bg-[#080F1A] p-1 rounded-2xl border border-slate-200 dark:border-slate-800">
             <button
               onClick={() => setFormat('square')}
-              className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+              className={`flex-1 py-1.5 text-xs font-bold rounded-xl transition-all ${
                 format === 'square'
-                  ? 'bg-slate-800 text-white font-bold'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
               }`}
             >
               ⏹️ Feed / Zap (1:1)
             </button>
             <button
               onClick={() => setFormat('story')}
-              className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all ${
+              className={`flex-1 py-1.5 text-xs font-bold rounded-xl transition-all ${
                 format === 'story'
-                  ? 'bg-slate-800 text-white font-bold'
-                  : 'text-slate-400 hover:text-slate-200'
+                  ? 'bg-white dark:bg-slate-800 text-slate-900 dark:text-white shadow-sm'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200'
               }`}
             >
               📱 Stories / Status (9:16)
@@ -339,10 +339,10 @@ export default function VisualCardGenerator({ argument, onClose }: VisualCardGen
         </div>
 
         {/* Canvas Preview Container */}
-        <div className="flex justify-center items-center bg-[#080F1A] rounded-xl p-3 border border-slate-800/80 mb-4 overflow-hidden">
+        <div className="flex justify-center items-center bg-slate-100 dark:bg-[#080F1A] rounded-2xl p-3 border border-slate-200 dark:border-slate-800/80 mb-4 overflow-hidden">
           <canvas
             ref={canvasRef}
-            className={`w-full max-w-[320px] rounded-lg shadow-xl ${
+            className={`w-full max-w-[320px] rounded-xl shadow-xl ${
               format === 'story' ? 'aspect-[9/16]' : 'aspect-square'
             }`}
           />
@@ -353,7 +353,7 @@ export default function VisualCardGenerator({ argument, onClose }: VisualCardGen
           {shareSupported && (
             <button
               onClick={handleShare}
-              className="w-full py-3 px-4 rounded-xl font-bold text-white flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] transition-all shadow-lg active:scale-95"
+              className="w-full py-3 px-4 rounded-xl font-bold text-white flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20bd5a] transition-all shadow-md active:scale-95"
             >
               <span>📲</span> Compartilhar no WhatsApp
             </button>
@@ -362,18 +362,14 @@ export default function VisualCardGenerator({ argument, onClose }: VisualCardGen
           <button
             onClick={handleDownload}
             disabled={downloading}
-            className={`w-full py-3 px-4 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${
-              theme === 'casa13'
-                ? 'bg-[#C52229] hover:bg-[#A81B21] text-white shadow-lg shadow-red-950/40'
-                : 'btn-primary'
-            }`}
+            className="btn-pt w-full text-xs md:text-sm font-bold shadow-md"
           >
             <span>⬇️</span> Baixar Imagem em Alta Resolução (PNG)
           </button>
 
           <button
             onClick={onClose}
-            className="btn-ghost w-full text-xs text-slate-400 hover:text-slate-200"
+            className="btn-ghost w-full text-xs text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
           >
             Fechar
           </button>

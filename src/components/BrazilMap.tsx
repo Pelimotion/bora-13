@@ -20,19 +20,13 @@ export default function BrazilMap({
   const hoveredState = BRAZIL_STATES_GEO.find(s => s.uf === hoveredUF);
   const selectedStateObj = BRAZIL_STATES_GEO.find(s => s.uf === selectedState);
 
-  // Filter states by region if selected
-  const filteredStates = activeRegion === 'Todas'
-    ? BRAZIL_STATES_GEO
-    : BRAZIL_STATES_GEO.filter(s => s.region === activeRegion);
-
   const getRegionColor = (region: StateGeo['region'], isSelected: boolean, isHovered: boolean) => {
-    if (isSelected) return '#C52229'; // Casa 13 signature vibrant red
-    if (isHovered) return '#F59E0B'; // Warm amber hover
+    if (isSelected) return '#C52229'; // Casa 13 signature red
+    if (isHovered) return '#F59E0B'; // Golden amber on hover
 
-    // Subtle regional palette
     switch (region) {
       case 'Norte':
-        return '#0D9488'; // Teal deep
+        return '#0D9488'; // Teal
       case 'Nordeste':
         return '#EA580C'; // Warm orange
       case 'Centro-Oeste':
@@ -42,7 +36,7 @@ export default function BrazilMap({
       case 'Sul':
         return '#16A34A'; // Forest green
       default:
-        return '#334155';
+        return '#64748B';
     }
   };
 
@@ -55,10 +49,10 @@ export default function BrazilMap({
             key={reg}
             type="button"
             onClick={() => setActiveRegion(reg)}
-            className={`px-3 py-1 rounded-full text-xs font-semibold whitespace-nowrap transition-all ${
+            className={`px-3 py-1 rounded-full text-xs font-bold whitespace-nowrap transition-all ${
               activeRegion === reg
-                ? 'bg-[#C52229] text-white shadow-md shadow-red-900/40'
-                : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700/80'
+                ? 'bg-[#C52229] text-white shadow-sm'
+                : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 hover:border-slate-300'
             }`}
           >
             {reg}
@@ -67,22 +61,18 @@ export default function BrazilMap({
       </div>
 
       {/* SVG Interactive Map Container */}
-      <div className="relative w-full max-w-[420px] aspect-[520/640] bg-[#0A101D] border border-slate-800/90 rounded-2xl p-2.5 shadow-2xl overflow-hidden group">
-        {/* Ambient Map Glow */}
-        <div className="absolute top-1/4 left-1/4 w-40 h-40 bg-teal-500/10 rounded-full blur-3xl pointer-events-none" />
-        <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-red-600/10 rounded-full blur-3xl pointer-events-none" />
-
+      <div className="relative w-full max-w-[420px] aspect-[520/640] bg-slate-50 dark:bg-[#0E1626] border border-slate-200 dark:border-slate-800 rounded-3xl p-3 shadow-md overflow-hidden group transition-colors">
         {/* Hover / Selected Info Tooltip Banner */}
-        <div className="absolute top-3 left-3 right-3 z-10 flex items-center justify-between pointer-events-none bg-slate-900/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-slate-700/60 shadow-lg">
+        <div className="absolute top-3 left-3 right-3 z-10 flex items-center justify-between pointer-events-none bg-white/95 dark:bg-slate-900/95 backdrop-blur-md px-3.5 py-2 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm">
           <div>
-            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
-              {hoveredState ? 'Estado em foco' : selectedStateObj ? 'Estado Selecionado' : 'Selecione no mapa'}
+            <span className="text-[10px] uppercase font-bold tracking-wider text-slate-500 dark:text-slate-400">
+              {hoveredState ? 'Estado em foco' : selectedStateObj ? 'Estado Selecionado' : 'Toque no mapa'}
             </span>
-            <p className="text-xs font-black text-slate-100">
-              {hoveredState ? `${hoveredState.name} (${hoveredState.uf})` : selectedStateObj ? `${selectedStateObj.name} (${selectedStateObj.uf})` : 'Toque ou passe o mouse'}
+            <p className="text-xs font-black text-slate-900 dark:text-slate-100">
+              {hoveredState ? `${hoveredState.name} (${hoveredState.uf})` : selectedStateObj ? `${selectedStateObj.name} (${selectedStateObj.uf})` : 'Selecione sua UF'}
             </p>
           </div>
-          <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-slate-800 text-teal-400 border border-teal-500/30">
+          <span className="text-xs font-bold px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700">
             {hoveredState?.region || selectedStateObj?.region || 'Brasil'}
           </span>
         </div>
@@ -90,9 +80,8 @@ export default function BrazilMap({
         {/* Interactive SVG */}
         <svg
           viewBox="30 70 480 560"
-          className="w-full h-full drop-shadow-md select-none mt-4"
+          className="w-full h-full drop-shadow-sm select-none mt-5"
         >
-          {/* Brazil Boundary Base Glow */}
           <g className="transition-all duration-300">
             {BRAZIL_STATES_GEO.map((st) => {
               const isSelected = selectedState === st.uf;
@@ -101,14 +90,14 @@ export default function BrazilMap({
               const fillColor = getRegionColor(st.region, isSelected, isHovered);
 
               return (
-                <g key={st.uf} className="cursor-pointer group/state">
+                <g key={st.uf} className="cursor-pointer">
                   <path
                     d={st.svgPath}
                     fill={fillColor}
-                    fillOpacity={isFiltered ? (isSelected ? 0.95 : isHovered ? 0.85 : 0.45) : 0.15}
-                    stroke={isSelected ? '#FDE047' : isHovered ? '#FFFFFF' : 'rgba(255,255,255,0.2)'}
-                    strokeWidth={isSelected ? 3.5 : isHovered ? 2.5 : 1}
-                    className="transition-all duration-200 hover:scale-[1.01] origin-center"
+                    fillOpacity={isFiltered ? (isSelected ? 1.0 : isHovered ? 0.9 : 0.65) : 0.15}
+                    stroke={isSelected ? '#FBBF24' : '#FFFFFF'}
+                    strokeWidth={isSelected ? 3.5 : 1.5}
+                    className="transition-all duration-150 hover:opacity-95"
                     onMouseEnter={() => setHoveredUF(st.uf)}
                     onMouseLeave={() => setHoveredUF(null)}
                     onClick={() => onSelectState(st)}
@@ -120,10 +109,10 @@ export default function BrazilMap({
                       y={st.labelPos.y}
                       textAnchor="middle"
                       dominantBaseline="central"
-                      fill={isSelected ? '#FFFFFF' : '#CBD5E1'}
+                      fill={isSelected ? '#FFFFFF' : '#0F172A'}
                       fontSize={isSelected ? '14' : '11'}
                       fontWeight={isSelected ? '900' : '700'}
-                      className="pointer-events-none select-none drop-shadow-md font-sans"
+                      className="pointer-events-none select-none font-sans"
                     >
                       {st.uf}
                     </text>
@@ -135,8 +124,8 @@ export default function BrazilMap({
         </svg>
 
         {/* Bottom hint */}
-        <p className="text-[10px] text-center text-slate-500 mt-1 pointer-events-none">
-          💡 Dica: Você também pode usar a lista e o campo de busca logo abaixo
+        <p className="text-[11px] text-center text-slate-500 dark:text-slate-400 mt-1 pointer-events-none font-medium">
+          Toque no estado ou escolha na lista abaixo
         </p>
       </div>
     </div>
