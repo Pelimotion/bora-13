@@ -1,7 +1,8 @@
 # 🌟 BORA 13 — DOCUMENTO MESTRE DE CONTEXTO DO PRODUTO (UX/UI, ARQUITETURA & INTENÇÃO)
 
 > **Documento de Contexto Integral para Modelos de IA (ChatGPT, Claude, Gemini)**  
-> **Aplicação**: Bora 13 — Conversas que Viram Voto  
+> **Aplicação**: Bora 13 — Guia Cidadão de Diálogo Popular  
+> **Posicionamento**: Iniciativa Cidadã & Voluntária • **Não oficial, sem vínculo com o PT ou Casa 13** • Feita para somar na causa  
 > **Acesso em Produção**: [www.gigantera.xyz/bora](https://www.gigantera.xyz/bora)  
 > **Finalidade**: Permitir que qualquer IA compreenda imediatamente a identidade visual, a arquitetura técnica, os fluxos de navegação, a psicologia de conversão e as decisões de UX/UI do aplicativo para propor melhorias, novos componentes, refatorações ou estratégias narrativas com 100% de precisão contextual.
 
@@ -71,8 +72,8 @@ O aplicativo é estruturado como uma **Single Page Application (SPA)** de alta p
 ┌────────────────────────────────────────────────────────────────────────┐
 │                   BORA 13 — 5 DESTINOS DE INTENÇÃO CLARA               │
 ├───────────────┬────────────────────────────────────────────────────────┤
-│ 1. inicio     │ Ponto de Partida Editorial, "Por Onde Começar?" e      │
-│               │ Bloco "Continuar de Onde Parei" (Memória Persistente)  │
+│ 1. inicio     │ Ponto de Partida Editorial, Radar Territorial HUD      │
+│               │ com Mapa Interativo (Passo 1) e Memória Persistente    │
 ├───────────────┼────────────────────────────────────────────────────────┤
 │ 2. preparar   │ Espaço de Trabalho de Missão Dedicado: O Funil Guiado  │
 │               │ da Virada em 3 Passos (Território → Perfil → Arsenal)  │
