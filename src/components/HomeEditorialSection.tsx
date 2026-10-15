@@ -21,6 +21,7 @@ import {
   IconUser,
   IconShareWhatsApp,
 } from '@/components/icons/CasaIcons';
+import TerritoryMapHud from '@/components/TerritoryMapHud';
 
 interface HomeEditorialSectionProps {
   onNavigate: (section: AppSection) => void;
@@ -30,6 +31,7 @@ interface HomeEditorialSectionProps {
   onInstall?: () => void;
   onSelectFront?: (frontId: 'ex_lula' | 'terceira_via' | 'abstencao_70' | 'nulo_branco') => void;
   onOpenStudioWithPreset?: (preset: PostPresetData) => void;
+  onSelectState?: (uf: string, city?: string) => void;
 }
 
 export default function HomeEditorialSection({
@@ -40,6 +42,7 @@ export default function HomeEditorialSection({
   onInstall,
   onSelectFront,
   onOpenStudioWithPreset,
+  onSelectState,
 }: HomeEditorialSectionProps) {
   const activeUF = memory.selectedUF || 'SP';
   const stateGeo = getStateByUF(activeUF) || BRAZIL_STATES_GEO[0];
@@ -216,56 +219,62 @@ export default function HomeEditorialSection({
       )}
 
       {/* ═══════════════════════════════════════════════════════════════
-          3. SEÇÃO EDITORIAL BENTO 2x2: "TUDO O QUE VOCÊ PRECISA, EM UM SÓ LUGAR"
-          Identidade Casa 13 com cartões sólidos, pílulas brancas e tipografia firme
+          3. RADAR TERRITORIAL CIDADÃO: MAPA INTERATIVO & HUD EM TEMPO REAL
+          Passo 1 do Guia: fácil de clicar em mobile e desktop, poucos itens
+          ═══════════════════════════════════════════════════════════════ */}
+      <TerritoryMapHud
+        activeUF={activeUF}
+        onSelectState={(uf, city) => onSelectState?.(uf, city)}
+        onNavigate={handleNav}
+      />
+
+      {/* ═══════════════════════════════════════════════════════════════
+          4. TRILHAS PRÁTICAS DO MOVIMENTO: 3 PILARES SEM SOBRECARGA
+          Roteiro Sob Medida • Dojô de Diálogo • Estúdio Criativo
           ═══════════════════════════════════════════════════════════════ */}
       <div className="space-y-6">
         <div className="text-center max-w-2xl mx-auto space-y-2">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-black uppercase tracking-wider">
+            <IconStar className="w-3.5 h-3.5 text-[#C52229]" />
+            <span>Ferramentas de Apoio</span>
+          </div>
           <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
             Tudo o que você precisa, <span className="text-[#C52229]">em um só lugar.</span>
           </h2>
           <p className="text-sm sm:text-base text-slate-600 dark:text-slate-400 font-normal">
-            Acesse roteiros adaptados, argumentos auditados e peças para redes para fortalecer sua atuação.
+            Escolha como prefere atuar hoje: preparando seu roteiro, treinando respostas ou criando peças visuais para as redes.
           </p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* CARD 1 (TOP LEFT): PREPARAÇÃO DE DIÁLOGO (CARD VERMELHO CASA 13) */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          {/* CARD 1: PREPARAÇÃO DE DIÁLOGO (CARD VERMELHO RUBRO) */}
           <div
             style={{
               background: 'linear-gradient(135deg, #B32428 0%, #C52229 100%)',
             }}
-            className="rounded-3xl text-white p-7 sm:p-8 flex flex-col justify-between shadow-lg relative overflow-hidden group"
+            className="rounded-3xl text-white p-7 flex flex-col justify-between shadow-lg relative overflow-hidden group"
           >
             <div className="space-y-4 relative z-10">
               <span className="inline-block bg-white text-[#C52229] text-xs font-black uppercase tracking-wider px-3.5 py-1 rounded-full shadow-xs">
                 Guia em 3 Passos
               </span>
 
-              <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+              <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
                 Preparar Roteiro Sob Medida
               </h3>
 
-              <p className="text-sm text-red-50 leading-relaxed">
-                Selecione o estado, a cidade e com quem você vai falar (motorista de app, comerciante, professor, parente indeciso). O sistema gera na hora o tom certo, as respostas para objeções e dados locais.
+              <p className="text-xs sm:text-sm text-red-50 leading-relaxed font-normal">
+                Selecione o perfil do seu interlocutor (motorista, comerciante, idoso, jovem) e receba roteiros acolhedores, dados do bolso e respostas para objeções.
               </p>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2 text-xs font-bold text-white/95">
+              <div className="space-y-1.5 pt-1 text-xs font-bold text-white/95">
                 <div className="flex items-center gap-2">
-                  <IconCheck className="w-4 h-4 text-[#FFE234]" />
+                  <IconCheck className="w-3.5 h-3.5 text-[#FFE234]" />
                   <span>Acolhimento sem discussão</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <IconCheck className="w-4 h-4 text-[#FFE234]" />
-                  <span>3 provas concretas locais</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <IconCheck className="w-4 h-4 text-[#FFE234]" />
+                  <IconCheck className="w-3.5 h-3.5 text-[#FFE234]" />
                   <span>Texto para Zap em 1 clique</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <IconCheck className="w-4 h-4 text-[#FFE234]" />
-                  <span>Fontes oficiais do IBGE & Caged</span>
                 </div>
               </div>
             </div>
@@ -274,114 +283,42 @@ export default function HomeEditorialSection({
               <button
                 type="button"
                 onClick={() => handleNav('preparar')}
-                className="w-full sm:w-auto px-6 py-3 rounded-xl bg-white hover:bg-red-50 text-[#C52229] font-black text-sm flex items-center justify-center gap-2 transition-all active:scale-95 shadow-md cursor-pointer"
+                className="w-full px-5 py-3 rounded-xl bg-white hover:bg-red-50 text-[#C52229] font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-all active:scale-95 shadow-md cursor-pointer"
               >
-                <span>Iniciar Preparação</span>
+                <span>Montar Roteiro</span>
                 <IconArrowRight className="w-4 h-4" />
               </button>
             </div>
           </div>
 
-          {/* CARD 2 (TOP RIGHT): ESTÚDIO CRIATIVO VISUAL (CARD ESCURO EDITORIAL) */}
-          <div className="rounded-3xl bg-[#0F1626] border border-slate-800 text-white p-7 sm:p-8 flex flex-col justify-between shadow-lg relative overflow-hidden group">
-            <div className="space-y-4">
-              <span className="inline-block bg-white/20 text-white text-xs font-black uppercase tracking-wider px-3.5 py-1 rounded-full border border-white/20">
-                Estúdio 1080p
-              </span>
-
-              <h3 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-                Criador de Peças Visuais
-              </h3>
-
-              <p className="text-sm text-slate-300 leading-relaxed">
-                Crie carrosséis de 5 atos para o Instagram e posts 1080p direto no seu navegador via Canvas 2D, sem depender de servidor ou design complexo.
-              </p>
-
-              <ul className="space-y-2 text-xs text-slate-300 font-medium pt-1">
-                <li className="flex items-center gap-2">
-                  <IconStar className="w-3.5 h-3.5 text-[#FFE234]" />
-                  <span>5 identidades tipográficas autênticas</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <IconStar className="w-3.5 h-3.5 text-[#FFE234]" />
-                  <span>Exportação PNG rápida e ZIP completo</span>
-                </li>
-                <li className="flex items-center gap-2">
-                  <IconStar className="w-3.5 h-3.5 text-[#FFE234]" />
-                  <span>Formatos Quadrado (Feed) e Story (Vertical)</span>
-                </li>
-              </ul>
-            </div>
-
-            <div className="pt-6 mt-6 border-t border-slate-800">
-              <button
-                type="button"
-                onClick={() => handleNav('estudio')}
-                style={{ backgroundColor: '#C52229' }}
-                className="w-full py-3 rounded-xl text-white font-black text-sm flex items-center justify-center gap-2 transition-all active:scale-95 shadow-md hover:opacity-95 cursor-pointer"
-              >
-                <IconStudio className="w-4 h-4 text-white" />
-                <span>Abrir Estúdio Criativo</span>
-                <IconArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          {/* CARD 3 (BOTTOM LEFT): EXPLORAR DADOS & TERRITÓRIOS */}
-          <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-7 sm:p-8 flex flex-col justify-between shadow-xs group hover:border-slate-300 transition-all">
-            <div className="space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-amber-50 dark:bg-amber-950/40 text-amber-600 dark:text-amber-400 flex items-center justify-center shadow-inner">
-                <IconExplore className="w-6 h-6" />
-              </div>
-
-              <div>
-                <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                  Explorar Território & Fatos
-                </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
-                  Consulte a cartografia das 27 UFs brasileiras, indicadores do Caged, Pé-de-Meia, Minha Casa Minha Vida e tabela de preços da cesta básica auditada pelo DIEESE.
-                </p>
-              </div>
-
-              <div className="flex flex-wrap gap-2 pt-1 text-xs text-slate-600 dark:text-slate-300 font-bold">
-                <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800">27 Estados</span>
-                <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800">Pé-de-Meia</span>
-                <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800">Cesta Básica</span>
-              </div>
-            </div>
-
-            <div className="pt-6 mt-6 border-t border-slate-100 dark:border-slate-800">
-              <button
-                type="button"
-                onClick={() => handleNav('explorar')}
-                className="w-full py-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-98 cursor-pointer"
-              >
-                <span>Ver Mapa e Indicadores</span>
-                <IconArrowRight className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
-          {/* CARD 4 (BOTTOM RIGHT): DOJÔ DE DIÁLOGO */}
-          <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-7 sm:p-8 flex flex-col justify-between shadow-xs group hover:border-slate-300 transition-all">
+          {/* CARD 2: DOJÔ DE DIÁLOGO (CARD CLARO / CONVERSA SEM POLARIZAÇÃO) */}
+          <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-7 flex flex-col justify-between shadow-xs group hover:border-slate-300 transition-all">
             <div className="space-y-4">
               <div className="w-12 h-12 rounded-2xl bg-red-50 dark:bg-red-950/40 text-[#C52229] dark:text-red-400 flex items-center justify-center shadow-inner">
                 <IconDojo className="w-6 h-6" />
               </div>
 
               <div>
-                <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                  Dojô de Diálogo Interativo
+                <span className="text-[10px] font-black uppercase tracking-wider text-[#C52229] block mb-1">
+                  Simulação Prática
+                </span>
+                <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+                  Dojô de Diálogo
                 </h3>
-                <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
-                  Treine respostas acolhedoras em tempo real com cenários simulados (Tio do Zap, Dona Neide, Motorista de App, Jovem Universitário) antes de ir para a rua ou grupo de família.
+                <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
+                  Treine respostas em tempo real com cenários reais (Tio do Zap, Dona Neide, Motorista de App) antes de conversar na rua ou em família.
                 </p>
               </div>
 
-              <div className="flex flex-wrap gap-2 pt-1 text-xs text-slate-600 dark:text-slate-300 font-bold">
-                <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800">Sem Briga</span>
-                <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800">Técnica de Ponte</span>
-                <span className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800">Feedbacks Imediatos</span>
+              <div className="space-y-1.5 pt-1 text-xs text-slate-600 dark:text-slate-300 font-bold">
+                <div className="flex items-center gap-2">
+                  <IconCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Técnica de escuta e ponte</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <IconCheck className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Feedback tático instantâneo</span>
+                </div>
               </div>
             </div>
 
@@ -389,9 +326,50 @@ export default function HomeEditorialSection({
               <button
                 type="button"
                 onClick={() => handleNav('treinar')}
-                className="w-full py-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-bold text-sm flex items-center justify-center gap-2 transition-all active:scale-98 cursor-pointer"
+                className="w-full py-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-all active:scale-98 cursor-pointer"
               >
                 <span>Treinar Conversas</span>
+                <IconArrowRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
+
+          {/* CARD 3: ESTÚDIO CRIATIVO VISUAL (CARD ESCURO EDITORIAL) */}
+          <div className="rounded-3xl bg-[#0F1626] border border-slate-800 text-white p-7 flex flex-col justify-between shadow-lg relative overflow-hidden group">
+            <div className="space-y-4">
+              <span className="inline-block bg-white/20 text-white text-xs font-black uppercase tracking-wider px-3.5 py-1 rounded-full border border-white/20">
+                Estúdio 1080p
+              </span>
+
+              <h3 className="text-xl sm:text-2xl font-black text-white tracking-tight">
+                Criador de Peças Visuais
+              </h3>
+
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed font-normal">
+                Crie carrosséis de 5 atos para o Instagram e posts de alta resolução direto no navegador via Canvas 2D, sem depender de programas pesados.
+              </p>
+
+              <div className="space-y-1.5 pt-1 text-xs text-slate-300 font-bold">
+                <div className="flex items-center gap-2">
+                  <IconStar className="w-3.5 h-3.5 text-[#FFE234]" />
+                  <span>Formatos Feed (1:1) e Stories (9:16)</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <IconStar className="w-3.5 h-3.5 text-[#FFE234]" />
+                  <span>Exportação PNG rápida e ZIP</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="pt-6 mt-6 border-t border-slate-800">
+              <button
+                type="button"
+                onClick={() => handleNav('estudio')}
+                style={{ backgroundColor: '#C52229' }}
+                className="w-full py-3 rounded-xl text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-all active:scale-95 shadow-md hover:opacity-95 cursor-pointer"
+              >
+                <IconStudio className="w-4 h-4 text-white" />
+                <span>Abrir Estúdio Criativo</span>
                 <IconArrowRight className="w-4 h-4" />
               </button>
             </div>

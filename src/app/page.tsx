@@ -441,6 +441,7 @@ export default function BoraApp() {
             onInstall={handleInstallApp}
             onSelectFront={handleSelectFront}
             onOpenStudioWithPreset={handleOpenStudioWithPreset}
+            onSelectState={handleSelectTerritory}
           />
         )}
 

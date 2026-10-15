@@ -10,6 +10,8 @@ interface BrazilMapProps {
   className?: string;
   showSelector?: boolean;
   showRegions?: boolean;
+  activeRegion?: string;
+  onSelectRegion?: (region: string) => void;
 }
 
 export default function BrazilMap({
@@ -18,9 +20,13 @@ export default function BrazilMap({
   className = '',
   showSelector = true,
   showRegions = true,
+  activeRegion: controlledRegion,
+  onSelectRegion,
 }: BrazilMapProps) {
   const [hoveredUF, setHoveredUF] = useState<string | null>(null);
-  const [activeRegion, setActiveRegion] = useState<string>('Todas');
+  const [internalRegion, setInternalRegion] = useState<string>('Todas');
+
+  const activeRegion = controlledRegion !== undefined ? controlledRegion : internalRegion;
 
   const hoveredState = BRAZIL_STATES_GEO.find(s => s.uf === hoveredUF);
   const selectedStateObj = BRAZIL_STATES_GEO.find(s => s.uf === selectedState) || BRAZIL_STATES_GEO[0];
@@ -70,7 +76,11 @@ export default function BrazilMap({
                 type="button"
                 onClick={() => {
                   playProceduralHaptic('click');
-                  setActiveRegion(reg);
+                  if (onSelectRegion) {
+                    onSelectRegion(reg);
+                  } else {
+                    setInternalRegion(reg);
+                  }
                 }}
                 className={`px-2.5 py-1 rounded-full text-[11px] font-bold whitespace-nowrap transition-all ${
                   activeRegion === reg
