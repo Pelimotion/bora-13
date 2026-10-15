@@ -469,20 +469,20 @@ export default function TailoredMissionFunnel({
         </div>
       </div>
 
-      {/* ── PASSO 3: O ARSENAL SOB MEDIDA GERADO ── */}
+      {/* ── PASSO 3: O ROTEIRO SOB MEDIDA GERADO ── */}
       <div className="pt-3 border-t border-slate-100 dark:border-slate-800 space-y-4 relative z-10">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
           <div>
             <span className="text-xs font-black uppercase tracking-wider text-slate-900 dark:text-white flex items-center gap-2">
               <span className="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-xs font-black">3</span>
-              <span>Arsenal de Diálogo em {plan.locationLabel}</span>
+              <span>Roteiro de Conversa em {plan.locationLabel}</span>
             </span>
             <p className="text-[11px] text-slate-500 mt-0.5">
-              Roteiro testado, provas no bolso e mensagem formatada para WhatsApp:
+              Argumentos do dia a dia, provas do bolso e mensagem pronta para o WhatsApp:
             </p>
           </div>
 
-          {/* Abas Rápidas do Arsenal */}
+          {/* Abas Rápidas do Roteiro */}
           <div className="flex bg-slate-100 dark:bg-slate-800 p-1 rounded-xl gap-1 shrink-0">
             <button
               type="button"
@@ -497,7 +497,7 @@ export default function TailoredMissionFunnel({
               }`}
             >
               <IconDojo className="w-3.5 h-3.5" />
-              <span>Roteiro de Diálogo</span>
+              <span>Roteiro de Conversa</span>
             </button>
             <button
               type="button"
@@ -512,7 +512,7 @@ export default function TailoredMissionFunnel({
               }`}
             >
               <IconShareWhatsApp className="w-3.5 h-3.5 text-white" />
-              <span>Mensagem WhatsApp</span>
+              <span>Mensagem pro Zap</span>
             </button>
           </div>
         </div>

@@ -31,6 +31,7 @@ interface NavigationHeaderProps {
   onToggleSound: () => void;
   canInstall?: boolean;
   onInstall?: () => void;
+  onOpenShortcutGuide?: () => void;
   onResetContext?: () => void;
 }
 
@@ -77,6 +78,7 @@ export default function NavigationHeader({
   onToggleSound,
   canInstall,
   onInstall,
+  onOpenShortcutGuide,
   onResetContext,
 }: NavigationHeaderProps) {
   const activeCanonical = normalizeAppSection(currentSection);
@@ -211,12 +213,12 @@ export default function NavigationHeader({
           })}
         </nav>
 
-        {/* LADO DIREITO: UTILITÁRIOS (SOM, TEMA & INSTALAR APP) */}
+        {/* LADO DIREITO: UTILITÁRIOS (SOM, TEMA & ATALHO NO CELULAR) */}
         <div className="flex items-center gap-2">
           {/* Som Tátil Procedural Toggle */}
           <button
             onClick={onToggleSound}
-            title={soundEnabled ? 'Desativar sons do aplicativo' : 'Ativar sons do aplicativo'}
+            title={soundEnabled ? 'Desativar sons' : 'Ativar sons'}
             className="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center hover:scale-105 active:scale-95 transition-all text-slate-700 dark:text-slate-300 shadow-sm"
           >
             {soundEnabled ? (
@@ -229,16 +231,19 @@ export default function NavigationHeader({
           {/* Theme Toggle (Light / Dark) */}
           <ThemeToggle />
 
-          {/* PWA Install Button */}
-          {canInstall && onInstall && (
-            <button
-              onClick={onInstall}
-              className="hidden sm:flex items-center gap-2 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#C52229] hover:bg-[#a51b21] text-white transition-all shadow-sm active:scale-95"
-            >
-              <IconSmartphone className="w-3.5 h-3.5" />
-              <span>Instalar</span>
-            </button>
-          )}
+          {/* Atalho no Celular (Adicionar à Tela Inicial sem Baixar Nada) */}
+          <button
+            onClick={() => {
+              playProceduralHaptic('click');
+              if (onOpenShortcutGuide) onOpenShortcutGuide();
+            }}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold bg-[#C52229] hover:bg-[#a51b21] text-white transition-all shadow-2xs active:scale-95 cursor-pointer"
+            title="Salvar atalho direto na tela inicial do celular"
+          >
+            <IconSmartphone className="w-3.5 h-3.5 text-white" />
+            <span className="hidden sm:inline">Atalho no Celular</span>
+            <span className="sm:hidden">Atalho</span>
+          </button>
         </div>
       </div>
     </header>

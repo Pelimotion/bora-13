@@ -14,6 +14,7 @@ import PrepareWorkspaceSection from '@/components/PrepareWorkspaceSection';
 import ExploreHubSection from '@/components/ExploreHubSection';
 import ConversationSimulator from '@/components/ConversationSimulator';
 import PostStudioSection from '@/components/PostStudioSection';
+import InstallShortcutModal from '@/components/InstallShortcutModal';
 import {
   type AppSection,
   type CanonicalAppSection,
@@ -47,6 +48,7 @@ export default function BoraApp() {
   const [isDark, setIsDark] = useState(false);
   const [soundEnabled, setSoundEnabled] = useState(true);
   const [installPrompt, setInstallPrompt] = useState<any>(null);
+  const [isShortcutModalOpen, setIsShortcutModalOpen] = useState(false);
 
   // Memória de Trabalho Agêntica
   const [memory, setMemory] = useState<AgenticWorkingMemory>({
@@ -442,6 +444,7 @@ export default function BoraApp() {
         onToggleSound={handleToggleSound}
         canInstall={!!installPrompt}
         onInstall={handleInstallApp}
+        onOpenShortcutGuide={() => setIsShortcutModalOpen(true)}
         onResetContext={handleResetContext}
       />
 
@@ -454,6 +457,7 @@ export default function BoraApp() {
             onResetContext={handleResetContext}
             canInstall={!!installPrompt}
             onInstall={handleInstallApp}
+            onOpenShortcutGuide={() => setIsShortcutModalOpen(true)}
             onSelectFront={handleSelectFront}
             onOpenStudioWithPreset={handleOpenStudioWithPreset}
             onSelectState={handleSelectTerritory}
@@ -524,6 +528,14 @@ export default function BoraApp() {
           </div>
         </div>
       </footer>
+
+      {/* ── MODAL DE ATALHO NO CELULAR (INSTALAR ATALHO NA TELA INICIAL) ── */}
+      <InstallShortcutModal
+        isOpen={isShortcutModalOpen}
+        onClose={() => setIsShortcutModalOpen(false)}
+        canInstallNative={!!installPrompt}
+        onInstallNative={handleInstallApp}
+      />
     </div>
   );
 }

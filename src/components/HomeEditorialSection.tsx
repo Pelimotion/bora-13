@@ -20,6 +20,7 @@ import {
   IconMapPin,
   IconUser,
   IconShareWhatsApp,
+  IconSmartphone,
 } from '@/components/icons/CasaIcons';
 import TerritoryMapHud from '@/components/TerritoryMapHud';
 
@@ -29,6 +30,7 @@ interface HomeEditorialSectionProps {
   onResetContext?: () => void;
   canInstall?: boolean;
   onInstall?: () => void;
+  onOpenShortcutGuide?: () => void;
   onSelectFront?: (frontId: ConversionFrontId) => void;
   onOpenStudioWithPreset?: (preset: PostPresetData) => void;
   onSelectState?: (uf: string, city?: string) => void;
@@ -41,6 +43,7 @@ export default function HomeEditorialSection({
   onResetContext,
   canInstall,
   onInstall,
+  onOpenShortcutGuide,
   onSelectFront,
   onOpenStudioWithPreset,
   onSelectState,
@@ -86,12 +89,12 @@ export default function HomeEditorialSection({
             </div>
 
             <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-black tracking-tight leading-[1.1] text-white">
-              Bora 13. Uma ferramenta popular <br />
-              <span className="text-[#FFE234]">para somar na causa.</span>
+              Bora 13. O guia de conversa <br />
+              <span className="text-[#FFE234]">para virar voto no dia a dia.</span>
             </h1>
 
             <p className="text-base sm:text-lg text-red-50 font-normal leading-relaxed max-w-xl">
-              Uma iniciativa voluntária e independente criada por cidadãos e apoiadores para ajudar você a dialogar sem briga, levar dados públicos auditados para o dia a dia e somar na esperança pelo Brasil.
+              Feito pra quem acorda cedo e rala todo dia. Encontre argumentos reais sobre comida no prato, aumento real do salário, remédios de graça e fim da escala 6x1 — pra conversar com calma, sem briga, com a família, no trabalho ou no zap.
             </p>
 
             <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -111,7 +114,7 @@ export default function HomeEditorialSection({
                 className="px-5 py-3.5 rounded-2xl bg-white/15 hover:bg-white/25 text-white font-bold text-sm border border-white/30 backdrop-blur-sm transition-all active:scale-95 flex items-center gap-2 cursor-pointer"
               >
                 <IconDojo className="w-4 h-4 text-white" />
-                <span>Simular no Dojô</span>
+                <span>Treinar Conversa</span>
               </button>
             </div>
           </div>
@@ -295,7 +298,7 @@ export default function HomeEditorialSection({
             </div>
           </div>
 
-          {/* CARD 2: DOJÔ DE DIÁLOGO (CARD CLARO / CONVERSA SEM POLARIZAÇÃO) */}
+          {/* CARD 2: COMO RESPONDER NO DIA A DIA (CARD CLARO / CONVERSA SEM BRIGA) */}
           <div className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-7 flex flex-col justify-between shadow-xs group hover:border-slate-300 transition-all">
             <div className="space-y-4">
               <div className="w-12 h-12 rounded-2xl bg-red-50 dark:bg-red-950/40 text-[#C52229] dark:text-red-400 flex items-center justify-center shadow-inner">
@@ -304,24 +307,24 @@ export default function HomeEditorialSection({
 
               <div>
                 <span className="text-[10px] font-black uppercase tracking-wider text-[#C52229] block mb-1">
-                  Simulação Prática
+                  Treino de Conversa
                 </span>
                 <h3 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
-                  Dojô de Diálogo
+                  Como Responder no Dia a Dia
                 </h3>
                 <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 mt-2 leading-relaxed">
-                  Treine respostas em tempo real com cenários reais (Tio do Zap, Dona Neide, Motorista de App) antes de conversar na rua ou em família.
+                  Treine o que falar nas conversas mais comuns (almoço de família, pausa do trabalho, com o motorista ou no zap) e descubra como desarmar boatos com respeito e argumentos certeiros pro bolso.
                 </p>
               </div>
 
               <div className="space-y-1.5 pt-1 text-xs text-slate-600 dark:text-slate-300 font-bold">
                 <div className="flex items-center gap-2">
                   <IconCheck className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Técnica de escuta e ponte</span>
+                  <span>Sem briga nem sermão</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <IconCheck className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Feedback tático instantâneo</span>
+                  <span>Dicas diretas pro bolso</span>
                 </div>
               </div>
             </div>
@@ -332,7 +335,7 @@ export default function HomeEditorialSection({
                 onClick={() => handleNav('treinar')}
                 className="w-full py-3 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 transition-all active:scale-98 cursor-pointer"
               >
-                <span>Treinar Conversas</span>
+                <span>Treinar Respostas</span>
                 <IconArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -434,15 +437,27 @@ export default function HomeEditorialSection({
               </div>
             </div>
 
-            <div className="pt-4">
+            <div className="pt-4 flex flex-wrap gap-3">
               <button
                 type="button"
-                onClick={() => handleNav('preparar')}
+                onClick={() => {
+                  if (onOpenShortcutGuide) onOpenShortcutGuide();
+                  else handleNav('preparar');
+                }}
                 style={{ backgroundColor: '#C52229' }}
                 className="px-6 py-3 rounded-xl text-white font-black text-sm flex items-center gap-2 shadow-sm hover:opacity-95 transition-all active:scale-95 cursor-pointer"
               >
-                <span>Acessar o Guia no Celular</span>
-                <IconArrowRight className="w-4 h-4" />
+                <IconSmartphone className="w-4 h-4 text-white" />
+                <span>Salvar Atalho na Tela do Celular</span>
+                <IconArrowRight className="w-4 h-4 text-white" />
+              </button>
+
+              <button
+                type="button"
+                onClick={() => handleNav('preparar')}
+                className="px-5 py-3 rounded-xl bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-sm transition-all active:scale-95 cursor-pointer"
+              >
+                <span>Ver Roteiros de Conversa</span>
               </button>
             </div>
           </div>

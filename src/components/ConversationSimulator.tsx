@@ -206,10 +206,10 @@ export default function ConversationSimulator({
       {/* Header */}
       <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800 mb-4">
         <div className="flex items-center gap-3">
-          <span className="text-3xl">🥋</span>
+          <span className="text-3xl">🤝</span>
           <div>
-            <h2 className="text-lg md:text-xl font-black text-slate-900 dark:text-slate-100">Dojô de Conversas da Vida Real</h2>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Treine suas respostas com psicologia do diálogo e neurociência</p>
+            <h2 className="text-lg md:text-xl font-black text-slate-900 dark:text-slate-100">Como Responder no Dia a Dia</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Treine o que falar na família, no trabalho ou no zap — sem briga e com foco no bolso</p>
           </div>
         </div>
         {onClose && !isEmbedded && (
@@ -304,7 +304,7 @@ export default function ConversationSimulator({
           >
             <div className="flex items-center justify-between mb-2">
               <span className="text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-300">
-                Análise Tática do Diálogo
+                Por que essa resposta funciona (ou não)
               </span>
               <span
                 className={`text-xs font-black px-2.5 py-0.5 rounded-full ${
@@ -315,7 +315,7 @@ export default function ConversationSimulator({
                     : 'bg-rose-100 dark:bg-rose-500/20 text-rose-800 dark:text-rose-300'
                 }`}
               >
-                Eficácia: {chosenOption.score}%
+                Poder de Convencimento: {chosenOption.score}%
               </span>
             </div>
 
@@ -325,7 +325,7 @@ export default function ConversationSimulator({
 
             <div className="bg-white/80 dark:bg-black/30 p-2.5 rounded-xl border border-slate-200 dark:border-white/5">
               <p className="text-xs text-slate-700 dark:text-slate-300">
-                <strong className="text-red-600 dark:text-red-400">💡 Dica de Neurociência & Comunicação:</strong>{' '}
+                <strong className="text-[#C52229] dark:text-red-400">💡 Dica de Ouro pro Papo:</strong>{' '}
                 {chosenOption.tacticalTip}
               </p>
             </div>
@@ -344,9 +344,9 @@ export default function ConversationSimulator({
           {onClose && (
             <button
               onClick={onClose}
-              className="btn-ghost px-4 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+              className="btn-ghost px-4 text-xs text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 cursor-pointer"
             >
-              Concluir Treino
+              Finalizar
             </button>
           )}
         </div>
