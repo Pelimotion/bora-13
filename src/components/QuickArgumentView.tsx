@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { ARGUMENTS_DATABASE, type Argument } from '@/data/arguments';
 import AudioPlayerButton from '@/components/AudioPlayerButton';
 import gsap from 'gsap';
+import { copyToClipboardClean, openWhatsApp } from '@/lib/shareUtils';
 
 interface QuickArgumentViewProps {
   onBack?: () => void;
@@ -328,17 +329,8 @@ export default function QuickArgumentView({
 
   const handleCopyText = async () => {
     playProceduralSound('ping');
-    try {
-      await navigator.clipboard.writeText(buildWhatsAppText());
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      const ta = document.createElement('textarea');
-      ta.value = buildWhatsAppText();
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
+    const ok = await copyToClipboardClean(buildWhatsAppText());
+    if (ok) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
@@ -346,8 +338,7 @@ export default function QuickArgumentView({
 
   const handleShareWhatsApp = () => {
     playProceduralSound('ping');
-    const encoded = encodeURIComponent(buildWhatsAppText());
-    window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
+    openWhatsApp(buildWhatsAppText());
   };
 
   // Contagem por categoria para as pílulas

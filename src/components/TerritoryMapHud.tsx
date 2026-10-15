@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { BRAZIL_STATES_GEO, REGIONS, getStateByUF, type StateGeo } from '@/data/brazilGeo';
 import { getStateStats, playProceduralHaptic, type AppSection } from '@/lib/agenticOrchestrator';
 import {
@@ -13,11 +13,14 @@ import {
   IconExplore,
 } from '@/components/icons/CasaIcons';
 import BrazilMap from '@/components/BrazilMap';
+import StateDossierModal from '@/components/StateDossierModal';
+import { openWhatsApp, cleanTextForSharing } from '@/lib/shareUtils';
 
 interface TerritoryMapHudProps {
   activeUF: string;
   onSelectState: (uf: string, city?: string) => void;
   onNavigate: (section: AppSection) => void;
+  initialOpenDossier?: boolean;
   className?: string;
 }
 
@@ -25,9 +28,17 @@ export default function TerritoryMapHud({
   activeUF,
   onSelectState,
   onNavigate,
+  initialOpenDossier = false,
   className = '',
 }: TerritoryMapHudProps) {
   const [activeRegion, setActiveRegion] = useState<string>('Todas');
+  const [isDossierOpen, setIsDossierOpen] = useState(initialOpenDossier);
+
+  useEffect(() => {
+    if (initialOpenDossier) {
+      setIsDossierOpen(true);
+    }
+  }, [initialOpenDossier]);
 
   const selectedStateGeo = useMemo(
     () => getStateByUF(activeUF) || BRAZIL_STATES_GEO[0],
@@ -64,19 +75,9 @@ export default function TerritoryMapHud({
     onNavigate('explorar');
   };
 
-  const handleShareWhatsApp = () => {
+  const handleOpenDossier = () => {
     playProceduralHaptic('click');
-    const text =
-      `Oi! Dê uma olhada nos dados públicos e confirmados de ${selectedStateGeo.name} (${selectedStateGeo.uf}):\n\n` +
-      `💼 *Empregos Formais (Caged):* ${stats.jobsCreated}\n` +
-      `🎓 *Pé-de-Meia (MEC):* ${stats.pedeMeiaStudents}\n` +
-      `💊 *Farmácia Popular:* ${stats.farmaciaPopularBeneficiaries}\n\n` +
-      `💡 "${stats.highlightText}"\n\n` +
-      `_Iniciativa popular independente Bora 13 • gigantera.xyz/bora_`;
-
-    if (typeof window !== 'undefined') {
-      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(text)}`, '_blank');
-    }
+    setIsDossierOpen(true);
   };
 
   return (
@@ -268,20 +269,20 @@ export default function TerritoryMapHud({
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
-                onClick={handleExploreState}
-                className="py-2 px-3 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                onClick={handleOpenDossier}
+                className="py-2.5 px-3 rounded-xl bg-red-50 dark:bg-red-950/60 hover:bg-red-100 dark:hover:bg-red-900/60 border border-red-200 dark:border-red-800 text-[#C52229] dark:text-red-300 font-black text-xs flex items-center justify-center gap-1.5 transition-all active:scale-98 cursor-pointer shadow-2xs"
               >
-                <IconExplore className="w-3.5 h-3.5 text-[#C52229]" />
-                <span>Ver Todos os Fatos</span>
+                <IconStar className="w-3.5 h-3.5 text-[#C52229]" />
+                <span>5 Motivos de {selectedStateGeo.uf} 🎯</span>
               </button>
 
               <button
                 type="button"
-                onClick={handleShareWhatsApp}
-                className="py-2 px-3 rounded-xl bg-emerald-50 dark:bg-emerald-950/60 hover:bg-emerald-100 dark:hover:bg-emerald-900/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+                onClick={handleExploreState}
+                className="py-2.5 px-3 rounded-xl bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
               >
-                <IconShareWhatsApp className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-                <span>Zap de {selectedStateGeo.uf}</span>
+                <IconExplore className="w-3.5 h-3.5 text-[#C52229]" />
+                <span>Ver Todos os Fatos</span>
               </button>
             </div>
           </div>
@@ -296,6 +297,17 @@ export default function TerritoryMapHud({
           </div>
         </div>
       </div>
+
+      {/* Modal do Dossiê Territorial com Gerador Estratégico de Conversa */}
+      <StateDossierModal
+        uf={selectedStateGeo.uf}
+        isOpen={isDossierOpen}
+        onClose={() => setIsDossierOpen(false)}
+        onStartPreparation={() => {
+          setIsDossierOpen(false);
+          handleStartPreparation();
+        }}
+      />
     </section>
   );
 }

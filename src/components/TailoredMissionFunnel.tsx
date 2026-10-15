@@ -30,6 +30,7 @@ import {
   IconCopy,
   IconShareWhatsApp,
 } from '@/components/icons/CasaIcons';
+import { copyToClipboardClean, openWhatsApp, cleanTextForSharing } from '@/lib/shareUtils';
 
 interface TailoredMissionFunnelProps {
   initialUF?: string;
@@ -168,17 +169,8 @@ export default function TailoredMissionFunnel({
 
   const handleCopyZap = async () => {
     playProceduralHaptic('copy');
-    try {
-      await navigator.clipboard.writeText(plan.whatsappScript);
-      setCopiedZap(true);
-      setTimeout(() => setCopiedZap(false), 2200);
-    } catch {
-      const ta = document.createElement('textarea');
-      ta.value = plan.whatsappScript;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
+    const ok = await copyToClipboardClean(plan.whatsappScript);
+    if (ok) {
       setCopiedZap(true);
       setTimeout(() => setCopiedZap(false), 2200);
     }
@@ -186,27 +178,24 @@ export default function TailoredMissionFunnel({
 
   const handleSendWhatsApp = () => {
     playProceduralHaptic('generate');
-    const encoded = encodeURIComponent(plan.whatsappScript);
-    window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
+    openWhatsApp(plan.whatsappScript);
   };
 
   const handleCopyScriptOnly = async () => {
     playProceduralHaptic('copy');
-    const fullScript = `*⭐ ROTEIRO CIDADÃO DE DIÁLOGO EM ${plan.locationLabel.toUpperCase()} (INICIATIVA INDEPENDENTE)*\n\n` +
+    const fullScript = `*⭐ ROTEIRO CIDADAO DE DIALOGO EM ${plan.locationLabel.toUpperCase()} (INICIATIVA INDEPENDENTE)*\n\n` +
       `*1. COMO INICIAR (ACOLHIMENTO):*\n"${plan.acolhimentoHook}"\n\n` +
       `*2. PROVAS DO BOLSO:*\n` +
-      plan.localPocketFacts.map(f => `• *${f.title}*: ${f.description}`).join('\n') +
+      plan.localPocketFacts.map(f => `* ${f.title}: ${f.description}`).join('\n') +
       `\n\n*3. SE A PESSOA FALAR:* "${plan.objectionRebuttal.objection}"\n` +
       `*O QUE RESPONDER:* ${plan.objectionRebuttal.rebuttal}\n\n` +
       `*4. O RISCO DO RETROCESSO:* ${plan.retrocessoAlert.title} (${plan.retrocessoAlert.description})\n\n` +
-      `_Iniciativa popular independente e voluntária • Feita para somar na causa • Dados públicos auditados_`;
+      `Iniciativa popular independente e voluntaria - Feita para somar na causa - Dados publicos auditados`;
 
-    try {
-      await navigator.clipboard.writeText(fullScript);
+    const ok = await copyToClipboardClean(fullScript);
+    if (ok) {
       setCopiedScript(true);
       setTimeout(() => setCopiedScript(false), 2200);
-    } catch {
-      // Fallback
     }
   };
 
@@ -221,17 +210,8 @@ export default function TailoredMissionFunnel({
     if (selectedOccupation) params.set('occ', selectedOccupation);
     const shareUrl = `${baseUrl}?${params.toString()}`;
 
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      setCopiedLink(true);
-      setTimeout(() => setCopiedLink(false), 2200);
-    } catch {
-      const ta = document.createElement('textarea');
-      ta.value = shareUrl;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
+    const ok = await copyToClipboardClean(shareUrl);
+    if (ok) {
       setCopiedLink(true);
       setTimeout(() => setCopiedLink(false), 2200);
     }

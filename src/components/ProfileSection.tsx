@@ -13,6 +13,7 @@ import {
   MENOS_COM_FLAVIO_FACTS,
   type ConversionFront,
 } from '@/data/electoralTactics';
+import { copyToClipboardClean, openWhatsApp } from '@/lib/shareUtils';
 
 interface ProfileSectionProps {
   profile: UserProfile;
@@ -100,17 +101,8 @@ export default function ProfileSection({
 
   const handleCopy = async (text: string, id: string) => {
     playProceduralHaptic('copy');
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedId(id);
-      setTimeout(() => setCopiedId(null), 2000);
-    } catch {
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
+    const ok = await copyToClipboardClean(text);
+    if (ok) {
       setCopiedId(id);
       setTimeout(() => setCopiedId(null), 2000);
     }
@@ -118,8 +110,7 @@ export default function ProfileSection({
 
   const handleShareWhatsApp = (text: string) => {
     playProceduralHaptic('click');
-    const encoded = encodeURIComponent(text);
-    window.open(`https://api.whatsapp.com/send?text=${encoded}`, '_blank');
+    openWhatsApp(text);
   };
 
   return (

@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react';
 import type { Argument } from '@/data/arguments';
+import { copyToClipboardClean } from '@/lib/shareUtils';
 
 interface VisualCardGeneratorProps {
   argument: Argument;
@@ -545,17 +546,8 @@ ${argument.counterArgument ? `O fato documentado: ${argument.rebuttal}` : ''}
   // Copiar Copywriter Adaptado
   const handleCopyText = async () => {
     const text = generateAdaptedCopy(copyPlatform);
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedCopy(true);
-      setTimeout(() => setCopiedCopy(false), 2200);
-    } catch {
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
+    const ok = await copyToClipboardClean(text);
+    if (ok) {
       setCopiedCopy(true);
       setTimeout(() => setCopiedCopy(false), 2200);
     }

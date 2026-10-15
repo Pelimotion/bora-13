@@ -32,6 +32,7 @@ interface HomeEditorialSectionProps {
   onSelectFront?: (frontId: 'ex_lula' | 'terceira_via' | 'abstencao_70' | 'nulo_branco') => void;
   onOpenStudioWithPreset?: (preset: PostPresetData) => void;
   onSelectState?: (uf: string, city?: string) => void;
+  initialOpenDossier?: boolean;
 }
 
 export default function HomeEditorialSection({
@@ -43,6 +44,7 @@ export default function HomeEditorialSection({
   onSelectFront,
   onOpenStudioWithPreset,
   onSelectState,
+  initialOpenDossier = false,
 }: HomeEditorialSectionProps) {
   const activeUF = memory.selectedUF || 'SP';
   const stateGeo = getStateByUF(activeUF) || BRAZIL_STATES_GEO[0];
@@ -226,6 +228,7 @@ export default function HomeEditorialSection({
         activeUF={activeUF}
         onSelectState={(uf, city) => onSelectState?.(uf, city)}
         onNavigate={handleNav}
+        initialOpenDossier={initialOpenDossier}
       />
 
       {/* ═══════════════════════════════════════════════════════════════

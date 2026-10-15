@@ -55,6 +55,15 @@ export type VisualTheme = 'brasil-editorial' | 'brasil-vibrante' | 'dark-moderno
 export type CopyPlatform = 'instagram' | 'whatsapp' | 'stories' | 'threads';
 export type SlideArchetype = 'editorial-cover' | 'big-stat-hero' | 'dialectic-split' | 'pocket-reality' | 'manifesto-cta';
 
+export interface StateDossierReason {
+  id: string;
+  category: 'infra' | 'agro' | 'trabalho' | 'saude' | 'educacao' | 'risco_flavio' | 'bolso' | 'seguranca';
+  title: string;
+  description: string;
+  proofBadge: string;
+  audienceTag?: string;
+}
+
 export interface StateStats {
   jobsCreated: string;
   bolsaFamiliaFamilies: string;
@@ -62,6 +71,7 @@ export interface StateStats {
   farmaciaPopularBeneficiaries: string;
   mcmvHomes: string;
   highlightText: string;
+  strategicReasons?: StateDossierReason[];
 }
 
 export interface PostPresetData {
@@ -131,6 +141,48 @@ export const STATE_OFFICIAL_STATS: Record<string, StateStats> = {
     farmaciaPopularBeneficiaries: '4,2 milhões de pessoas com remédio grátis',
     mcmvHomes: '145 mil novas moradias contratadas',
     highlightText: 'Em São Paulo, o Farmácia Popular já atende mais de 4,2 milhões de trabalhadores e idosos com remédios 100% gratuitos.',
+    strategicReasons: [
+      {
+        id: 'sp-1',
+        category: 'saude',
+        title: '4,2 milhões de paulistas com remédio 100% grátis',
+        description: 'Farmácia Popular reestruturada fornecendo remédios gratuitos de pressão alta, diabetes, asma e osteoporose na capital, Grande SP e interior.',
+        proofBadge: 'Ministério da Saúde • Farmácia Popular',
+        audienceTag: 'Para quem tem idoso na família ou gasta na farmácia',
+      },
+      {
+        id: 'sp-2',
+        category: 'infra',
+        title: 'Túnel Santos-Guarujá e Trens Metropolitanos',
+        description: 'Parceria republicana com R$ 6 bilhões federais no Túnel Santos-Guarujá, além de investimentos no Trem Intercidades SP-Campinas.',
+        proofBadge: 'Novo PAC • Ministério dos Transportes',
+        audienceTag: 'Para moradores da Baixada, Campinas e Capital',
+      },
+      {
+        id: 'sp-3',
+        category: 'trabalho',
+        title: '+580 mil empregos formais gerados no estado',
+        description: 'Liderança absoluta do Caged com retomada da indústria automotiva e expansão de serviços, aquecendo o comércio local.',
+        proofBadge: 'Caged • Ministério do Trabalho',
+        audienceTag: 'Para trabalhadores, autônomos e comerciantes',
+      },
+      {
+        id: 'sp-4',
+        category: 'educacao',
+        title: 'Pé-de-Meia para 410 mil estudantes da rede pública',
+        description: 'Poupança Caixa mensal que protege a permanência de estudantes no ensino médio e técnico da periferia e do interior paulista.',
+        proofBadge: 'MEC • Caixa Econômica Federal',
+        audienceTag: 'Para pais e jovens estudantes',
+      },
+      {
+        id: 'sp-5',
+        category: 'risco_flavio',
+        title: 'O Risco Flávio: Desmonte do SUS paulista e Fim do Aumento Real',
+        description: 'Votações comprovam proposta de desvincular o salário mínimo e cortar repasses federais para hospitais e santas casas paulistas.',
+        proofBadge: 'Registro Oficial do Congresso Nacional',
+        audienceTag: 'Para indecisos e votos nulos',
+      },
+    ],
   },
   RJ: {
     jobsCreated: '+210 mil vagas com carteira assinada',
@@ -139,6 +191,48 @@ export const STATE_OFFICIAL_STATS: Record<string, StateStats> = {
     farmaciaPopularBeneficiaries: '2,1 milhões com medicação contínua sem custo',
     mcmvHomes: '62 mil unidades do Minha Casa Minha Vida',
     highlightText: 'No Rio, a retomada dos estaleiros e investimentos da Petrobras reativaram a cadeia naval e de serviços.',
+    strategicReasons: [
+      {
+        id: 'rj-1',
+        category: 'trabalho',
+        title: 'Retomada dos Estaleiros Navais e Cadeia do Petróleo',
+        description: 'Contratações da Petrobras em Niterói, Angra e São Gonçalo reativaram a indústria naval fluminense gerando empregos qualificados.',
+        proofBadge: 'Petrobras • ANP • Caged',
+        audienceTag: 'Para trabalhadores navais, metalúrgicos e serviços',
+      },
+      {
+        id: 'rj-2',
+        category: 'saude',
+        title: '2,1 milhões de fluminenses com remédio gratuito',
+        description: 'Alívio direto no bolso de famílias da Baixada, Zona Oeste e interior com medicamentos essenciais sem cobrança.',
+        proofBadge: 'Ministério da Saúde',
+        audienceTag: 'Para famílias e aposentados',
+      },
+      {
+        id: 'rj-3',
+        category: 'educacao',
+        title: '185 mil jovens fluminenses no Pé-de-Meia',
+        description: 'Incentivo financeiro mensal para manter os jovens nas escolas e afastá-los da cooptação da violência.',
+        proofBadge: 'MEC • Caixa Econômica Federal',
+        audienceTag: 'Para jovens e famílias da periferia',
+      },
+      {
+        id: 'rj-4',
+        category: 'seguranca',
+        title: 'Apreensão recorde de fuzis e asfixia financeira de milícias',
+        description: 'Ações integradas da Polícia Federal desarticulando rotas de contrabando pesado e lavagem de capitais sem teatralidade.',
+        proofBadge: 'Polícia Federal • Ministério da Justiça',
+        audienceTag: 'Para quem cobra segurança pública séria',
+      },
+      {
+        id: 'rj-5',
+        category: 'risco_flavio',
+        title: 'O Risco Flávio: Aparelhamento do Rio e Alianças com o Crime Organizado',
+        description: 'Histórico de ligações questionáveis na ALERJ, rachadinhas e tentativas de enfraquecer o controle financeiro do COAF.',
+        proofBadge: 'Investigações MPF e Decisões Judiciais',
+        audienceTag: 'Para indecisos e desiludidos',
+      },
+    ],
   },
   MG: {
     jobsCreated: '+295 mil empregos formais gerados',
@@ -147,6 +241,48 @@ export const STATE_OFFICIAL_STATS: Record<string, StateStats> = {
     farmaciaPopularBeneficiaries: '2,8 milhões de mineiros beneficiados',
     mcmvHomes: '88 mil novas casas e reformas rurais',
     highlightText: 'Em Minas Gerais, mais de 230 mil jovens não precisam largar a escola pública para ajudar na renda da casa.',
+    strategicReasons: [
+      {
+        id: 'mg-1',
+        category: 'infra',
+        title: 'Obras da BR-381 e Investimentos Rodoviários',
+        description: 'Destravamento do leilão e obras de duplicação do trecho BH-Governador Valadares para salvar vidas na "Rodovia da Morte".',
+        proofBadge: 'Ministério dos Transportes • ANTT',
+        audienceTag: 'Para motoristas, transportadores e Vale do Aço',
+      },
+      {
+        id: 'mg-2',
+        category: 'saude',
+        title: '2,8 milhões de mineiros com remédio 100% grátis',
+        description: 'Preservação da renda de quem precisa de remédios para diabetes, hipertensão e asma nas farmácias de todo o estado.',
+        proofBadge: 'Ministério da Saúde • Farmácia Popular',
+        audienceTag: 'Para idosos e famílias trabalhadoras',
+      },
+      {
+        id: 'mg-3',
+        category: 'agro',
+        title: 'Plano Safra Recorde para o Café e Agricultura Familiar',
+        description: 'Crédito acessível para produtores do Sul de Minas, Matas e Cerrado, protegendo o agro real contra oscilações externas.',
+        proofBadge: 'MAPA • Pronaf',
+        audienceTag: 'Para produtores rurais e cooperativas mineiras',
+      },
+      {
+        id: 'mg-4',
+        category: 'educacao',
+        title: '230 mil jovens no Pé-de-Meia nas escolas estaduais',
+        description: 'Garantia de que os jovens mineiros concluam o ensino médio e ingressem no mercado de trabalho qualificado.',
+        proofBadge: 'MEC • Caixa Econômica Federal',
+        audienceTag: 'Para estudantes e pais',
+      },
+      {
+        id: 'mg-5',
+        category: 'risco_flavio',
+        title: 'O Risco Flávio: Ataque ao BPC e Congelamento de Salários',
+        description: 'Proposta do grupo de Flávio de arrochar benefícios assistenciais que sustentam milhares de lares no interior de Minas.',
+        proofBadge: 'Registro Oficial de Propostas no Congresso',
+        audienceTag: 'Para aposentados e indecisos',
+      },
+    ],
   },
   BA: {
     jobsCreated: '+180 mil carteiras assinadas',
@@ -155,6 +291,48 @@ export const STATE_OFFICIAL_STATS: Record<string, StateStats> = {
     farmaciaPopularBeneficiaries: '1,9 milhão de pessoas com remédios gratuitos',
     mcmvHomes: '95 mil contratos de moradia digna',
     highlightText: 'A Bahia lidera o Pé-de-Meia no Nordeste, garantindo permanência escolar e futuro para a juventude.',
+    strategicReasons: [
+      {
+        id: 'ba-1',
+        category: 'trabalho',
+        title: 'Polo Automotivo BYD e Reindustrialização em Camaçari',
+        description: 'Retomada industrial da antiga fábrica da Ford com fábrica de carros elétricos gerando mais de 5 mil empregos diretos.',
+        proofBadge: 'MDIC • Governo da Bahia',
+        audienceTag: 'Para trabalhadores industriais e comércio regional',
+      },
+      {
+        id: 'ba-2',
+        category: 'educacao',
+        title: '290 mil estudantes baianos na poupança Pé-de-Meia',
+        description: 'Maior cobertura do Nordeste, evitando evasão escolar e garantindo poupança de até R$ 9.200 ao se formar.',
+        proofBadge: 'MEC • Caixa Econômica Federal',
+        audienceTag: 'Para jovens e famílias baianas',
+      },
+      {
+        id: 'ba-3',
+        category: 'infra',
+        title: 'Ferrovia FIOL e Segurança Hídrica do São Francisco',
+        description: 'Aceleração de obras que ligam o Oeste baiano aos portos e garantem água para consumo e irrigação no semiárido.',
+        proofBadge: 'Novo PAC • Ministério da Integração',
+        audienceTag: 'Para produtores do Oeste e sertanejos',
+      },
+      {
+        id: 'ba-4',
+        category: 'saude',
+        title: '1,9 milhão de baianos com remédio gratuito no Farmácia Popular',
+        description: 'Tratamentos de pressão, diabetes e asma sem nenhum custo em farmácias credenciadas de Salvador ao interior.',
+        proofBadge: 'Ministério da Saúde',
+        audienceTag: 'Para idosos e famílias',
+      },
+      {
+        id: 'ba-5',
+        category: 'risco_flavio',
+        title: 'O Risco Flávio: Discriminação contra o Nordeste e Corte de Verbas',
+        description: 'Histórico comprovado de preconceito e bloqueio de verbas federais para estados nordestinos na gestão anterior.',
+        proofBadge: 'Dados de Execução Orçamentária Federal 2019-2022',
+        audienceTag: 'Para indecisos e eleitores indecisos',
+      },
+    ],
   },
   RS: {
     jobsCreated: '+125 mil vagas formais criadas',
@@ -163,6 +341,48 @@ export const STATE_OFFICIAL_STATS: Record<string, StateStats> = {
     farmaciaPopularBeneficiaries: '1,5 milhão de gaúchos atendidos',
     mcmvHomes: '54 mil moradias no plano de reconstrução',
     highlightText: 'No Rio Grande do Sul, recursos extraordinários da União garantiram crédito facilitado para o pequeno agricultor e reconstrução.',
+    strategicReasons: [
+      {
+        id: 'rs-1',
+        category: 'infra',
+        title: 'Plano Extraordinário de Reconstrução do RS',
+        description: 'Mais de R$ 90 bilhões em crédito subsidiado, auxílio reconstrução de R$ 5.100 para famílias e socorro financeiro a empresas gaúchas.',
+        proofBadge: 'Ministério da Reconstrução do RS',
+        audienceTag: 'Para atingidos, pequenos empresários e famílias',
+      },
+      {
+        id: 'rs-2',
+        category: 'agro',
+        title: 'Crédito Emergencial e Plano Safra para Cooperativas Gaúchas',
+        description: 'Renegociação de dívidas agrícolas e juros reduzidos para salvar a safra de arroz, soja e leite após as enchentes.',
+        proofBadge: 'MAPA • BNDES',
+        audienceTag: 'Para produtores rurais e cooperativas',
+      },
+      {
+        id: 'rs-3',
+        category: 'saude',
+        title: '1,5 milhão de gaúchos atendidos na Farmácia Popular',
+        description: 'Medicamentos essenciais gratuitos em toda a rede de farmácias de Porto Alegre, Região Metropolitana e interior.',
+        proofBadge: 'Ministério da Saúde',
+        audienceTag: 'Para idosos e trabalhadores',
+      },
+      {
+        id: 'rs-4',
+        category: 'educacao',
+        title: '95 mil estudantes gaúchos na poupança Pé-de-Meia',
+        description: 'Auxílio financeiro para assegurar a continuidade dos estudos no ensino médio estadual.',
+        proofBadge: 'MEC • Caixa Econômica Federal',
+        audienceTag: 'Para estudantes e professores',
+      },
+      {
+        id: 'rs-5',
+        category: 'risco_flavio',
+        title: 'O Risco Flávio: Negacionismo Climático e Corte de Verbas de Socorro',
+        description: 'Bancada de Flávio votou contra medidas de emergência climática e defende afrouxamento ambiental que agrava tragédias.',
+        proofBadge: 'Votações na Câmara e Senado Federal',
+        audienceTag: 'Para indecisos e defensores da reconstrução séria',
+      },
+    ],
   },
   PR: {
     jobsCreated: '+165 mil novos postos de trabalho',
@@ -195,6 +415,56 @@ export const STATE_OFFICIAL_STATS: Record<string, StateStats> = {
     farmaciaPopularBeneficiaries: '750 mil paraenses beneficiados',
     mcmvHomes: '42 mil unidades habitacionais contratadas',
     highlightText: 'O Pará sedia investimentos estruturantes da COP-30 em saneamento, energia limpa e transporte público fluvial e terrestre.',
+  },
+  SC: {
+    jobsCreated: '+112 mil empregos formais gerados (Caged)',
+    bolsaFamiliaFamilies: '135 mil famílias amparadas',
+    pedeMeiaStudents: '58 mil jovens na poupança escolar',
+    farmaciaPopularBeneficiaries: '840 mil catarinenses com remédio 100% grátis',
+    mcmvHomes: '18 mil novas moradias contratadas',
+    highlightText: 'Em Santa Catarina, o governo federal acelerou as obras da BR-470 e da BR-280, e garantiu R$ 6,5 bilhões do Plano Safra para cooperativas e suinocultores.',
+    strategicReasons: [
+      {
+        id: 'sc-1',
+        category: 'infra',
+        title: 'Retomada das obras da BR-470 e BR-280',
+        description: 'Recursos federais garantiram o ritmo das obras no Vale do Itajaí e Norte Catarinense, barateando o frete das indústrias e salvando vidas nas estradas.',
+        proofBadge: 'DNIT • Ministério dos Transportes',
+        audienceTag: 'Para trabalhadores, motoristas e comércio',
+      },
+      {
+        id: 'sc-2',
+        category: 'agro',
+        title: 'R$ 6,5 bilhões do Plano Safra e proteção ao agronegócio',
+        description: 'Crédito com juros subsidiados para cooperativas de aves e suínos no Oeste de SC, aliado à diplomacia estável que mantém as exportações abertas na China e na Europa sem crises ideológicas.',
+        proofBadge: 'Ministério da Agricultura e Pecuária',
+        audienceTag: 'Para produtores rurais, cooperativas e indústria',
+      },
+      {
+        id: 'sc-3',
+        category: 'saude',
+        title: 'Farmácia Popular com remédio 100% grátis',
+        description: '840 mil pessoas em Florianópolis, Joinville, Blumenau, Chapecó e Criciúma retirando remédios contínuos de pressão, diabetes e asma sem pagar nada.',
+        proofBadge: 'Ministério da Saúde • 840 mil beneficiados',
+        audienceTag: 'Para quem tem idoso na família ou gasta com remédio',
+      },
+      {
+        id: 'sc-4',
+        category: 'educacao',
+        title: 'Pé-de-Meia para 58 mil estudantes catarinenses',
+        description: 'Poupança de até R$ 9.200 por aluno do ensino médio público para reduzir a evasão e garantir que os jovens concluam o ensino técnico ou regular.',
+        proofBadge: 'MEC • Caixa Econômica Federal',
+        audienceTag: 'Para pais de estudantes e jovens',
+      },
+      {
+        id: 'sc-5',
+        category: 'risco_flavio',
+        title: 'O Risco Flávio: Cortes na Farmácia Popular e Guerra Comercial',
+        description: 'No governo anterior, o grupo de Flávio propôs corte de 59% na Farmácia Popular e desindexação do salário mínimo, além de ameaçar vendas de carne para a Ásia por conflitos ideológicos.',
+        proofBadge: 'Registro Oficial de Votações no Congresso',
+        audienceTag: 'Para indecisos e quem cogita anular o voto',
+      },
+    ],
   },
 };
 

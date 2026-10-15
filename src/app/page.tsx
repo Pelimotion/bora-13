@@ -88,6 +88,9 @@ export default function BoraApp() {
   // Cenário ativo no Simulador de Conversa
   const [simulatorScenarioId, setSimulatorScenarioId] = useState<string>('tio-almoco');
 
+  // Abertura automática do dossiê estadual vindo de link compartilhado
+  const [openDossierOnLoad, setOpenDossierOnLoad] = useState<boolean>(false);
+
   // 1. Observador de Modo Escuro / Claro (para sincronizar WebGL Shaders e Tema)
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -219,11 +222,16 @@ export default function BoraApp() {
       setSection('inicio');
     }
 
-    const stateParam = params.get('state');
+    const stateParam = params.get('state') || params.get('uf');
+    const dossierParam = params.get('dossier');
     const cityParam = params.get('city');
     const levelParam = params.get('level');
     const occParam = params.get('occ');
     const frontParam = params.get('front');
+
+    if (dossierParam === '1' || dossierParam === 'true') {
+      setOpenDossierOnLoad(true);
+    }
 
     if (stateParam || levelParam || occParam || cityParam || frontParam) {
       const updatedProfile: UserProfile = {
@@ -261,7 +269,13 @@ export default function BoraApp() {
       }));
 
       if (!modeParam && !tabParam) {
-        setSection('preparar');
+        if (dossierParam === '1' || dossierParam === 'true') {
+          setSection('inicio');
+        } else if (occParam || frontParam || levelParam) {
+          setSection('preparar');
+        } else {
+          setSection('inicio');
+        }
       }
     }
 
@@ -442,6 +456,7 @@ export default function BoraApp() {
             onSelectFront={handleSelectFront}
             onOpenStudioWithPreset={handleOpenStudioWithPreset}
             onSelectState={handleSelectTerritory}
+            initialOpenDossier={openDossierOnLoad}
           />
         )}
 

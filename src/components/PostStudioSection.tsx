@@ -21,8 +21,8 @@ import {
 } from '@/lib/agenticOrchestrator';
 import { ARGUMENTS_DATABASE, type Argument } from '@/data/arguments';
 import { OPPORTUNITIES_DATABASE, type Opportunity } from '@/data/opportunities';
-import { BRAZIL_STATES_GEO } from '@/data/brazilGeo';
 import { CONVERSION_FRONTS, MENOS_COM_FLAVIO_FACTS } from '@/data/electoralTactics';
+import { copyToClipboardClean } from '@/lib/shareUtils';
 
 interface PostStudioSectionProps {
   initialPreset?: PostPresetData | null;
@@ -613,19 +613,8 @@ export default function PostStudioSection({
 
   const handleCopyText = async (text: string, key: string) => {
     playProceduralHaptic('copy');
-    try {
-      await navigator.clipboard.writeText(text);
-      setCopiedKey(key);
-      setTimeout(() => setCopiedKey(null), 2200);
-    } catch {
-      const ta = document.createElement('textarea');
-      ta.value = text;
-      ta.style.position = 'fixed';
-      ta.style.opacity = '0';
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
+    const ok = await copyToClipboardClean(text);
+    if (ok) {
       setCopiedKey(key);
       setTimeout(() => setCopiedKey(null), 2200);
     }
