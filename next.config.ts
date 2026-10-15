@@ -32,7 +32,6 @@ const securityHeaders = [
 ];
 
 const nextConfig: NextConfig = {
-  basePath: "/bora",
   reactStrictMode: true,
   poweredByHeader: false,
   compress: true,
@@ -49,22 +48,14 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
-        source: "/",
-        destination: "/bora",
-        basePath: false,
-        permanent: false,
+        source: "/bora",
+        destination: "/",
+        permanent: true,
       },
       {
-        source: "/icon.svg",
-        destination: "/bora/icon.svg",
-        basePath: false,
-        permanent: false,
-      },
-      {
-        source: "/manifest.json",
-        destination: "/bora/manifest.json",
-        basePath: false,
-        permanent: false,
+        source: "/bora/:path*",
+        destination: "/:path*",
+        permanent: true,
       },
     ];
   },

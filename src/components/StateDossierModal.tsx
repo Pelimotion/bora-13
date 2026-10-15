@@ -47,7 +47,7 @@ export default function StateDossierModal({
 
   // Geração de mensagem altamente persuasiva para virar voto no 1-a-1
   const generatedMessage = useMemo(() => {
-    const siteUrl = `https://www.gigantera.xyz/bora?state=${stateGeo.uf}${city ? `&city=${encodeURIComponent(city)}` : ''}&dossier=1`;
+    const siteUrl = `https://patriaamada.lat/?state=${stateGeo.uf}${city ? `&city=${encodeURIComponent(city)}` : ''}&dossier=1`;
     const stateName = stateGeo.name;
     const locationName = city ? `${city} (${stateGeo.uf})` : stateName;
 
@@ -128,7 +128,7 @@ export default function StateDossierModal({
     await shareLinkOrText({
       title: `5 Motivos para ${stateGeo.name} Seguir em Frente`,
       text: `Dê uma olhada nos dados confirmados e nos motivos reais para ${stateGeo.name}:`,
-      url: `https://www.gigantera.xyz/bora?state=${stateGeo.uf}&dossier=1`,
+      url: `https://patriaamada.lat/?state=${stateGeo.uf}&dossier=1`,
     });
   };
 

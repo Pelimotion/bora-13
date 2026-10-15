@@ -53,6 +53,7 @@ export function normalizeAppSection(section: AppSection | string): CanonicalAppS
 
 export type PostFormat = 'portrait' | 'carousel' | 'square' | 'story';
 export type VisualTheme = 'brasil-editorial' | 'brasil-vibrante' | 'dark-moderno' | 'concretismo-puro' | 'jornalismo-investigativo';
+export type TonerStyle = 'toner-rubro' | 'toner-pb' | 'toner-brasil' | 'toner-dark' | 'toner-editorial-clean';
 export type CopyPlatform = 'instagram' | 'whatsapp' | 'stories' | 'threads';
 export type SlideArchetype = 'editorial-cover' | 'big-stat-hero' | 'dialectic-split' | 'pocket-reality' | 'manifesto-cta';
 
@@ -101,6 +102,22 @@ export interface PostPresetData {
   act3Rebuttal?: string;
   act4PocketImpact?: string;
   act5Cta?: string;
+  // ── ENRIQUECIMENTO NOTICIOSO E EDITORIAL (MANCHETE / CAPA DE JORNAL) ──
+  newsSource?: string;         // 'G1 • ECONOMIA', 'FOLHA DE S.PAULO', 'UOL', 'IBGE', etc.
+  newsDate?: string;           // '2024 / 2025 • REGISTRO PÚBLICO'
+  newsHeadline?: string;       // Manchete do recorte de notícia
+  newsImageUrl?: string;       // URL da foto documental/noticiosa
+  newsVerified?: boolean;      // Badge de checagem oficial (true)
+  showNewsCard?: boolean;      // Exibir recorte noticioso no slide
+  // ── FUNDO FOTOGRÁFICO TERRITORIAL & TONER ──
+  bgImageUrl?: string;         // URL da foto de fundo
+  showBgPhoto?: boolean;       // Ativar foto de fundo
+  tonerStyle?: TonerStyle;     // Estilo de toner
+  tonerIntensity?: number;     // 0.3 a 0.95 (default 0.8)
+  // ── ELEMENTOS HUD CARROSSEL INSTAGRAM ──
+  showCarouselHud?: boolean;   // HUD com barras de progresso 01/05, etc.
+  territoryTag?: string;       // 'Joinville • SC' ou 'São Paulo • SP'
+  swipeCtaText?: string;       // 'Deslize para ver os dados ››'
 }
 
 export interface CopyBundle {
@@ -568,6 +585,18 @@ ${preset.proofData || preset.rebuttal || preset.bodyText}
 // ─────────────────────────────────────────────────────────────
 
 export function createPostPresetFromArgument(arg: Argument, memory?: AgenticWorkingMemory): PostPresetData {
+  const isTrabalho = arg.category === 'trabalho' || arg.category === 'salario';
+  const isEducacao = arg.category === 'educacao';
+  const isAlimento = arg.category === 'alimentacao' || arg.category === 'bolso';
+  const photoUrl = isEducacao
+    ? '/images/news-education.jpg'
+    : isAlimento
+    ? '/images/news-market.jpg'
+    : '/images/news-workers.jpg';
+
+  const defaultUf = memory?.selectedUF || 'SC';
+  const defaultCity = memory?.selectedCity || 'Joinville';
+
   return {
     id: `post-arg-${arg.id}`,
     title: arg.title,
@@ -591,10 +620,29 @@ export function createPostPresetFromArgument(arg: Argument, memory?: AgenticWork
     act3Rebuttal: arg.rebuttal,
     act4PocketImpact: `Como isso se reflete no seu bolso: alívio no fim do mês e mais previsibilidade pra você e sua família.`,
     act5Cta: `Compartilhe com quem ainda não teve acesso a esses dados verificados.`,
+    // Notícia e Imagens
+    newsSource: arg.sourceName.toUpperCase(),
+    newsDate: 'REGISTRO AUDITADO • 2024/2025',
+    newsHeadline: arg.headline,
+    newsImageUrl: photoUrl,
+    newsVerified: true,
+    showNewsCard: true,
+    bgImageUrl: defaultUf === 'SC' ? '/images/territory-sc.jpg' : defaultUf === 'SP' ? '/images/territory-sp.jpg' : photoUrl,
+    showBgPhoto: true,
+    tonerStyle: 'toner-rubro',
+    tonerIntensity: 0.82,
+    showCarouselHud: true,
+    territoryTag: `${defaultCity} • ${defaultUf}`,
+    swipeCtaText: 'Deslize para ver as provas na mesa ››',
   };
 }
 
 export function createPostPresetFromOpportunity(opp: Opportunity, memory?: AgenticWorkingMemory): PostPresetData {
+  const isEdu = opp.id === 'opp-pe-de-meia' || (opp.badge && opp.badge.toLowerCase().includes('educa'));
+  const photoUrl = isEdu ? '/images/news-education.jpg' : '/images/news-market.jpg';
+  const defaultUf = memory?.selectedUF || 'SC';
+  const defaultCity = memory?.selectedCity || 'Joinville';
+
   return {
     id: `post-opp-${opp.id}`,
     title: opp.title,
@@ -618,6 +666,20 @@ export function createPostPresetFromOpportunity(opp: Opportunity, memory?: Agent
     act3Rebuttal: `Quem tem direito comprovado: ${opp.whoIsEligible}`,
     act4PocketImpact: `Como acessar na prática: ${opp.howToAccess}`,
     act5Cta: `Compartilhe com parentes ou amigos que têm esse direito garantido por lei!`,
+    // Notícia e Imagens
+    newsSource: `${opp.program.toUpperCase()} • PROGRAMA PÚBLICO`,
+    newsDate: 'ATUALIZADO • REGISTRO OFICIAL',
+    newsHeadline: `${opp.title}: ${opp.headline}`,
+    newsImageUrl: photoUrl,
+    newsVerified: true,
+    showNewsCard: true,
+    bgImageUrl: defaultUf === 'SC' ? '/images/territory-sc.jpg' : photoUrl,
+    showBgPhoto: true,
+    tonerStyle: 'toner-rubro',
+    tonerIntensity: 0.80,
+    showCarouselHud: true,
+    territoryTag: `${defaultCity} • ${defaultUf}`,
+    swipeCtaText: 'Deslize para ver como acessar ››',
   };
 }
 
@@ -626,6 +688,12 @@ export function createPostPresetFromTerritory(uf: string, cityName?: string): Po
   const stateName = geo ? geo.name : uf;
   const stats = getStateStats(uf);
   const locationLabel = cityName ? `${cityName} • ${uf}` : stateName;
+
+  const bgPhoto = uf === 'SC' 
+    ? '/images/territory-sc.jpg' 
+    : uf === 'SP' 
+    ? '/images/territory-sp.jpg' 
+    : '/images/hero-dialogue.jpg';
 
   return {
     id: `post-geo-${uf}`,
@@ -650,6 +718,20 @@ export function createPostPresetFromTerritory(uf: string, cityName?: string): Po
     act3Rebuttal: `${stats.jobsCreated} com carteira assinada e ${stats.pedeMeiaStudents} garantidos.`,
     act4PocketImpact: `O comércio local ganha força quando a juventude e os trabalhadores têm renda circulando na cidade.`,
     act5Cta: `Divulgue os dados da nossa região e fortaleça a conversa com esperança e fatos reais!`,
+    // Notícia e Imagens
+    newsSource: `MINISTÉRIO DA FAZENDA • ${uf}`,
+    newsDate: 'BALANÇO REGIONAL • AUDITADO 2024',
+    newsHeadline: `Investimentos federais garantem ${stats.jobsCreated} e impulsionam ${locationLabel}`,
+    newsImageUrl: bgPhoto,
+    newsVerified: true,
+    showNewsCard: true,
+    bgImageUrl: bgPhoto,
+    showBgPhoto: true,
+    tonerStyle: 'toner-rubro',
+    tonerIntensity: 0.84,
+    showCarouselHud: true,
+    territoryTag: locationLabel,
+    swipeCtaText: 'Deslize para ver as provas na mesa ››',
   };
 }
 
@@ -677,6 +759,20 @@ export function createDefaultPostPreset(): PostPresetData {
     act3Rebuttal: 'Dados auditados pelo IBGE mostram desaceleração contínua da inflação de alimentos.',
     act4PocketImpact: 'Mais comida no prato e poder de compra recuperado para quem vive de salário.',
     act5Cta: 'Salve este carrossel e compartilhe a verdade com provas na mesa!',
+    // Notícia e Imagens
+    newsSource: 'IBGE • AGÊNCIA DE NOTÍCIAS',
+    newsDate: 'BOLETIM OFICIAL • OUTUBRO 2024',
+    newsHeadline: 'Deflação da cesta básica é registrada em 17 capitais e poder de compra da carne e leite sobe',
+    newsImageUrl: '/images/news-market.jpg',
+    newsVerified: true,
+    showNewsCard: true,
+    bgImageUrl: '/images/territory-sc.jpg',
+    showBgPhoto: true,
+    tonerStyle: 'toner-rubro',
+    tonerIntensity: 0.82,
+    showCarouselHud: true,
+    territoryTag: 'Santa Catarina • Florianópolis',
+    swipeCtaText: 'Deslize para ver os dados ››',
   };
 }
 
@@ -1036,6 +1132,19 @@ export const TACTICAL_PRESET_TEMPLATES: PostPresetData[] = [
     act3Rebuttal: 'Com Lula, a gratuidade voltou para milhões de aposentados.',
     act4PocketImpact: 'Economia real de mais de R$ 180 por mês no bolso do idoso.',
     act5Cta: 'Não vote contra o remédio da sua família. Mande esse card no privado.',
+    newsSource: 'MINISTÉRIO DA SAÚDE • REGISTRO HISTÓRICO',
+    newsDate: 'DADOS OFICIAIS DO ORÇAMENTO',
+    newsHeadline: 'Farmácia Popular sofreu corte de 59% e suspensão de medicamentos em gestão anterior',
+    newsImageUrl: '/images/hero-dialogue.jpg',
+    newsVerified: true,
+    showNewsCard: true,
+    bgImageUrl: '/images/territory-sc.jpg',
+    showBgPhoto: true,
+    tonerStyle: 'toner-rubro',
+    tonerIntensity: 0.85,
+    showCarouselHud: true,
+    territoryTag: 'Brasil • Saúde Pública',
+    swipeCtaText: 'Deslize para ver os registros oficiais ››',
   },
   {
     id: 'tpl-escala-6x1',
@@ -1060,6 +1169,19 @@ export const TACTICAL_PRESET_TEMPLATES: PostPresetData[] = [
     act3Rebuttal: 'O governo Lula apoia a revisão da jornada sem redução de salário.',
     act4PocketImpact: 'Mais tempo com seus filhos, mais descanso e o mesmo salário na conta.',
     act5Cta: 'Trabalhador defende trabalhador. Salve este post e apoie o fim da 6x1!',
+    newsSource: 'SENADO FEDERAL • DIÁRIO OFICIAL',
+    newsDate: 'REGISTRO DE VOTAÇÃO NO CONGRESSO',
+    newsHeadline: 'PEC pelo fim da jornada 6x1 avança com apoio do governo e resistência do bolsonarismo',
+    newsImageUrl: '/images/news-workers.jpg',
+    newsVerified: true,
+    showNewsCard: true,
+    bgImageUrl: '/images/news-workers.jpg',
+    showBgPhoto: true,
+    tonerStyle: 'toner-dark',
+    tonerIntensity: 0.86,
+    showCarouselHud: true,
+    territoryTag: 'Brasil • Direitos Trabalhistas',
+    swipeCtaText: 'Deslize para conferir os votos ››',
   },
   {
     id: 'tpl-terceira-via',
@@ -1084,6 +1206,19 @@ export const TACTICAL_PRESET_TEMPLATES: PostPresetData[] = [
     act3Rebuttal: 'Concentração total de poder em uma só família sem fiscalização.',
     act4PocketImpact: 'Estabilidade econômica exige pesos e contrapesos na República.',
     act5Cta: 'Envie para amigos de centro que buscam moderação e segurança jurídica.',
+    newsSource: 'CONGRESSO EM FOCO • ANÁLISE INSTITUCIONAL',
+    newsDate: 'CENÁRIO ELEITORAL • 2º TURNO',
+    newsHeadline: 'Risco de superconcentração: mesma família controlaria Planalto, Senado e maioria no STF',
+    newsImageUrl: '/images/territory-sp.jpg',
+    newsVerified: true,
+    showNewsCard: true,
+    bgImageUrl: '/images/territory-sp.jpg',
+    showBgPhoto: true,
+    tonerStyle: 'toner-pb',
+    tonerIntensity: 0.85,
+    showCarouselHud: true,
+    territoryTag: 'Brasil • República e Equilíbrio',
+    swipeCtaText: 'Deslize para entender o cenário ››',
   },
   {
     id: 'tpl-4-votos-sala',
@@ -1108,6 +1243,19 @@ export const TACTICAL_PRESET_TEMPLATES: PostPresetData[] = [
     act3Rebuttal: 'Em 2022, mais de 250 cidades trocaram de vencedor no 2º turno.',
     act4PocketImpact: 'Cada pessoa que você acolhe e vira vale por dois no placar final.',
     act5Cta: 'Faça a sua lista de 4 nomes hoje mesmo e bora pra virada!',
+    newsSource: 'TSE • DADOS ELEITORAIS AUDITADOS',
+    newsDate: 'HISTÓRICO OFICIAL DE 2º TURNO',
+    newsHeadline: 'Matemática da virada: 245 mil urnas foram decididas por margem inferior a 5 votos',
+    newsImageUrl: '/images/campaign-workshop.jpg',
+    newsVerified: true,
+    showNewsCard: true,
+    bgImageUrl: '/images/campaign-workshop.jpg',
+    showBgPhoto: true,
+    tonerStyle: 'toner-brasil',
+    tonerIntensity: 0.80,
+    showCarouselHud: true,
+    territoryTag: 'Mobilização Popular • 2º Turno',
+    swipeCtaText: 'Deslize para ver os números da virada ››',
   },
 ];
 

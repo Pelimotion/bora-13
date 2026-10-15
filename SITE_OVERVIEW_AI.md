@@ -3,7 +3,7 @@
 > **Documento de Contexto Integral para Modelos de IA (ChatGPT, Claude, Gemini)**  
 > **Aplicação**: Bora 13 — Guia Cidadão de Diálogo Popular  
 > **Posicionamento**: Iniciativa Cidadã & Voluntária • **Não oficial, sem vínculo com o PT ou Casa 13** • Feita para somar na causa  
-> **Acesso em Produção**: [www.gigantera.xyz/bora](https://www.gigantera.xyz/bora)  
+> **Acesso em Produção**: [patriaamada.lat](https://patriaamada.lat)  
 > **Finalidade**: Permitir que qualquer IA compreenda imediatamente a identidade visual, a arquitetura técnica, os fluxos de navegação, a psicologia de conversão e as decisões de UX/UI do aplicativo para propor melhorias, novos componentes, refatorações ou estratégias narrativas com 100% de precisão contextual.
 
 ---

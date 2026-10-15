@@ -6,22 +6,14 @@ import {
   type PostPresetData,
   type PostFormat,
   type VisualTheme,
+  type TonerStyle,
   type CopyPlatform,
   type SlideArchetype,
   type AgenticWorkingMemory,
   generateSmartCopy,
-  createPostPresetFromArgument,
-  createPostPresetFromOpportunity,
-  createPostPresetFromTerritory,
   createDefaultPostPreset,
-  createPostPresetFromConversionFront,
-  createPostPresetFromMenosFact,
-  TACTICAL_PRESET_TEMPLATES,
   playProceduralHaptic,
 } from '@/lib/agenticOrchestrator';
-import { ARGUMENTS_DATABASE, type Argument } from '@/data/arguments';
-import { OPPORTUNITIES_DATABASE, type Opportunity } from '@/data/opportunities';
-import { CONVERSION_FRONTS, MENOS_COM_FLAVIO_FACTS } from '@/data/electoralTactics';
 import { copyToClipboardClean } from '@/lib/shareUtils';
 
 interface PostStudioSectionProps {
@@ -31,15 +23,254 @@ interface PostStudioSectionProps {
 }
 
 // ─────────────────────────────────────────────────────────────
-// BIBLIOTECA DE SELOS INSTITUCIONAIS & ADESIVOS DE AUDITORIA
+// RESOLUÇÃO DE CAMINHO DE ASSETS (DOMÍNIO PRÓPRIO PATRIAAMADA.LAT)
 // ─────────────────────────────────────────────────────────────
-const OFFICIAL_SEALS = [
-  { id: 'selo-casa13', label: '⭐ Bora 13 Cidadão', text: '⭐ BORA 13 • INICIATIVA CIDADÃ' },
-  { id: 'selo-ibge', label: '🏛️ Dados IBGE', text: '🏛️ FONTE PÚBLICA AUDITADA • IBGE' },
-  { id: 'selo-dieese', label: '📊 Estudo DIEESE', text: '📊 DADOS AUDITADOS • DIEESE' },
-  { id: 'selo-comprovado', label: '🛡️ Fato Comprovado', text: '🛡️ FATO COMPROVADO EM DIÁRIO PÚBLICO' },
-  { id: 'selo-menos-flavio', label: '📉 O Menos com Flávio', text: '📉 O MENOS COM FLÁVIO • REGISTRO HISTÓRICO' },
-  { id: 'selo-pe-de-meia', label: '🎒 Programa Pé-de-Meia', text: '🎒 POUPANÇA DO ENSINO MÉDIO • MEC / CAIXA' },
+export function resolveAssetPath(path: string): string {
+  if (!path) return '';
+  if (path.startsWith('http://') || path.startsWith('https://') || path.startsWith('data:')) return path;
+  if (path.startsWith('/bora/')) return path.replace('/bora/', '/');
+  if (path.startsWith('/')) return path;
+  return `/${path}`;
+}
+
+// ─────────────────────────────────────────────────────────────
+// PAUTAS ESTRATÉGICAS PRIORITÁRIAS (NARRATIVA CLARA & VIRADA DE VOTO)
+// Pensado elemento por elemento com foco na realidade popular
+// ─────────────────────────────────────────────────────────────
+const STRATEGIC_CATEGORIES = [
+  {
+    id: 'alimentacao',
+    title: 'Cesta Básica & Preço da Feira',
+    targetAudience: 'Para mães, famílias e donas de casa',
+    strategicGoal: 'Desarmar a ideia de que "o mercado tá caro demais"',
+    emoji: '🥩',
+    badge: 'Alimentação & Salário',
+    badgeColor: '#10B981',
+    photoUrl: '/images/news-market.jpg',
+    headline: 'O que a cesta básica revela sobre a inflação e o poder de compra no mercado',
+    source: 'IBGE & DIEESE',
+    newsSource: 'IBGE • AGÊNCIA DE NOTÍCIAS',
+    newsHeadline: 'Deflação da cesta básica é registrada em 17 capitais e poder de compra sobe',
+    proof: 'DIEESE e IBGE: Queda comprovada no valor da cesta básica em 17 capitais e aumento real de 3% no salário mínimo.',
+    statNumber: '17 CAPITAIS',
+    statLabel: 'Queda comprovada no valor da cesta básica (DIEESE)',
+    objection: 'Dizem que o mercado tá cada dia mais caro e que nada mudou no dia a dia',
+    rebuttal: 'A inflação oficial acumulada fechou dentro da meta e o poder de compra do salário mínimo teve aumento real de 3% acima da inflação.',
+    act1Hook: 'Você já reparou no preço do óleo, leite e da carne este mês? Veja o que os dados do DIEESE provam.',
+    act4Pocket: 'Mais comida no prato e poder de compra recuperado para quem vive de salário e sustenta a família.',
+  },
+  {
+    id: 'trabalho',
+    title: 'Fim da Escala 6x1 & Emprego',
+    targetAudience: 'Para trabalhadores do comércio, jovem e logística',
+    strategicGoal: 'Mostrar quem defende o trabalhador e o descanso digno',
+    emoji: '⏰',
+    badge: 'Trabalho & Descanso',
+    badgeColor: '#3B82F6',
+    photoUrl: '/images/news-workers.jpg',
+    headline: 'Você trabalha 6 dias para descansar 1. Quem quer mudar isso?',
+    source: 'CAGED • MINISTÉRIO DO TRABALHO',
+    newsSource: 'CAGED • DADOS OFICIAIS',
+    newsHeadline: 'Brasil bate recorde com mais de 3 milhões de postos de trabalho com carteira assinada',
+    proof: 'Caged: Mais de 3 milhões de postos formais criados e apoio oficial à revisão da jornada 6x1 sem corte de salário.',
+    statNumber: '+3 MILHÕES',
+    statLabel: 'Carteiras assinadas geradas no Brasil (Caged)',
+    objection: 'Dizem que acabar com a escala 6x1 vai quebrar os comerciantes e causar desemprego',
+    rebuttal: 'Estudos do DIEESE e experiências internacionais provam aumento de produtividade, menor rotatividade e mais saúde mental.',
+    act1Hook: 'Você aguenta continuar na escala 6x1 até se aposentar? Conheça os dados sobre o descanso digno.',
+    act4Pocket: 'Mais tempo com seus filhos, mais descanso aos domingos e o mesmo salário garantido na conta todo mês.',
+  },
+  {
+    id: 'educacao',
+    title: 'Poupança Pé-de-Meia para o Jovem',
+    targetAudience: 'Para pais e alunos de escola pública',
+    strategicGoal: 'Mostrar benefício direto na mão do jovem que quer estudar',
+    emoji: '🎓',
+    badge: 'Futuro da Juventude',
+    badgeColor: '#8B5CF6',
+    photoUrl: '/images/news-education.jpg',
+    headline: 'Até R$ 9.200 na poupança para seu filho não largar os estudos',
+    source: 'MEC • CAIXA ECONÔMICA',
+    newsSource: 'MINISTÉRIO DA EDUCAÇÃO',
+    newsHeadline: 'Pé-de-Meia atinge 4 milhões de estudantes com depósitos mensais de R$ 200 na Caixa',
+    proof: 'MEC: Quase 4 milhões de estudantes da rede pública recebem depósitos mensais de R$ 200 mais bônus de R$ 1.000 ao fim de cada ano.',
+    statNumber: 'R$ 9.200',
+    statLabel: 'Poupança total por aluno ao se formar no Ensino Médio',
+    objection: 'Dizem que o governo não investe de verdade no futuro da juventude',
+    rebuttal: 'O programa Pé-de-Meia é uma lei federal com fundo orçamentário próprio de mais de R$ 20 bilhões garantido na Caixa.',
+    act1Hook: 'Você sabia que seu filho ou neto de escola pública tem direito a receber depósitos mensais da Caixa?',
+    act4Pocket: 'Alívio financeiro imediato para a família e futuro garantido para a juventude que quer trabalhar e vencer.',
+  },
+  {
+    id: 'menos_flavio',
+    title: 'Comparar Gestões: O Risco com Flávio',
+    targetAudience: 'Para aposentados e eleitores indecisos',
+    strategicGoal: 'Alertar sobre corte de 59% na Farmácia Popular e arrocho',
+    emoji: '📉',
+    badge: 'Comparativo de Gestões',
+    badgeColor: '#EF4444',
+    photoUrl: '/images/territory-sp.jpg',
+    headline: 'O remédio de pressão e diabetes da sua mãe corre risco?',
+    source: 'ORÇAMENTO DA UNIÃO • MINISTÉRIO DA SAÚDE',
+    newsSource: 'ORÇAMENTO FEDERAL • DADOS PÚBLICOS',
+    newsHeadline: 'Registros do Congresso confirmam corte de 59% na verba da Farmácia Popular sob gestão anterior',
+    proof: 'Registros do Congresso Nacional: corte de 59% na verba da Farmácia Popular e votos contrários a direitos do trabalhador.',
+    statNumber: '-59%',
+    statLabel: 'Corte na Farmácia Popular sob gestão anterior',
+    objection: 'Dizem que nada muda na saúde e no posto se mudar o governo federal',
+    rebuttal: 'Sem orçamento federal, farmácias credenciadas suspendem a entrega gratuita e a família tem que pagar do próprio bolso.',
+    act1Hook: 'Você sabe quanto custa o remédio de pressão e diabetes todo mês? Veja o que o orçamento prova.',
+    act4Pocket: 'Economia real de mais de R$ 180 por mês no bolso do idoso trabalhador com remédio 100% gratuito.',
+  },
+  {
+    id: 'desarme',
+    title: 'Desarmar Mentiras no WhatsApp',
+    targetAudience: 'Para almoço de domingo e grupos de família',
+    strategicGoal: 'Responder parentes e colegas sem briga, apenas com fatos',
+    emoji: '🛡️',
+    badge: 'Checagem de Fatos',
+    badgeColor: '#F59E0B',
+    photoUrl: '/images/hero-dialogue.jpg',
+    headline: 'Disseram no grupo que tudo piorou? Veja o que os documentos provam',
+    source: 'DIÁRIO OFICIAL & REGISTROS PÚBLICOS',
+    newsSource: 'REGISTROS DO ESTADO BRASILEIRO',
+    newsHeadline: 'Desemprego atinge menor patamar em 10 anos e reservas internacionais crescem',
+    proof: 'Fontes primárias do Estado brasileiro: balanços da Fazenda, dados do Caged e levantamentos de preços do DIEESE.',
+    statNumber: 'MENOR TAXA',
+    statLabel: 'Menor taxa de desemprego em 10 anos no Brasil',
+    objection: 'Dizem nas redes sociais que "o Brasil tá quebrando e vai piorar"',
+    rebuttal: 'O desemprego caiu para o menor patamar em 10 anos, reservas internacionais cresceram e o risco-país recuou.',
+    act1Hook: 'Antes de brigar no grupo de família, olhe esses números comprovados em registros públicos.',
+    act4Pocket: 'A verdade não precisa de grito: números oficiais falam por si e protegem o diálogo.',
+  },
+  {
+    id: 'territorio',
+    title: 'Obras & Verbas na Minha Região',
+    targetAudience: 'Para eleitores de SC, SP e cidades locais',
+    strategicGoal: 'Mostrar investimentos federais concretos no seu estado',
+    emoji: '📍',
+    badge: 'Dossiê Regional',
+    badgeColor: '#06B6D4',
+    photoUrl: '/images/territory-sc.jpg',
+    headline: 'Como os investimentos federais estão impactando as cidades do nosso estado',
+    source: 'MINISTÉRIO DA FAZENDA • DADOS PÚBLICOS',
+    newsSource: 'MINISTÉRIO DA FAZENDA • BALANÇO OFICIAL',
+    newsHeadline: 'Repasses recordes para infraestrutura, saúde e escolas beneficiam municípios do estado',
+    proof: 'Balanço Oficial: Recorde de repasses federais para infraestrutura, saúde pública e créditos facilitados para o comércio local.',
+    statNumber: '100% AUDITADO',
+    statLabel: 'Dados abertos e fiscalizados por órgãos de controle',
+    objection: 'Dizem que o governo federal esqueceu o nosso estado e não investe aqui',
+    rebuttal: 'Os relatórios de execução orçamentária comprovam retomada de obras paralisadas e repasses recordes para municípios.',
+    act1Hook: 'O impacto real das medidas econômicas na infraestrutura e nos hospitais da nossa região.',
+    act4Pocket: 'O comércio local ganha força quando os trabalhadores e aposentados têm renda circulando no bairro.',
+  },
+];
+
+// ─────────────────────────────────────────────────────────────
+// TEMPLATES VISUAIS PRÉ-PRONTOS (MINIATURAS VISUAIS DE ALTO NÍVEL)
+// Miniaturas fieis que mostram a estética do post antes da escolha
+// ─────────────────────────────────────────────────────────────
+interface PresetVisualTemplate {
+  id: string;
+  title: string;
+  desc: string;
+  badge: string;
+  bgUrl: string;
+  toner: TonerStyle;
+  intensity: number;
+  newsCard: boolean;
+  newsSource: string;
+  newsImg: string;
+  theme: VisualTheme;
+  accentColor: string;
+  miniBgClass: string;
+  miniBadgeColor: string;
+  miniSampleNumber?: string;
+}
+
+const PRESET_VISUAL_TEMPLATES: PresetVisualTemplate[] = [
+  {
+    id: 'tpl-noticiosa',
+    title: 'Manchete Noticiosa',
+    desc: 'Capa estilo G1/IBGE com recorte fotográfico de jornal e selo auditado',
+    badge: 'Padrão Editorial',
+    bgUrl: '/images/news-market.jpg',
+    toner: 'toner-rubro',
+    intensity: 0.82,
+    newsCard: true,
+    newsSource: 'IBGE • AGÊNCIA DE NOTÍCIAS',
+    newsImg: '/images/news-market.jpg',
+    theme: 'brasil-editorial',
+    accentColor: '#C52229',
+    miniBgClass: 'from-slate-950 via-red-950/70 to-slate-900',
+    miniBadgeColor: 'bg-red-600 text-white',
+  },
+  {
+    id: 'tpl-territorial',
+    title: 'Dossiê Territorial',
+    desc: 'Fotografia urbana da sua região com toner cinematográfico vermelho profundo',
+    badge: 'Território & Cinema',
+    bgUrl: '/images/territory-sc.jpg',
+    toner: 'toner-rubro',
+    intensity: 0.86,
+    newsCard: true,
+    newsSource: 'MINISTÉRIO DA FAZENDA • DADOS PÚBLICOS',
+    newsImg: '/images/territory-sc.jpg',
+    theme: 'brasil-editorial',
+    accentColor: '#EF4444',
+    miniBgClass: 'from-red-950 via-slate-950 to-black',
+    miniBadgeColor: 'bg-red-500 text-white',
+  },
+  {
+    id: 'tpl-bigstat',
+    title: 'Big Stat Monumental',
+    desc: 'Super número verde esmeralda com dados auditados em primeiro plano',
+    badge: 'Super Número',
+    bgUrl: '/images/news-workers.jpg',
+    toner: 'toner-dark',
+    intensity: 0.90,
+    newsCard: false,
+    newsSource: 'CAGED • MINISTÉRIO DO TRABALHO',
+    newsImg: '/images/news-workers.jpg',
+    theme: 'dark-moderno',
+    accentColor: '#10B981',
+    miniBgClass: 'from-slate-950 via-emerald-950/60 to-black',
+    miniBadgeColor: 'bg-emerald-600 text-white',
+    miniSampleNumber: '+3 MILHÕES',
+  },
+  {
+    id: 'tpl-pb',
+    title: 'P&B Investigativo',
+    desc: 'Estilo jornalístico de alto contraste monocromático e denúncia contundente',
+    badge: 'Investigativo',
+    bgUrl: '/images/territory-sp.jpg',
+    toner: 'toner-pb',
+    intensity: 0.88,
+    newsCard: true,
+    newsSource: 'FOLHA DE S.PAULO • ECONOMIA',
+    newsImg: '/images/territory-sp.jpg',
+    theme: 'dark-moderno',
+    accentColor: '#F87171',
+    miniBgClass: 'from-neutral-900 via-neutral-950 to-black',
+    miniBadgeColor: 'bg-neutral-800 text-red-400 border border-red-500/30',
+  },
+  {
+    id: 'tpl-esperanca',
+    title: 'Cívico Esperança',
+    desc: 'Verde floresta e dourado para inspirar acolhimento, diálogo e união popular',
+    badge: 'Diálogo & Futuro',
+    bgUrl: '/images/campaign-workshop.jpg',
+    toner: 'toner-brasil',
+    intensity: 0.82,
+    newsCard: false,
+    newsSource: 'BORA 13 • INICIATIVA CIDADÃ',
+    newsImg: '/images/campaign-workshop.jpg',
+    theme: 'brasil-vibrante',
+    accentColor: '#F59E0B',
+    miniBgClass: 'from-emerald-950 via-slate-950 to-amber-950/40',
+    miniBadgeColor: 'bg-amber-600 text-white',
+    miniSampleNumber: '⭐ BORA 13',
+  },
 ];
 
 export default function PostStudioSection({
@@ -57,20 +288,44 @@ export default function PostStudioSection({
   const [isExporting, setIsExporting] = useState<boolean>(false);
   const [exportProgress, setExportProgress] = useState<string>('');
 
-  // Modo de Operação: Leigo (1-Click Rápido) vs. Avançado (Precision Studio)
-  const [studioMode, setStudioMode] = useState<'facil' | 'avancado'>('facil');
+  // Passo Ativo do Stepper Progressivo (1 = Pauta, 2 = Estilo Visual, 3 = Post Pronto)
+  const [activeStep, setActiveStep] = useState<1 | 2 | 3>(3);
 
-  // Controles Avançados de Design
-  const [showSafeZone, setShowSafeZone] = useState<boolean>(false);
-  const [enablePaperGrain, setEnablePaperGrain] = useState<boolean>(true);
-  const [enableGridLines, setEnableGridLines] = useState<boolean>(true);
-  const [fontScale, setFontScale] = useState<number>(1);
-  const [headlineWeight, setHeadlineWeight] = useState<'bold' | 'black' | 'normal'>('black');
-  const [isUppercase, setIsUppercase] = useState<boolean>(false);
-  const [activeSeal, setActiveSeal] = useState<string>('⭐ BORA 13 • DIÁLOGO REAL');
+  // Categoria estratégica ativa
+  const [activeCategory, setActiveCategory] = useState<string>('alimentacao');
 
-  // Arquétipos visuais customizados por slide (para o modo carrossel)
-  const [slideArchetypes, setSlideArchetypes] = useState<Record<number, SlideArchetype>>({
+  // Template visual ativo
+  const [activeTemplateId, setActiveTemplateId] = useState<string>('tpl-noticiosa');
+
+  // Configurações de Fundo Fotográfico & Toner
+  const [showBgPhoto, setShowBgPhoto] = useState<boolean>(true);
+  const [bgImageUrl, setBgImageUrl] = useState<string>(
+    memory?.selectedUF === 'SP' ? '/images/territory-sp.jpg' : '/images/territory-sc.jpg'
+  );
+  const [tonerStyle, setTonerStyle] = useState<TonerStyle>('toner-rubro');
+  const [tonerIntensity, setTonerIntensity] = useState<number>(0.84);
+
+  // Configurações de Notícia / Manchete
+  const [showNewsCard, setShowNewsCard] = useState<boolean>(true);
+  const [newsSource, setNewsSource] = useState<string>('IBGE • AGÊNCIA DE NOTÍCIAS');
+  const [newsDate, setNewsDate] = useState<string>('OUTUBRO 2024 • REGISTRO PÚBLICO OFICIAL');
+  const [newsHeadline, setNewsHeadline] = useState<string>(
+    'Deflação da cesta básica é registrada em 17 capitais e poder de compra sobe'
+  );
+  const [newsImageUrl, setNewsImageUrl] = useState<string>('/images/news-market.jpg');
+
+  // Configuração discreta de localização (HUD)
+  const [territoryTag, setTerritoryTag] = useState<string>(() => {
+    if (memory?.selectedCity && memory?.selectedUF) return `${memory.selectedCity} • ${memory.selectedUF}`;
+    if (memory?.selectedUF) return `${memory.selectedUF} • Brasil`;
+    return 'Santa Catarina • Florianópolis';
+  });
+
+  // Gaveta opcional minimalista de personalização
+  const [showQuickSettings, setShowQuickSettings] = useState<boolean>(false);
+
+  // Arquétipos visuais por slide
+  const [slideArchetypes] = useState<Record<number, SlideArchetype>>({
     0: 'editorial-cover',
     1: 'big-stat-hero',
     2: 'dialectic-split',
@@ -78,30 +333,131 @@ export default function PostStudioSection({
     4: 'manifesto-cta',
   });
 
-  const [catalogFilter, setCatalogFilter] = useState<
-    'todos' | 'tatico_4votos' | 'menos_com_flavio' | 'fatos' | 'oportunidades' | 'territorio' | 'custom'
-  >('todos');
+  // Cache de imagens pré-carregadas para o canvas
+  const imageCache = useRef<Map<string, HTMLImageElement>>(new Map());
+  const [imagesReadyVersion, setImagesReadyVersion] = useState<number>(0);
 
-  // Atualiza preset se o initialPreset mudar via orquestrador
+  // Pré-carregamento imediato de todas as fotos fotográficas via basePath correto
   useEffect(() => {
-    if (initialPreset) {
-      setPreset(initialPreset);
-      if (initialPreset.format) setFormat(initialPreset.format);
-      if (initialPreset.theme) setTheme(initialPreset.theme);
-      setActiveSlide(0);
-    }
-  }, [initialPreset]);
+    let isMounted = true;
+    const preloadList = [
+      '/images/territory-sc.jpg',
+      '/images/territory-sp.jpg',
+      '/images/news-workers.jpg',
+      '/images/news-market.jpg',
+      '/images/news-education.jpg',
+      '/images/campaign-workshop.jpg',
+      '/images/hero-dialogue.jpg',
+    ];
 
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+    preloadList.forEach((rawPath) => {
+      const resolved = resolveAssetPath(rawPath);
+      if (imageCache.current.has(resolved)) return;
+
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = () => {
+        if (!isMounted) return;
+        imageCache.current.set(resolved, img);
+        setImagesReadyVersion((v) => v + 1);
+      };
+      img.onerror = () => {
+        // Fallback sem basePath caso ocorra erro
+        if (resolved !== rawPath && !imageCache.current.has(rawPath)) {
+          const fallbackImg = new Image();
+          fallbackImg.crossOrigin = 'anonymous';
+          fallbackImg.onload = () => {
+            if (!isMounted) return;
+            imageCache.current.set(rawPath, fallbackImg);
+            setImagesReadyVersion((v) => v + 1);
+          };
+          fallbackImg.src = rawPath;
+        }
+      };
+      img.src = resolved;
+    });
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  const ensureImage = useCallback((rawPath: string): HTMLImageElement | null => {
+    if (!rawPath) return null;
+    const resolved = resolveAssetPath(rawPath);
+    if (imageCache.current.has(resolved)) return imageCache.current.get(resolved)!;
+    if (imageCache.current.has(rawPath)) return imageCache.current.get(rawPath)!;
+
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      imageCache.current.set(resolved, img);
+      setImagesReadyVersion((v) => v + 1);
+    };
+    img.src = resolved;
+    return null;
+  }, []);
+
+  const TOTAL_SLIDES = 5;
   const isCarousel = format === 'carousel' || format === 'portrait';
-  const TOTAL_SLIDES = isCarousel ? 5 : 1;
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
-  // Gerador de Cópias Multiplataforma
-  const copies = useMemo(() => {
-    return generateSmartCopy(preset, memory);
-  }, [preset, memory]);
+  // Geração de Legendas Inteligentes
+  const copies = useMemo(
+    () => generateSmartCopy(preset, memory),
+    [preset, memory]
+  );
 
-  // Função auxiliar para quebrar texto no canvas 2D com suporte a line-height
+  // Seleção de Categoria Estratégica (Passo 1)
+  const handleSelectCategory = (catId: string) => {
+    playProceduralHaptic('card');
+    setActiveCategory(catId);
+    const cat = STRATEGIC_CATEGORIES.find((c) => c.id === catId);
+    if (!cat) return;
+
+    setPreset((prev) => ({
+      ...prev,
+      title: cat.title,
+      headline: cat.headline,
+      categoryTag: cat.id,
+      proofData: cat.proof,
+      statNumber: cat.statNumber,
+      statLabel: cat.statLabel,
+      counterArg: cat.objection,
+      rebuttal: cat.rebuttal,
+      act1Hook: cat.act1Hook,
+      act4PocketImpact: cat.act4Pocket,
+      sourceName: cat.source,
+    }));
+
+    setNewsHeadline(cat.newsHeadline || cat.headline);
+    setNewsSource(cat.newsSource || cat.source);
+    setNewsImageUrl(cat.photoUrl);
+    setBgImageUrl(cat.photoUrl);
+    setActiveSlide(0);
+    // Avança para visualização ou para o passo 2
+    setActiveStep(3);
+  };
+
+  // Seleção de Template Visual Pré-Pronto (Passo 2)
+  const handleSelectTemplate = (tplId: string) => {
+    playProceduralHaptic('toggle');
+    setActiveTemplateId(tplId);
+    const tpl = PRESET_VISUAL_TEMPLATES.find((t) => t.id === tplId);
+    if (!tpl) return;
+
+    setShowBgPhoto(true);
+    setBgImageUrl(tpl.bgUrl);
+    setTonerStyle(tpl.toner);
+    setTonerIntensity(tpl.intensity);
+    setShowNewsCard(tpl.newsCard);
+    setNewsSource(tpl.newsSource);
+    setNewsImageUrl(tpl.newsImg);
+    setTheme(tpl.theme);
+    setActiveStep(3);
+  };
+
+  // Função para quebrar texto no canvas 2D
   const wrapText = (
     ctx: CanvasRenderingContext2D,
     text: string,
@@ -131,14 +487,13 @@ export default function PostStudioSection({
     return currentY + lineHeight;
   };
 
-  // Gerador Procedural de Textura Analógica (Papel Algodão / Grão Estocástico)
+  // Grão estocástico para acabamento de revista impressa
   const applyAnalogTexture = (
     ctx: CanvasRenderingContext2D,
     width: number,
     height: number,
-    intensity: number = 0.035
+    intensity: number = 0.022
   ) => {
-    if (!enablePaperGrain) return;
     try {
       const w = Math.min(width, 1080);
       const h = Math.min(height, 1920);
@@ -153,16 +508,13 @@ export default function PostStudioSection({
       }
       ctx.putImageData(imgData, 0, 0);
     } catch {
-      // Fallback gracioso caso cross-origin ou memória restrinja getImageData
+      // Ignora erro caso cross-origin restrinja
     }
   };
 
   // ─────────────────────────────────────────────────────────────
-  // RENDERIZADOR NATIVO CANVAS 2D DE ALTA FIDELIDADE
-  // Dimensões Oficiais:
-  // - Retrato 4:5 (Padrão de Ouro Feed Instagram): 1080 x 1350
-  // - Quadrado 1:1: 1080 x 1080
-  // - Story 9:16: 1080 x 1920
+  // RENDERIZADOR CANVAS 2D DE ALTO IMPACTO (USO TOTAL DO ESPAÇO)
+  // Diagramação milimétrica para 1080x1350 sem vazios desconexos
   // ─────────────────────────────────────────────────────────────
   const renderCanvas = useCallback(
     (slideIdx: number = activeSlide) => {
@@ -172,7 +524,7 @@ export default function PostStudioSection({
       if (!ctx) return;
 
       const width = 1080;
-      let height = 1350; // Padrão Retrato 4:5
+      let height = 1350; // Padrão Retrato 4:5 Feed Instagram
       if (format === 'square') height = 1080;
       else if (format === 'story') height = 1920;
       else if (format === 'portrait' || format === 'carousel') height = 1350;
@@ -180,272 +532,514 @@ export default function PostStudioSection({
       canvas.width = width;
       canvas.height = height;
 
-      // 1. TEMA DE FUNDO & ATMOSFERA EDITORIAL
-      const isDark = theme === 'dark-moderno';
-      const isInvestigativo = theme === 'jornalismo-investigativo';
-      const isVibrante = theme === 'brasil-vibrante';
-      const isConcretista = theme === 'concretismo-puro';
+      // Fator de escala vertical para 1:1, 4:5 e 9:16
+      const vScale = height / 1350;
 
-      if (theme === 'brasil-editorial') {
-        // Fundo papel algodão off-white autêntico
-        ctx.fillStyle = '#FAF7F2';
-        ctx.fillRect(0, 0, width, height);
+      // ── 1. FUNDO TERRITORIAL COM TONER CINEMATOGRÁFICO ──
+      const bgImg = showBgPhoto ? ensureImage(bgImageUrl) : null;
 
-        // Arcos Concretistas Geométricos
-        ctx.save();
-        ctx.strokeStyle = 'rgba(0, 107, 63, 0.08)'; // Verde Brasil sutil
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        ctx.arc(width - 40, 120, 320, 0, Math.PI * 2);
-        ctx.stroke();
+      if (showBgPhoto && bgImg) {
+        const imgAspect = bgImg.width / bgImg.height;
+        const canvasAspect = width / height;
+        let dw = width;
+        let dh = height;
+        let dx = 0;
+        let dy = 0;
 
-        ctx.strokeStyle = 'rgba(197, 34, 41, 0.06)'; // Vermelho Casa 13
-        ctx.beginPath();
-        ctx.arc(60, height - 160, 380, 0, Math.PI * 2);
-        ctx.stroke();
-        ctx.restore();
-      } else if (isVibrante) {
-        // Gradiente Solar & Esperança
-        const grad = ctx.createLinearGradient(0, 0, width, height);
-        grad.addColorStop(0, '#FFFFFF');
-        grad.addColorStop(0.4, '#FFFDF5');
-        grad.addColorStop(1, '#FEF2F2');
-        ctx.fillStyle = grad;
-        ctx.fillRect(0, 0, width, height);
+        if (imgAspect > canvasAspect) {
+          dw = height * imgAspect;
+          dx = (width - dw) / 2;
+        } else {
+          dh = width / imgAspect;
+          dy = (height - dh) / 2;
+        }
 
-        // Faixa geométrica no topo
-        ctx.fillStyle = '#C52229';
-        ctx.fillRect(0, 0, width, 18);
-        ctx.fillStyle = '#F59E0B';
-        ctx.fillRect(0, 18, width, 6);
-      } else if (isInvestigativo) {
-        // Fundo Dossier Editorial Técnico
-        ctx.fillStyle = '#F8FAFC';
-        ctx.fillRect(0, 0, width, height);
+        ctx.drawImage(bgImg, dx, dy, dw, dh);
 
-        // Marca de documento auditado no canto
-        ctx.fillStyle = 'rgba(15, 23, 42, 0.03)';
-        ctx.fillRect(60, 60, width - 120, height - 120);
-        ctx.strokeStyle = 'rgba(15, 23, 42, 0.12)';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(60, 60, width - 120, height - 120);
-      } else if (isDark) {
-        // Dark Obsidian VIP
+        // Aplicação de Toner Editorial
+        if (tonerStyle === 'toner-rubro') {
+          // Rubro Povo / Vermelho Cidadão
+          ctx.fillStyle = `rgba(165, 20, 25, ${0.78 * tonerIntensity})`;
+          ctx.fillRect(0, 0, width, height);
+
+          const redGlow = ctx.createRadialGradient(width - 150, 180, 50, width - 150, 180, 800);
+          redGlow.addColorStop(0, `rgba(197, 34, 41, ${0.55 * tonerIntensity})`);
+          redGlow.addColorStop(1, 'rgba(11, 15, 25, 0)');
+          ctx.fillStyle = redGlow;
+          ctx.fillRect(0, 0, width, height);
+
+          const bottomGrad = ctx.createLinearGradient(0, height * 0.30, 0, height);
+          bottomGrad.addColorStop(0, 'rgba(11, 15, 25, 0.25)');
+          bottomGrad.addColorStop(1, `rgba(11, 15, 25, ${0.97 * tonerIntensity})`);
+          ctx.fillStyle = bottomGrad;
+          ctx.fillRect(0, 0, width, height);
+        } else if (tonerStyle === 'toner-pb') {
+          // P&B Investigativo de alto contraste
+          ctx.fillStyle = `rgba(15, 23, 42, ${0.86 * tonerIntensity})`;
+          ctx.fillRect(0, 0, width, height);
+
+          const darkWash = ctx.createLinearGradient(0, 0, 0, height);
+          darkWash.addColorStop(0, 'rgba(15, 23, 42, 0.45)');
+          darkWash.addColorStop(1, `rgba(3, 7, 18, ${0.96 * tonerIntensity})`);
+          ctx.fillStyle = darkWash;
+          ctx.fillRect(0, 0, width, height);
+        } else if (tonerStyle === 'toner-brasil') {
+          // Verde Floresta & Ouro Cívico
+          ctx.fillStyle = `rgba(0, 55, 30, ${0.82 * tonerIntensity})`;
+          ctx.fillRect(0, 0, width, height);
+
+          const amberGlow = ctx.createRadialGradient(width / 2, 220, 40, width / 2, 220, 700);
+          amberGlow.addColorStop(0, `rgba(245, 158, 11, ${0.32 * tonerIntensity})`);
+          amberGlow.addColorStop(1, 'rgba(0, 55, 30, 0)');
+          ctx.fillStyle = amberGlow;
+          ctx.fillRect(0, 0, width, height);
+
+          const deepGreen = ctx.createLinearGradient(0, height * 0.35, 0, height);
+          deepGreen.addColorStop(0, 'rgba(0, 30, 15, 0)');
+          deepGreen.addColorStop(1, `rgba(0, 20, 10, ${0.95 * tonerIntensity})`);
+          ctx.fillStyle = deepGreen;
+          ctx.fillRect(0, 0, width, height);
+        } else if (tonerStyle === 'toner-dark') {
+          // Obsidian Night Film
+          const noirGrad = ctx.createLinearGradient(0, 0, 0, height);
+          noirGrad.addColorStop(0, `rgba(11, 15, 25, ${0.84 * tonerIntensity})`);
+          noirGrad.addColorStop(0.5, `rgba(11, 15, 25, ${0.92 * tonerIntensity})`);
+          noirGrad.addColorStop(1, `rgba(3, 5, 10, ${0.98 * tonerIntensity})`);
+          ctx.fillStyle = noirGrad;
+          ctx.fillRect(0, 0, width, height);
+        } else {
+          // Papel Editorial
+          ctx.fillStyle = `rgba(248, 246, 240, ${0.90 * tonerIntensity})`;
+          ctx.fillRect(0, 0, width, height);
+        }
+      } else {
+        // Fallback Vetorial Escuro
         ctx.fillStyle = '#0B0F19';
         ctx.fillRect(0, 0, width, height);
-
-        // Radial glow suave
-        const glow = ctx.createRadialGradient(width / 2, 280, 40, width / 2, 280, 640);
-        glow.addColorStop(0, 'rgba(197, 34, 41, 0.28)');
-        glow.addColorStop(1, 'rgba(11, 15, 25, 0)');
-        ctx.fillStyle = glow;
+        const redGlow = ctx.createRadialGradient(width - 100, 200, 40, width - 100, 200, 720);
+        redGlow.addColorStop(0, 'rgba(197, 34, 41, 0.45)');
+        redGlow.addColorStop(1, 'rgba(11, 15, 25, 0)');
+        ctx.fillStyle = redGlow;
         ctx.fillRect(0, 0, width, height);
-      } else {
-        // Concretismo Puro (Cartaz de Arte Suíço-Brasileira)
-        ctx.fillStyle = '#F4F4F5';
-        ctx.fillRect(0, 0, width, height);
-
-        // Faixas verticais de corte concreto
-        ctx.fillStyle = '#C52229';
-        ctx.fillRect(80, 90, 22, 140);
-        ctx.fillStyle = '#E5A800';
-        ctx.fillRect(108, 90, 12, 140);
-        ctx.fillStyle = '#006B3F';
-        ctx.fillRect(126, 90, 8, 140);
       }
 
-      // Linhas de Grade Modernistas (1px com transparência calculada)
-      if (enableGridLines) {
-        ctx.save();
-        ctx.strokeStyle = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(15,23,42,0.04)';
-        ctx.lineWidth = 1;
-        // Grade vertical de 12 colunas
-        const colW = width / 12;
-        for (let c = 1; c < 12; c++) {
-          ctx.beginPath();
-          ctx.moveTo(c * colW, 0);
-          ctx.lineTo(c * colW, height);
-          ctx.stroke();
-        }
-        ctx.restore();
-      }
-
-      // Margens e Dimensões do Conteúdo
-      const margin = 84;
+      // Dimensões e Margens
+      const margin = 72;
       const contentWidth = width - margin * 2;
 
-      // Cores do Design System
-      const textPrimary = isDark ? '#FFFFFF' : '#0F172A';
-      const textSecondary = isDark ? '#94A3B8' : '#475569';
-      const textMuted = isDark ? '#64748B' : '#94A3B8';
+      // Paleta Tipográfica
+      const textPrimary = '#FFFFFF';
+      const textSecondary = '#CBD5E1';
+      const textMuted = '#94A3B8';
       const accentRed = '#C52229';
       const accentGold = '#F59E0B';
       const accentGreen = '#10B981';
 
-      // 2. CABEÇALHO DO CARD (Selo & Paginação)
-      const headerY = 100;
-
-      // Selo de Destaque no Topo
-      ctx.fillStyle = isDark ? 'rgba(197, 34, 41, 0.28)' : '#FEE2E2';
-      ctx.beginPath();
-      ctx.roundRect(margin, headerY, 340, 52, 26);
-      ctx.fill();
-
-      ctx.fillStyle = isDark ? '#FCA5A5' : accentRed;
-      ctx.font = 'bold 20px Inter, -apple-system, sans-serif';
-      ctx.fillText(activeSeal, margin + 22, headerY + 33);
-
-      // Indicador de Slide no Carrossel (Ato X de 5)
+      // ── 2. HUD DE CARROSSEL INSTAGRAM (TOPO DO POST) ──
+      // Barras Segmentadas (01 a 05)
       if (isCarousel) {
-        ctx.fillStyle = textMuted;
-        ctx.font = 'bold 22px Inter, -apple-system, sans-serif';
-        ctx.textAlign = 'right';
-        ctx.fillText(`ATO ${slideIdx + 1} DE ${TOTAL_SLIDES}`, width - margin, headerY + 33);
-        ctx.textAlign = 'left';
+        const totalBars = TOTAL_SLIDES;
+        const barGap = 8;
+        const barWidth = (contentWidth - (totalBars - 1) * barGap) / totalBars;
+        const barY = 46 * (vScale < 1 ? 0.9 : 1);
+
+        for (let b = 0; b < totalBars; b++) {
+          const bx = margin + b * (barWidth + barGap);
+          const isCurrent = b === slideIdx;
+          const isFilled = b <= slideIdx;
+
+          ctx.fillStyle = isCurrent
+            ? accentRed
+            : isFilled
+            ? 'rgba(255, 255, 255, 0.85)'
+            : 'rgba(255, 255, 255, 0.22)';
+
+          ctx.beginPath();
+          ctx.roundRect(bx, barY, barWidth, 6, 3);
+          ctx.fill();
+        }
       }
 
-      // 3. RENDERIZAÇÃO DO CONTEÚDO PELO ARQUÉTIPO VISUAL
-      let currentY = 220;
+      // Pílulas de Geolocalização e Contador
+      const hudY = 76 * (vScale < 1 ? 0.9 : 1);
+
+      // Pílula de Localização (Esquerda)
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+      ctx.beginPath();
+      ctx.roundRect(margin, hudY, 340, 44, 22);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      ctx.fillStyle = '#FCA5A5';
+      ctx.font = 'bold 18px Inter, -apple-system, sans-serif';
+      ctx.fillText(`📍 ${territoryTag}`, margin + 18, hudY + 28);
+
+      // Selo do Slide Ativo (Direita)
+      ctx.fillStyle = 'rgba(197, 34, 41, 0.35)';
+      ctx.beginPath();
+      ctx.roundRect(width - margin - 170, hudY, 170, 44, 22);
+      ctx.fill();
+      ctx.strokeStyle = 'rgba(239, 68, 68, 0.5)';
+      ctx.lineWidth = 1.2;
+      ctx.stroke();
+
+      ctx.fillStyle = '#F87171';
+      ctx.font = '900 18px Inter, -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText(`SLIDE 0${slideIdx + 1} / 0${TOTAL_SLIDES}`, width - margin - 85, hudY + 28);
+      ctx.textAlign = 'left';
+
+      // ── 3. RENDERIZAÇÃO DO CONTEÚDO (APROVEITAMENTO MÁXIMO DO ESPAÇO) ──
+      let currentY = 154 * (vScale < 1 ? 0.95 : 1);
       const archetype = slideArchetypes[slideIdx] || (slideIdx === 0 ? 'editorial-cover' : 'big-stat-hero');
 
-      // ── ARQUÉTIPO 1: CAPA NOTICIOSA / EDITORIAL COVER ──
+      // ── ARQUÉTIPO 1: CAPA COM MANCHETE NOTICIOSA AUDITADA ──
       if (archetype === 'editorial-cover' || (!isCarousel && slideIdx === 0 && format !== 'story')) {
         // Chapéu / Kicker
         ctx.fillStyle = accentRed;
-        ctx.font = 'bold 24px Inter, -apple-system, sans-serif';
-        ctx.fillText(`DIÁLOGOS DO BRASIL • ${preset.categoryTag.toUpperCase()}`, margin, currentY);
-        currentY += 45;
+        ctx.font = '900 22px Inter, -apple-system, sans-serif';
+        ctx.fillText(`[ 📰 DOSSIÊ DE DIÁLOGO • ${preset.categoryTag.toUpperCase()} ]`, margin, currentY);
+        currentY += 40;
 
-        // Manchete Monumental Display
-        const weightStr = headlineWeight === 'black' ? '900' : headlineWeight === 'bold' ? 'bold' : '600';
-        const fontSize = Math.round(62 * fontScale);
+        // Manchete Monumental
+        const rawHeadline = preset.headline;
+        let fontSize = 62;
+        if (rawHeadline.length > 70) fontSize = 50;
+        else if (rawHeadline.length > 48) fontSize = 56;
+        if (format === 'square') fontSize = Math.round(fontSize * 0.82);
+
         ctx.fillStyle = textPrimary;
-        ctx.font = `${weightStr} ${fontSize}px Inter, -apple-system, sans-serif`;
-        const headlineText = isUppercase ? preset.headline.toUpperCase() : preset.headline;
-        currentY = wrapText(ctx, headlineText, margin, currentY, contentWidth, fontSize * 1.18);
-        currentY += 36;
+        ctx.font = `900 ${fontSize}px Inter, -apple-system, sans-serif`;
+        currentY = wrapText(ctx, rawHeadline, margin, currentY, contentWidth, fontSize * 1.15);
+        currentY += 26 * vScale;
 
-        // Caixa de Sub-Hook Editorial com Barra Lateral Rubra
-        const boxHeight = 220;
-        ctx.fillStyle = isDark ? 'rgba(255, 255, 255, 0.05)' : '#FFFFFF';
+        // Card da Manchete Noticiosa Expandido (Foto em Alta Destaque)
+        if (showNewsCard) {
+          const cardH = Math.round(445 * vScale);
+          const cardY = currentY;
+
+          // Sombra cinematográfica
+          ctx.save();
+          ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+          ctx.shadowBlur = 36;
+          ctx.shadowOffsetY = 18;
+
+          ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
+          ctx.beginPath();
+          ctx.roundRect(margin, cardY, contentWidth, cardH, 24);
+          ctx.fill();
+          ctx.restore();
+
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+          ctx.lineWidth = 1.8;
+          ctx.stroke();
+
+          // Barra Superior do Card (Veículo + Data + Verificação)
+          ctx.fillStyle = accentRed;
+          ctx.beginPath();
+          ctx.roundRect(margin + 24, cardY + 22, 240, 38, 19);
+          ctx.fill();
+
+          ctx.fillStyle = '#FFFFFF';
+          ctx.font = '900 15px Inter, -apple-system, sans-serif';
+          ctx.fillText(newsSource, margin + 40, cardY + 46);
+
+          // Data do Registro
+          ctx.fillStyle = textMuted;
+          ctx.font = 'bold 15px Inter, -apple-system, sans-serif';
+          ctx.fillText(newsDate, margin + 280, cardY + 46);
+
+          // Selo Fato Auditado
+          ctx.fillStyle = accentGreen;
+          ctx.font = '900 15px Inter, -apple-system, sans-serif';
+          ctx.textAlign = 'right';
+          ctx.fillText('✓ FATO AUDITADO', margin + contentWidth - 24, cardY + 46);
+          ctx.textAlign = 'left';
+
+          // Divisão do Card: Foto Noticiosa Ampla + Manchete
+          const newsImg = ensureImage(newsImageUrl);
+          const thumbW = Math.round(350 * (format === 'square' ? 0.8 : 1));
+          const thumbH = Math.round(270 * vScale);
+          const thumbX = margin + 24;
+          const thumbY = cardY + 76;
+
+          if (newsImg) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.roundRect(thumbX, thumbY, thumbW, thumbH, 18);
+            ctx.clip();
+            ctx.drawImage(newsImg, thumbX, thumbY, thumbW, thumbH);
+            ctx.restore();
+
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.28)';
+            ctx.lineWidth = 1.6;
+            ctx.beginPath();
+            ctx.roundRect(thumbX, thumbY, thumbW, thumbH, 18);
+            ctx.stroke();
+          }
+
+          // Texto da Notícia à Direita da Foto
+          const textX = thumbX + thumbW + 30;
+          const textMaxW = contentWidth - thumbW - 80;
+          ctx.fillStyle = textPrimary;
+          ctx.font = '700 30px Inter, -apple-system, sans-serif';
+          if (format === 'square') ctx.font = '700 22px Inter, -apple-system, sans-serif';
+          wrapText(ctx, `"${newsHeadline}"`, textX, thumbY + 44, textMaxW, format === 'square' ? 32 : 42);
+
+          // Rodapé do Card Noticioso
+          const footerCardY = cardY + cardH - 24;
+          ctx.fillStyle = textMuted;
+          ctx.font = 'bold 15px Inter, -apple-system, sans-serif';
+          ctx.fillText(`🏛️ Registro verificado em diários oficiais e pesquisas públicas`, textX, footerCardY);
+
+          currentY += cardH + 26 * vScale;
+        }
+
+        // Sub-Hook Box (Caixa de Acolhimento e Diálogo)
+        const hookBoxH = Math.round(260 * vScale);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
         ctx.beginPath();
-        ctx.roundRect(margin, currentY, contentWidth, boxHeight, 20);
+        ctx.roundRect(margin, currentY, contentWidth, hookBoxH, 22);
         ctx.fill();
-        ctx.strokeStyle = isDark ? 'rgba(255, 255, 255, 0.1)' : '#E2E8F0';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
         ctx.lineWidth = 1.5;
         ctx.stroke();
 
-        // Barra de Acento Lateral na Caixa
+        // Barra Rubra Lateral
         ctx.fillStyle = accentRed;
         ctx.beginPath();
-        ctx.roundRect(margin, currentY, 8, boxHeight, [20, 0, 0, 20]);
+        ctx.roundRect(margin, currentY, 12, hookBoxH, [22, 0, 0, 22]);
         ctx.fill();
 
+        // Kicker interno
+        ctx.fillStyle = accentGold;
+        ctx.font = '900 19px Inter, -apple-system, sans-serif';
+        ctx.fillText('💡 POR QUE ISSO IMPORTA NA SUA VIDA?', margin + 36, currentY + 46);
+
+        // Texto do Acolhimento
         ctx.fillStyle = textSecondary;
-        ctx.font = '500 30px Inter, -apple-system, sans-serif';
+        ctx.font = '500 28px Inter, -apple-system, sans-serif';
+        if (format === 'square') ctx.font = '500 20px Inter, -apple-system, sans-serif';
         wrapText(
           ctx,
-          preset.act1Hook || 'O que você precisa saber com dados oficiais antes da próxima conversa em família ou no trabalho.',
+          preset.act1Hook ||
+            'O que você precisa saber com dados oficiais antes da próxima conversa em família ou no trabalho.',
           margin + 36,
-          currentY + 68,
+          currentY + 92,
           contentWidth - 64,
-          44
+          format === 'square' ? 30 : 42
         );
 
-        // Indicador Visual de Deslize (Arrasta pro lado)
-        const ctaY = height - 160;
-        ctx.fillStyle = accentGold;
-        ctx.font = 'bold 28px Inter, -apple-system, sans-serif';
-        ctx.textAlign = 'center';
-        ctx.fillText('Deslize para ver as provas na mesa 👉', width / 2, ctaY);
-        ctx.textAlign = 'left';
+        // Micro-tag inferior do Acolhimento
+        ctx.fillStyle = '#CBD5E1';
+        ctx.font = 'bold 15px Inter, -apple-system, sans-serif';
+        ctx.fillText('📌 Salve este carrossel para consultar e mostrar fontes com tranquilidade.', margin + 36, currentY + hookBoxH - 24);
+
+        currentY += hookBoxH + 24 * vScale;
+
+        // Barra de Garantia de Auditoria Pública (Preenche harmoniosamente a tela)
+        const auditBarH = Math.round(62 * vScale);
+        ctx.fillStyle = 'rgba(16, 185, 129, 0.14)';
+        ctx.beginPath();
+        ctx.roundRect(margin, currentY, contentWidth, auditBarH, 16);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(16, 185, 129, 0.35)';
+        ctx.lineWidth = 1.4;
+        ctx.stroke();
+
+        ctx.fillStyle = accentGreen;
+        ctx.font = 'bold 17px Inter, -apple-system, sans-serif';
+        ctx.fillText('✓ FONTE AUDITADA: Órgãos oficiais do Estado, IBGE, DIEESE e Caged', margin + 24, currentY + 38);
+
+        // Indicador de Deslize Inferior
+        if (isCarousel) {
+          const swipeY = height - 116;
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+          ctx.beginPath();
+          ctx.roundRect(width - margin - 460, swipeY, 460, 52, 26);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          ctx.fillStyle = accentGold;
+          ctx.font = 'bold 21px Inter, -apple-system, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('Deslize para ver as provas na mesa 👉', width - margin - 230, swipeY + 33);
+          ctx.textAlign = 'left';
+        }
       }
 
-      // ── ARQUÉTIPO 2: BIG STAT HERO / O DADO DE IMPACTO ──
+      // ── ARQUÉTIPO 2: BIG STAT HERO / PROVA MATERIAL AUDITADA ──
       else if (archetype === 'big-stat-hero' || slideIdx === 1) {
         ctx.fillStyle = accentGreen;
-        ctx.font = 'bold 24px Inter, -apple-system, sans-serif';
-        ctx.fillText('📊 ATO 2 • A PROVA MATERIAL DOCUMENTADA', margin, currentY);
-        currentY += 45;
+        ctx.font = '900 22px Inter, -apple-system, sans-serif';
+        ctx.fillText('📊 ATO 2 • A PROVA MATERIAL AUDITADA', margin, currentY);
+        currentY += 40;
 
-        // Título do Fato
         ctx.fillStyle = textPrimary;
-        ctx.font = 'bold 44px Inter, -apple-system, sans-serif';
-        currentY = wrapText(ctx, preset.title, margin, currentY, contentWidth, 54);
-        currentY += 30;
+        ctx.font = '900 46px Inter, -apple-system, sans-serif';
+        currentY = wrapText(ctx, 'Os números oficiais que desmontam qualquer boato', margin, currentY, contentWidth, 54);
+        currentY += 28 * vScale;
 
-        // CARD DO BIG STAT (Número Gigante de Impacto)
-        const statBoxHeight = 360;
-        ctx.fillStyle = isDark ? '#131A29' : '#FFFFFF';
+        // Card 1: Monumental Big Stat (Expandido para 500px)
+        const statBoxHeight = Math.round(500 * vScale);
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
         ctx.beginPath();
         ctx.roundRect(margin, currentY, contentWidth, statBoxHeight, 28);
         ctx.fill();
-        ctx.strokeStyle = isDark ? 'rgba(16, 185, 129, 0.4)' : '#A7F3D0';
-        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = accentGreen;
+        ctx.lineWidth = 2.8;
         ctx.stroke();
 
-        // Número Gigante Tabular
+        // Número Gigante
         const statNum = preset.statNumber || '100% AUDITADO';
         ctx.fillStyle = accentGreen;
-        ctx.font = '900 88px Inter, -apple-system, sans-serif';
-        ctx.fillText(statNum, margin + 44, currentY + 110);
+        ctx.font = '900 120px Inter, -apple-system, sans-serif';
+        if (format === 'square') ctx.font = '900 84px Inter, -apple-system, sans-serif';
+        ctx.fillText(statNum, margin + 46, currentY + 128 * vScale);
 
-        // Rótulo do Número
+        // Rótulo em Ouro
         const statLabel = preset.statLabel || 'Dados consolidados por instituições de estado';
         ctx.fillStyle = accentGold;
-        ctx.font = 'bold 24px Inter, -apple-system, sans-serif';
-        ctx.fillText(statLabel.toUpperCase(), margin + 46, currentY + 160);
+        ctx.font = 'bold 25px Inter, -apple-system, sans-serif';
+        ctx.fillText(statLabel.toUpperCase(), margin + 48, currentY + 188 * vScale);
 
-        // Texto do Fato / Prova
+        // Linha divisória
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
+        ctx.lineWidth = 1.4;
+        ctx.beginPath();
+        ctx.moveTo(margin + 48, currentY + 220 * vScale);
+        ctx.lineTo(margin + contentWidth - 48, currentY + 220 * vScale);
+        ctx.stroke();
+
+        // Texto da Prova Material
         ctx.fillStyle = textPrimary;
-        ctx.font = '500 28px Inter, -apple-system, sans-serif';
-        wrapText(ctx, preset.proofData || preset.bodyText, margin + 46, currentY + 225, contentWidth - 92, 42);
+        ctx.font = '500 31px Inter, -apple-system, sans-serif';
+        if (format === 'square') ctx.font = '500 22px Inter, -apple-system, sans-serif';
+        wrapText(
+          ctx,
+          preset.proofData || preset.bodyText,
+          margin + 48,
+          currentY + 280 * vScale,
+          contentWidth - 96,
+          46 * vScale
+        );
 
-        currentY += statBoxHeight + 40;
+        // Carimbo de Registro
+        ctx.fillStyle = textMuted;
+        ctx.font = 'bold 18px Inter, -apple-system, sans-serif';
+        ctx.fillText(`🏛️ FONTE OFICIAL: ${preset.sourceName} • REGISTRO ABERTO`, margin + 48, currentY + statBoxHeight - 28);
 
-        // Carimbo de Auditoria
+        currentY += statBoxHeight + 28 * vScale;
+
+        // Card 2: Impacto no Dia a Dia (Expandido para 390px)
+        const dailyImpactH = Math.round(390 * vScale);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.08)';
+        ctx.beginPath();
+        ctx.roundRect(margin, currentY, contentWidth, dailyImpactH, 24);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.18)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.fillStyle = accentGreen;
+        ctx.beginPath();
+        ctx.roundRect(margin, currentY, 12, dailyImpactH, [24, 0, 0, 24]);
+        ctx.fill();
+
+        ctx.fillStyle = accentGold;
+        ctx.font = '900 22px Inter, -apple-system, sans-serif';
+        ctx.fillText('🔍 POR QUE ESSE NÚMERO FAZ DIFERENÇA NO DIA A DIA?', margin + 36, currentY + 48);
+
+        const bullets = [
+          '✓ Impacto direto nas famílias trabalhadoras e no comércio do seu bairro',
+          '✓ Sem truque contábil: dados auditados pelo Tribunal de Contas da União',
+          '✓ Poder de compra protegido para quem ganha até 2 salários mínimos',
+        ];
+
+        let bulletY = currentY + 112;
+        bullets.forEach((bText) => {
+          ctx.fillStyle = textPrimary;
+          ctx.font = '500 26px Inter, -apple-system, sans-serif';
+          if (format === 'square') ctx.font = '500 18px Inter, -apple-system, sans-serif';
+          ctx.fillText(bText, margin + 36, bulletY);
+          bulletY += 64 * vScale;
+        });
+
+        // Tag de transparência
         ctx.fillStyle = textSecondary;
-        ctx.font = 'bold 22px Inter, -apple-system, sans-serif';
-        ctx.fillText(`🏛️ FONTE INSTITUCIONAL: ${preset.sourceName}`, margin, currentY);
+        ctx.font = 'bold 16px Inter, -apple-system, sans-serif';
+        ctx.fillText('🛡️ Transparência pública: dados de acesso livre à população brasileira', margin + 36, currentY + dailyImpactH - 24);
+
+        // Pílula de deslize
+        if (isCarousel) {
+          const swipeY = height - 116;
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+          ctx.beginPath();
+          ctx.roundRect(width - margin - 440, swipeY, 440, 52, 26);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          ctx.fillStyle = accentGold;
+          ctx.font = 'bold 21px Inter, -apple-system, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('Deslize para ver o outro lado 👉', width - margin - 220, swipeY + 33);
+          ctx.textAlign = 'left';
+        }
       }
 
-      // ── ARQUÉTIPO 3: DIALECTIC SPLIT / O DESARME TÁTICO ──
+      // ── ARQUÉTIPO 3: DIALECTIC SPLIT / O DESARME SEM CONFRONTO ──
       else if (archetype === 'dialectic-split' || slideIdx === 2) {
         ctx.fillStyle = accentGold;
-        ctx.font = 'bold 24px Inter, -apple-system, sans-serif';
+        ctx.font = '900 22px Inter, -apple-system, sans-serif';
         ctx.fillText('🛡️ ATO 3 • O DESARME SEM CONFRONTO', margin, currentY);
-        currentY += 45;
+        currentY += 40;
 
-        // Bloco 1: "O que costumam dizer" (Dúvida / Rumor)
-        const objectionHeight = 210;
-        ctx.fillStyle = isDark ? '#1C1917' : '#FEF2F2';
+        ctx.fillStyle = textPrimary;
+        ctx.font = '900 46px Inter, -apple-system, sans-serif';
+        currentY = wrapText(ctx, 'Como responder quem tem dúvida sem criar briga', margin, currentY, contentWidth, 54);
+        currentY += 28 * vScale;
+
+        // Bloco 1: O que dizem no Zap (Dúvida / Rumor)
+        const objectionHeight = Math.round(330 * vScale);
+        ctx.fillStyle = 'rgba(239, 68, 68, 0.14)';
         ctx.beginPath();
         ctx.roundRect(margin, currentY, contentWidth, objectionHeight, 24);
         ctx.fill();
-        ctx.strokeStyle = isDark ? 'rgba(239, 68, 68, 0.4)' : '#FECACA';
+        ctx.strokeStyle = 'rgba(239, 68, 68, 0.45)';
         ctx.lineWidth = 2;
         ctx.stroke();
 
         ctx.fillStyle = accentRed;
-        ctx.font = 'bold 22px Inter, -apple-system, sans-serif';
-        ctx.fillText('🤔 O QUE COSTUMAM FALAR:', margin + 36, currentY + 48);
+        ctx.font = '900 22px Inter, -apple-system, sans-serif';
+        ctx.fillText('🤔 O QUE COSTUMAM FALAR NAS REDES E NO ZAP:', margin + 36, currentY + 48);
 
         ctx.fillStyle = textPrimary;
         ctx.font = '500 28px Inter, -apple-system, sans-serif';
+        if (format === 'square') ctx.font = '500 20px Inter, -apple-system, sans-serif';
         wrapText(
           ctx,
           `"${preset.counterArg || 'Dizem que tudo continua igual e que nada melhorou no dia a dia.'}"`,
           margin + 36,
-          currentY + 102,
+          currentY + 104,
           contentWidth - 72,
-          40
+          42 * vScale
         );
 
-        currentY += objectionHeight + 35;
+        ctx.fillStyle = '#FCA5A5';
+        ctx.font = 'bold 16px Inter, -apple-system, sans-serif';
+        ctx.fillText('⚠️ Boato recorrente que não se sustenta nos documentos públicos', margin + 36, currentY + objectionHeight - 24);
 
-        // Bloco 2: "O que os documentos provam" (Resposta com Provas)
-        const rebuttalHeight = 270;
-        ctx.fillStyle = isDark ? '#064E3B' : '#F0FDF4';
+        currentY += objectionHeight + 30 * vScale;
+
+        // Bloco 2: A Prova Oficial Comprovada
+        const rebuttalHeight = Math.round(410 * vScale);
+        ctx.fillStyle = 'rgba(16, 185, 129, 0.14)';
         ctx.beginPath();
         ctx.roundRect(margin, currentY, contentWidth, rebuttalHeight, 24);
         ctx.fill();
@@ -454,135 +1048,234 @@ export default function PostStudioSection({
         ctx.stroke();
 
         ctx.fillStyle = accentGreen;
-        ctx.font = 'bold 22px Inter, -apple-system, sans-serif';
-        ctx.fillText('✅ A PROVA REAL COM DOCUMENTOS:', margin + 36, currentY + 50);
+        ctx.font = '900 22px Inter, -apple-system, sans-serif';
+        ctx.fillText('✅ O QUE OS DOCUMENTOS OFICIAIS PROVAM:', margin + 36, currentY + 50);
 
-        ctx.fillStyle = isDark ? '#ECFDF5' : '#0F172A';
+        ctx.fillStyle = textPrimary;
         ctx.font = '600 30px Inter, -apple-system, sans-serif';
+        if (format === 'square') ctx.font = '600 22px Inter, -apple-system, sans-serif';
         wrapText(
           ctx,
           preset.rebuttal || preset.bodyText,
           margin + 36,
-          currentY + 110,
+          currentY + 112,
           contentWidth - 72,
-          44
+          46 * vScale
         );
+
+        ctx.fillStyle = textSecondary;
+        ctx.font = 'bold 18px Inter, -apple-system, sans-serif';
+        ctx.fillText(`🏛️ FONTE: ${preset.sourceName} • REGISTRO ABERTO`, margin + 36, currentY + rebuttalHeight - 26);
+
+        // Bloco 3: Dica de ouro de diálogo
+        const tipY = height - 120;
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+        ctx.beginPath();
+        ctx.roundRect(margin, tipY, contentWidth, 54, 27);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.fillStyle = accentGold;
+        ctx.font = 'bold 21px Inter, -apple-system, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('💬 Quem tem prova não precisa gritar. Mostre a fonte e converse com carinho.', width / 2, tipY + 34);
+        ctx.textAlign = 'left';
       }
 
       // ── ARQUÉTIPO 4: POCKET REALITY / A VIDA REAL NO BOLSO ──
       else if (archetype === 'pocket-reality' || slideIdx === 3) {
         ctx.fillStyle = accentRed;
-        ctx.font = 'bold 24px Inter, -apple-system, sans-serif';
-        ctx.fillText('💡 ATO 4 • TRADUZINDO PARA A VIDA REAL', margin, currentY);
-        currentY += 45;
+        ctx.font = '900 22px Inter, -apple-system, sans-serif';
+        ctx.fillText('💡 ATO 4 • A CONTA DO MÊS NO SEU BOLSO', margin, currentY);
+        currentY += 40;
 
         ctx.fillStyle = textPrimary;
-        ctx.font = 'bold 46px Inter, -apple-system, sans-serif';
-        currentY = wrapText(ctx, 'Como esse número muda o dia a dia da sua família?', margin, currentY, contentWidth, 58);
-        currentY += 35;
+        ctx.font = '900 46px Inter, -apple-system, sans-serif';
+        currentY = wrapText(ctx, 'Economia é comida no prato e dinheiro sobrando', margin, currentY, contentWidth, 54);
+        currentY += 28 * vScale;
 
-        // Bloco de Tradução Popular
-        const pocketBoxH = 340;
-        ctx.fillStyle = isDark ? '#1E293B' : '#FFFFFF';
+        // Card 1: Bloco de Tradução Popular
+        const pocketBoxH = Math.round(410 * vScale);
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
         ctx.beginPath();
         ctx.roundRect(margin, currentY, contentWidth, pocketBoxH, 28);
         ctx.fill();
-        ctx.strokeStyle = isDark ? 'rgba(255,255,255,0.1)' : '#E2E8F0';
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
         ctx.lineWidth = 2;
         ctx.stroke();
 
-        // Barra Amarela de Destaque
         ctx.fillStyle = accentGold;
         ctx.beginPath();
-        ctx.roundRect(margin, currentY, 10, pocketBoxH, [28, 0, 0, 28]);
+        ctx.roundRect(margin, currentY, 14, pocketBoxH, [28, 0, 0, 28]);
         ctx.fill();
 
+        ctx.fillStyle = accentGold;
+        ctx.font = '900 22px Inter, -apple-system, sans-serif';
+        ctx.fillText('🛒 O QUE MUDA NA ROTINA DA SUA FAMÍLIA:', margin + 44, currentY + 50);
+
         ctx.fillStyle = textPrimary;
-        ctx.font = '500 32px Inter, -apple-system, sans-serif';
+        ctx.font = '500 31px Inter, -apple-system, sans-serif';
+        if (format === 'square') ctx.font = '500 22px Inter, -apple-system, sans-serif';
         wrapText(
           ctx,
-          preset.act4PocketImpact || 'Economia não é número abstrato de jornal: é o preço do arroz, do gás e da carne sobrando no final do mês para cuidar da família com tranquilidade.',
-          margin + 46,
-          currentY + 80,
-          contentWidth - 84,
-          50
+          preset.act4PocketImpact ||
+            'Economia não é número abstrato de jornal: é o preço do arroz, do gás e da carne sobrando no final do mês para cuidar da família com tranquilidade.',
+          margin + 44,
+          currentY + 110,
+          contentWidth - 88,
+          50 * vScale
         );
+
+        ctx.fillStyle = textSecondary;
+        ctx.font = 'bold 18px Inter, -apple-system, sans-serif';
+        ctx.fillText('📈 ANTES: Arrocho e incerteza  ➔  HOJE: Reajuste real e inflação controlada', margin + 44, currentY + pocketBoxH - 28);
+
+        currentY += pocketBoxH + 30 * vScale;
+
+        // Card 2: 3 Impactos Materiais Concretos
+        const gridH = Math.round(390 * vScale);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.07)';
+        ctx.beginPath();
+        ctx.roundRect(margin, currentY, contentWidth, gridH, 24);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.fillStyle = accentGreen;
+        ctx.font = '900 22px Inter, -apple-system, sans-serif';
+        ctx.fillText('📋 3 IMPACTOS DIRETOS NO SEU DIA A DIA:', margin + 36, currentY + 48);
+
+        const realPoints = [
+          '🥩 1. NO MERCADO: Cesta básica com deflação comprovada em 17 capitais.',
+          '💊 2. NA SAÚDE: Remédios de pressão e diabetes 100% gratuitos na Farmácia Popular.',
+          '💼 3. NO EMPREGO: Salário mínimo valorizado com ganho real acima da inflação.',
+        ];
+
+        let realY = currentY + 110;
+        realPoints.forEach((rText) => {
+          ctx.fillStyle = textPrimary;
+          ctx.font = '600 24px Inter, -apple-system, sans-serif';
+          if (format === 'square') ctx.font = '600 18px Inter, -apple-system, sans-serif';
+          ctx.fillText(rText, margin + 36, realY);
+          realY += 66 * vScale;
+        });
+
+        if (isCarousel) {
+          const swipeY = height - 120;
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.12)';
+          ctx.beginPath();
+          ctx.roundRect(width - margin - 400, swipeY, 400, 52, 26);
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(255, 255, 255, 0.22)';
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+
+          ctx.fillStyle = accentGold;
+          ctx.font = 'bold 21px Inter, -apple-system, sans-serif';
+          ctx.textAlign = 'center';
+          ctx.fillText('Deslize para ver como agir 👉', width - margin - 200, swipeY + 33);
+          ctx.textAlign = 'left';
+        }
       }
 
-      // ── ARQUÉTIPO 5: MANIFESTO CTA / ESPERANÇA & UNIÃO ──
+      // ── ARQUÉTIPO 5: MANIFESTO CTA / CONCLUSÃO & UNIÃO ──
       else {
         ctx.fillStyle = accentGold;
-        ctx.font = 'bold 26px Inter, -apple-system, sans-serif';
-        ctx.fillText('⭐ ATO 5 • ESPERANÇA & UNIÃO', margin, currentY);
-        currentY += 50;
+        ctx.font = '900 24px Inter, -apple-system, sans-serif';
+        ctx.fillText('⭐ ATO 5 • A NOSSA VOZ FAZ A DIFERENÇA', margin, currentY);
+        currentY += 44;
 
         ctx.fillStyle = textPrimary;
-        ctx.font = 'bold 54px Inter, -apple-system, sans-serif';
-        currentY = wrapText(ctx, 'O diálogo constrói pontes. Os fatos constroem o futuro.', margin, currentY, contentWidth, 66);
-        currentY += 45;
+        ctx.font = '900 48px Inter, -apple-system, sans-serif';
+        currentY = wrapText(ctx, 'O diálogo constrói pontes. Os fatos constroem o futuro.', margin, currentY, contentWidth, 58);
+        currentY += 28 * vScale;
 
-        // Bloco de Chamada para Ação
-        const ctaBoxH = 260;
-        ctx.fillStyle = isDark ? '#1E293B' : '#FFFFFF';
+        // Card 1: Bloco de Manifesto Central
+        const ctaBoxH = Math.round(390 * vScale);
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.94)';
         ctx.beginPath();
         ctx.roundRect(margin, currentY, contentWidth, ctaBoxH, 28);
         ctx.fill();
-        ctx.strokeStyle = isDark ? 'rgba(245, 158, 11, 0.4)' : '#FDE68A';
-        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = accentGold;
+        ctx.lineWidth = 2.8;
         ctx.stroke();
 
+        ctx.fillStyle = accentGold;
+        ctx.font = '900 22px Inter, -apple-system, sans-serif';
+        ctx.fillText('✨ A ELEIÇÃO SE DECIDE NA CONVERSA COM QUEM A GENTE AMA:', margin + 44, currentY + 50);
+
         ctx.fillStyle = textSecondary;
-        ctx.font = '500 30px Inter, -apple-system, sans-serif';
+        ctx.font = '500 29px Inter, -apple-system, sans-serif';
+        if (format === 'square') ctx.font = '500 20px Inter, -apple-system, sans-serif';
         wrapText(
           ctx,
-          preset.act5Cta || 'Salve este carrossel para consultar e compartilhe nos stories. Conversar com calma e respeito transforma mais do que brigar.',
+          preset.act5Cta ||
+            'Salve este carrossel para consultar e compartilhe nos stories. Conversar com calma e respeito transforma mais do que brigar na internet.',
           margin + 44,
-          currentY + 76,
+          currentY + 110,
           contentWidth - 88,
-          46
+          48 * vScale
         );
 
+        ctx.fillStyle = accentGold;
+        ctx.font = 'bold 20px Inter, -apple-system, sans-serif';
+        ctx.fillText('Não deixe mentiras decidirem o seu futuro: leve dados oficiais com acolhimento.', margin + 44, currentY + ctaBoxH - 30);
+
+        currentY += ctaBoxH + 30 * vScale;
+
+        // Card 2: 3 Passos para Ação Prática
+        const actionBoxH = Math.round(340 * vScale);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.07)';
+        ctx.beginPath();
+        ctx.roundRect(margin, currentY, contentWidth, actionBoxH, 24);
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.16)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.fillStyle = textPrimary;
+        ctx.font = '900 22px Inter, -apple-system, sans-serif';
+        ctx.fillText('COMO VOCÊ PODE SOMAR HOJE:', margin + 36, currentY + 48);
+
+        const actions = [
+          '💾 1. Salve este carrossel no seu celular para consultar na próxima conversa.',
+          '📲 2. Compartilhe nos seus stories e mostre os dados para quem está em dúvida.',
+          '💬 3. Envie no grupo da família com respeito e abertura para ouvir.',
+        ];
+
+        let actionY = currentY + 104;
+        actions.forEach((aText) => {
+          ctx.fillStyle = textPrimary;
+          ctx.font = '600 23px Inter, -apple-system, sans-serif';
+          if (format === 'square') ctx.font = '600 17px Inter, -apple-system, sans-serif';
+          ctx.fillText(aText, margin + 36, actionY);
+          actionY += 56 * vScale;
+        });
+
         // Selo Final Bora 13 Cidadão
-        const badgeY = height - 170;
+        const badgeY = height - 120;
         ctx.fillStyle = accentRed;
-        ctx.font = 'bold 30px Inter, -apple-system, sans-serif';
+        ctx.font = '900 28px Inter, -apple-system, sans-serif';
         ctx.textAlign = 'center';
-        ctx.fillText('⭐ BORA 13 • INICIATIVA CIDADÃ', width / 2, badgeY);
+        ctx.fillText('⭐ BORA 13 • INICIATIVA CIDADÃ E POPULAR', width / 2, badgeY);
         ctx.textAlign = 'left';
       }
 
-      // 4. RODAPÉ INSTITUCIONAL COM IDENTIDADE BRASIL
-      const footerY = height - 60;
+      // ── 4. RODAPÉ INSTITUCIONAL ──
+      const footerY = height - 48;
       ctx.fillStyle = textMuted;
-      ctx.font = 'bold 20px Inter, -apple-system, sans-serif';
-      ctx.fillText(`Fonte Pública • ${preset.sourceName}`, margin, footerY);
+      ctx.font = 'bold 17px Inter, -apple-system, sans-serif';
+      ctx.fillText(`Fonte Pública Oficial • ${preset.sourceName}`, margin, footerY);
 
       ctx.textAlign = 'right';
       ctx.fillText('Bora 13 • Feito pra Somar', width - margin, footerY);
       ctx.textAlign = 'left';
 
-      // 5. OVERLAY VISUAL DE SAFE ZONE DO INSTAGRAM (Se ativo no Modo Avançado)
-      if (showSafeZone) {
-        ctx.save();
-        // Áreas de risco do app do Instagram (Top 120px e Bottom 160px)
-        ctx.fillStyle = 'rgba(239, 68, 68, 0.18)';
-        ctx.fillRect(0, 0, width, 110); // Header do Instagram
-        ctx.fillRect(0, height - 140, width, 140); // Barra de ações e dots
-
-        ctx.fillStyle = '#EF4444';
-        ctx.font = 'bold 18px Inter, -apple-system, sans-serif';
-        ctx.fillText('⚠️ SAFE ZONE INSTAGRAM (Header / Perfil)', margin, 40);
-        ctx.fillText('⚠️ SAFE ZONE INSTAGRAM (Dots / Botões de Ação)', margin, height - 40);
-
-        ctx.strokeStyle = '#EF4444';
-        ctx.lineWidth = 2;
-        ctx.setLineDash([8, 8]);
-        ctx.strokeRect(margin, 110, contentWidth, height - 250);
-        ctx.restore();
-      }
-
-      // 6. APLICAÇÃO DE GRÃO ANALÓGICO ESTOCÁSTICO (Paper Grain)
-      applyAnalogTexture(ctx, width, height, 0.03);
+      // ── 5. GRÃO ANALÓGICO ESTOCÁSTICO DE REVISTA ──
+      applyAnalogTexture(ctx, width, height, 0.022);
     },
     [
       activeSlide,
@@ -591,26 +1284,28 @@ export default function PostStudioSection({
       preset,
       TOTAL_SLIDES,
       slideArchetypes,
-      showSafeZone,
-      enablePaperGrain,
-      enableGridLines,
-      fontScale,
-      headlineWeight,
-      isUppercase,
-      activeSeal,
+      showBgPhoto,
+      bgImageUrl,
+      tonerStyle,
+      tonerIntensity,
+      showNewsCard,
+      newsSource,
+      newsDate,
+      newsHeadline,
+      newsImageUrl,
+      territoryTag,
+      imagesReadyVersion,
+      ensureImage,
       isCarousel,
     ]
   );
 
-  // Redesenhar quando mudar qualquer parâmetro
+  // Redesenhar sempre que qualquer parâmetro mudar
   useEffect(() => {
     renderCanvas(activeSlide);
-  }, [renderCanvas, activeSlide]);
+  }, [renderCanvas, activeSlide, imagesReadyVersion]);
 
-  // ─────────────────────────────────────────────────────────────
-  // AÇÕES DE EXPORTAÇÃO E CÓPIA
-  // ─────────────────────────────────────────────────────────────
-
+  // Ações de Cópia e Exportação
   const handleCopyText = async (text: string, key: string) => {
     playProceduralHaptic('copy');
     const ok = await copyToClipboardClean(text);
@@ -620,7 +1315,6 @@ export default function PostStudioSection({
     }
   };
 
-  // Download de slide individual
   const handleDownloadSlide = (slideIndex: number = activeSlide) => {
     playProceduralHaptic('generate');
     const canvas = canvasRef.current;
@@ -641,10 +1335,9 @@ export default function PostStudioSection({
     }
   };
 
-  // Exportação em Lote via JSZip (Baixar todos os 5 slides em um único .ZIP)
   const handleDownloadAllZip = async () => {
     setIsExporting(true);
-    setExportProgress('Renderizando slides em alta resolução...');
+    setExportProgress('Renderizando os 5 slides em alta definição 1080x1350...');
     playProceduralHaptic('generate');
 
     try {
@@ -657,14 +1350,13 @@ export default function PostStudioSection({
         '02-prova-material.png',
         '03-desarme-tatico.png',
         '04-vida-real-bolso.png',
-        '05-conclusao-cta.png',
+        '05-conclusao-dialogo.png',
       ];
 
       for (let i = 0; i < TOTAL_SLIDES; i++) {
         setExportProgress(`Processando slide ${i + 1} de ${TOTAL_SLIDES}...`);
         renderCanvas(i);
-        // Aguarda ciclo de renderização
-        await new Promise((r) => setTimeout(r, 80));
+        await new Promise((r) => setTimeout(r, 90));
 
         const dataUrl = canvas.toDataURL('image/png', 1.0);
         const base64Data = dataUrl.replace(/^data:image\/png;base64,/, '');
@@ -681,13 +1373,12 @@ export default function PostStudioSection({
       link.click();
       URL.revokeObjectURL(downloadUrl);
 
-      // Restaura o slide ativo
       renderCanvas(activeSlide);
-      setExportProgress('✅ Carrossel baixado com sucesso!');
+      setExportProgress('✅ Carrossel completo baixado!');
       setTimeout(() => setExportProgress(''), 3000);
     } catch (err) {
       console.error('Erro na exportação ZIP:', err);
-      setExportProgress('Erro ao gerar ZIP. Baixando individualmente...');
+      setExportProgress('Erro ao gerar ZIP. Baixando slide individual...');
       setTimeout(() => setExportProgress(''), 2500);
       handleDownloadSlide(activeSlide);
     } finally {
@@ -695,7 +1386,6 @@ export default function PostStudioSection({
     }
   };
 
-  // Envio Nativo via Web Share API
   const handleNativeShare = async () => {
     playProceduralHaptic('click');
     const canvas = canvasRef.current;
@@ -723,573 +1413,284 @@ export default function PostStudioSection({
 
   return (
     <section className="w-full max-w-7xl mx-auto px-4 py-8 animate-fade-in">
-      {/* ── CABEÇALHO DO ESTÚDIO ── */}
-      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-8 pb-6 border-b border-slate-200 dark:border-slate-800">
+      {/* ── CABEÇALHO DO ESTÚDIO COM NAVEGAÇÃO PROGRESSIVA ── */}
+      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 mb-6 pb-6 border-b border-slate-200 dark:border-slate-800">
         <div>
           <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold bg-red-100 dark:bg-red-950/40 text-[#C52229] dark:text-red-300 mb-2">
             <span>✨</span>
-            <span>Estúdio Editorial & Carrosséis de Alta Fidelidade</span>
+            <span>Estúdio Editorial • Carrosséis Prontos em 1 Clique</span>
           </div>
-          <h2 className="text-3xl md:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
+          <h2 className="text-2xl md:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight">
             Criador de Posts & Carrosséis Pro
           </h2>
-          <p className="text-sm md:text-base text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
-            Projetado para eliminar a estética genérica de IA. Gere carrosséis no padrão das melhores agências em 4:5 Retrato ou use o modo estúdio para ajustar camadas, tipografia e selos auditados.
+          <p className="text-sm text-slate-600 dark:text-slate-400 mt-1 max-w-2xl">
+            Narrativa de revista projetada para virar voto, desarmar mentiras no almoço de domingo e acolher quem tem dúvida.
           </p>
         </div>
 
-        {/* Alternador de Modo de Operação (Leigo 1-Click vs. Precision Studio) */}
-        <div className="flex items-center gap-2 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-700">
-          <button
-            onClick={() => {
-              playProceduralHaptic('toggle');
-              setStudioMode('facil');
-            }}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-              studioMode === 'facil'
-                ? 'bg-white dark:bg-slate-900 text-[#C52229] shadow-sm'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-            }`}
-          >
-            <span>🪄</span>
-            <span>Diretor Rápido (1-Click)</span>
-          </button>
-          <button
-            onClick={() => {
-              playProceduralHaptic('toggle');
-              setStudioMode('avancado');
-            }}
-            className={`px-3.5 py-2 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
-              studioMode === 'avancado'
-                ? 'bg-[#C52229] text-white shadow-sm'
-                : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
-            }`}
-          >
-            <span>🛠️</span>
-            <span>Modo Precision (Avançado)</span>
-          </button>
+        {/* Seletor de Formato de Tela */}
+        <div className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 p-1.5 rounded-2xl border border-slate-200 dark:border-slate-700">
+          {[
+            { id: 'portrait', label: '4:5 Feed', icon: '📸' },
+            { id: 'square', label: '1:1 Feed', icon: '🖼️' },
+            { id: 'story', label: '9:16 Story/Zap', icon: '📱' },
+          ].map((f) => (
+            <button
+              key={f.id}
+              onClick={() => {
+                playProceduralHaptic('toggle');
+                setFormat(f.id as PostFormat);
+                setActiveSlide(0);
+              }}
+              className={`px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 ${
+                format === f.id
+                  ? 'bg-white dark:bg-slate-900 text-[#C52229] shadow-sm ring-1 ring-slate-200 dark:ring-slate-700'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+              }`}
+            >
+              <span>{f.icon}</span>
+              <span>{f.label}</span>
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* ── CATÁLOGO E SELETOR DE PAUTAS ── */}
-      <div className="mb-8">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-3">
-          <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-            📚 Pauta ou Contexto Ativo:
-          </span>
-          <div className="flex gap-1 overflow-x-auto pb-1 no-scrollbar">
-            {(
-              [
-                { id: 'todos', label: '🌟 Todos' },
-                { id: 'tatico_4votos', label: '🎯 Tática dos 4 Votos' },
-                { id: 'menos_com_flavio', label: '📉 O Menos com Flávio' },
-                { id: 'fatos', label: '⚡ Fatos Auditados' },
-                { id: 'oportunidades', label: '🎒 Direitos & Bolso' },
-                { id: 'territorio', label: '📍 Por Estado (UF)' },
-              ] as const
-            ).map((tab) => (
+      {/* ── STEPPER PROGRESSIVO / FLUXO INTUITIVO EM 3 PASSOS ── */}
+      <div className="flex items-center justify-between gap-2 p-2 rounded-2xl bg-slate-100 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60 mb-6 max-w-2xl">
+        <button
+          onClick={() => setActiveStep(1)}
+          className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+            activeStep === 1
+              ? 'bg-white dark:bg-slate-900 text-[#C52229] shadow-sm'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+          }`}
+        >
+          <span>1️⃣</span>
+          <span>Pauta Estratégica</span>
+        </button>
+        <span className="text-slate-300 dark:text-slate-600">➔</span>
+        <button
+          onClick={() => setActiveStep(2)}
+          className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+            activeStep === 2
+              ? 'bg-white dark:bg-slate-900 text-[#C52229] shadow-sm'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+          }`}
+        >
+          <span>2️⃣</span>
+          <span>Estilo Visual</span>
+        </button>
+        <span className="text-slate-300 dark:text-slate-600">➔</span>
+        <button
+          onClick={() => setActiveStep(3)}
+          className={`flex-1 py-2 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+            activeStep === 3
+              ? 'bg-white dark:bg-slate-900 text-[#C52229] shadow-sm'
+              : 'text-slate-600 dark:text-slate-400 hover:text-slate-900'
+          }`}
+        >
+          <span>3️⃣</span>
+          <span>Post Pronto</span>
+        </button>
+      </div>
+
+      {/* ── PASSO 1: ESCOLHA DA PAUTA ESTRATÉGICA (NARRATIVA CLARA & VIRADA DE VOTO) ── */}
+      {activeStep === 1 && (
+        <div className="mb-8 animate-fade-in">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h3 className="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                <span>🎯</span>
+                <span>Qual a conversa que você quer destravar hoje?</span>
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                Escolha a pauta pelo público que você quer convencer ou pela mentira que precisa desarmar.
+              </p>
+            </div>
+            <button
+              onClick={() => setActiveStep(2)}
+              className="text-xs font-bold text-[#C52229] hover:underline flex items-center gap-1"
+            >
+              <span>Ver estilos visuais</span>
+              <span>👉</span>
+            </button>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5">
+            {STRATEGIC_CATEGORIES.map((cat) => (
               <button
-                key={tab.id}
-                onClick={() => {
-                  playProceduralHaptic('click');
-                  setCatalogFilter(tab.id);
-                }}
-                className={`px-2.5 py-1 rounded-lg text-xs font-bold transition-all shrink-0 ${
-                  catalogFilter === tab.id
-                    ? 'bg-[#C52229] text-white shadow-sm'
-                    : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-100'
+                key={cat.id}
+                onClick={() => handleSelectCategory(cat.id)}
+                className={`p-4 rounded-2xl border text-left transition-all relative overflow-hidden flex flex-col justify-between group ${
+                  activeCategory === cat.id
+                    ? 'border-[#C52229] bg-red-50/70 dark:bg-red-950/30 shadow-md ring-2 ring-red-300/40'
+                    : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300'
                 }`}
               >
-                {tab.label}
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span
+                      className="text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full text-white"
+                      style={{ backgroundColor: cat.badgeColor }}
+                    >
+                      {cat.badge}
+                    </span>
+                    <span className="text-2xl">{cat.emoji}</span>
+                  </div>
+
+                  <h4 className="font-black text-sm text-slate-900 dark:text-white group-hover:text-[#C52229] transition-colors">
+                    {cat.title}
+                  </h4>
+
+                  <p className="text-xs text-slate-600 dark:text-slate-300 mt-1 line-clamp-2 leading-relaxed">
+                    {cat.strategicGoal}
+                  </p>
+
+                  <div className="mt-3 p-2 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-100 dark:border-slate-700/60">
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-wide block">
+                      👥 Público-alvo ideal:
+                    </span>
+                    <span className="text-xs font-medium text-slate-700 dark:text-slate-200">
+                      {cat.targetAudience}
+                    </span>
+                  </div>
+                </div>
+
+                <div className="mt-4 pt-2.5 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs font-bold text-[#C52229]">
+                  <span>{activeCategory === cat.id ? '✓ Pauta Selecionada' : 'Selecionar Pauta'}</span>
+                  <span>👉</span>
+                </div>
               </button>
             ))}
           </div>
         </div>
+      )}
 
-        {/* Pílulas de Pautas Táticas */}
-        <div className="flex gap-2.5 overflow-x-auto pb-3 scrollbar-none">
-          {(catalogFilter === 'todos' || catalogFilter === 'tatico_4votos') &&
-            TACTICAL_PRESET_TEMPLATES.map((tpl) => (
+      {/* ── PASSO 2: ESCOLHA DO ESTILO VISUAL (MINIATURAS VISUAIS RICAS) ── */}
+      {activeStep === 2 && (
+        <div className="mb-8 animate-fade-in">
+          <div className="flex items-center justify-between mb-3">
+            <div>
+              <h3 className="text-base font-extrabold text-slate-900 dark:text-white flex items-center gap-2">
+                <span>🎨</span>
+                <span>Escolha o Estilo Visual do seu Post</span>
+              </h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                Templates com fotos, diagramação e estética de revista pré-prontos. Escolha pela miniatura visual.
+              </p>
+            </div>
+            <button
+              onClick={() => setActiveStep(3)}
+              className="text-xs font-bold text-[#C52229] hover:underline flex items-center gap-1"
+            >
+              <span>Ver post pronto</span>
+              <span>👉</span>
+            </button>
+          </div>
+
+          {/* Grid de Miniaturas Gráficas dos Templates */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5">
+            {PRESET_VISUAL_TEMPLATES.map((tpl) => (
               <button
                 key={tpl.id}
-                onClick={() => {
-                  playProceduralHaptic('card');
-                  setPreset(tpl);
-                  setActiveSlide(0);
-                }}
-                className={`flex-shrink-0 p-3 rounded-2xl border text-left transition-all max-w-[260px] ${
-                  preset.id === tpl.id
-                    ? 'border-[#C52229] bg-red-50/80 dark:bg-red-950/30 shadow-md ring-2 ring-red-300/40'
-                    : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300'
+                onClick={() => handleSelectTemplate(tpl.id)}
+                className={`p-3 rounded-2xl border text-left transition-all relative flex flex-col justify-between group ${
+                  activeTemplateId === tpl.id
+                    ? 'border-[#C52229] bg-slate-900 text-white shadow-xl ring-2 ring-red-400/50 scale-[1.02]'
+                    : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-200 hover:border-slate-300'
                 }`}
               >
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-lg">{tpl.emoji}</span>
-                  <span className="text-[10px] font-black uppercase tracking-wider text-[#C52229]">
-                    ⚡ Tática 2º Turno
-                  </span>
-                </div>
-                <p className="text-xs font-bold text-slate-900 dark:text-white line-clamp-2 leading-tight">
-                  {tpl.title}
-                </p>
-                <span className="text-[10px] text-slate-500 line-clamp-1 mt-1 block">
-                  {tpl.statNumber ? `📊 ${tpl.statNumber}` : tpl.headline}
-                </span>
-              </button>
-            ))}
-
-          {(catalogFilter === 'todos' || catalogFilter === 'tatico_4votos') &&
-            CONVERSION_FRONTS.map((front) => (
-              <button
-                key={front.id}
-                onClick={() => {
-                  playProceduralHaptic('card');
-                  setPreset(createPostPresetFromConversionFront(front, memory));
-                  setActiveSlide(0);
-                }}
-                className={`flex-shrink-0 p-3 rounded-2xl border text-left transition-all max-w-[250px] ${
-                  preset.id === `post-front-${front.id}`
-                    ? 'border-[#C52229] bg-red-50/80 dark:bg-red-950/30 shadow-md ring-2 ring-red-300/40'
-                    : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300'
-                }`}
-              >
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-lg">{front.icon}</span>
-                  <span className="text-[10px] font-black uppercase tracking-wider text-amber-700 dark:text-amber-300">
-                    Frente {front.number}: {front.tag}
-                  </span>
-                </div>
-                <p className="text-xs font-bold text-slate-900 dark:text-white line-clamp-2 leading-tight">
-                  {front.title}
-                </p>
-              </button>
-            ))}
-
-          {(catalogFilter === 'todos' || catalogFilter === 'menos_com_flavio') &&
-            MENOS_COM_FLAVIO_FACTS.map((fact) => (
-              <button
-                key={fact.id}
-                onClick={() => {
-                  playProceduralHaptic('card');
-                  setPreset(createPostPresetFromMenosFact(fact, memory));
-                  setActiveSlide(0);
-                }}
-                className={`flex-shrink-0 p-3 rounded-2xl border text-left transition-all max-w-[250px] ${
-                  preset.id === `post-menos-${fact.id}`
-                    ? 'border-amber-500 bg-amber-50/80 dark:bg-amber-950/30 shadow-md ring-2 ring-amber-300/40'
-                    : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300'
-                }`}
-              >
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-lg">{fact.icon}</span>
-                  <span className="text-[10px] font-black uppercase tracking-wider text-red-600">
-                    {fact.highlight}
-                  </span>
-                </div>
-                <p className="text-xs font-bold text-slate-900 dark:text-white line-clamp-2 leading-tight">
-                  {fact.title}
-                </p>
-              </button>
-            ))}
-
-          {(catalogFilter === 'todos' || catalogFilter === 'fatos') &&
-            ARGUMENTS_DATABASE.slice(0, 6).map((arg) => (
-              <button
-                key={arg.id}
-                onClick={() => {
-                  playProceduralHaptic('card');
-                  setPreset(createPostPresetFromArgument(arg, memory));
-                  setActiveSlide(0);
-                }}
-                className={`flex-shrink-0 p-3 rounded-2xl border text-left transition-all max-w-[240px] ${
-                  preset.id === `post-arg-${arg.id}`
-                    ? 'border-[#C52229] bg-red-50/80 dark:bg-red-950/30 shadow-md ring-2 ring-red-300/40'
-                    : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-slate-300'
-                }`}
-              >
-                <div className="flex items-center gap-2 mb-1">
-                  <span className="text-lg">{arg.emoji}</span>
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#C52229]">
-                    {arg.category}
-                  </span>
-                </div>
-                <p className="text-xs font-bold text-slate-900 dark:text-white line-clamp-2 leading-tight">
-                  {arg.headline}
-                </p>
-              </button>
-            ))}
-        </div>
-      </div>
-
-      {/* ── GRID PRINCIPAL: CONTROLES À ESQUERDA & PREVIEW CANVAS À DIREITA ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        {/* COLUNA ESQUERDA: CONTROLES DO ESTÚDIO (5 COLUNAS) */}
-        <div className="lg:col-span-5 flex flex-col gap-6">
-          {/* Seletor de Formato de Tela (Com 4:5 Retrato Padrão) */}
-          <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                  📐 Formato & Proporção
-                </label>
-                <span className="text-[11px] font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/40 px-2 py-0.5 rounded-full">
-                  Recomendado: 4:5 Retrato
-                </span>
-              </div>
-              <div className="grid grid-cols-3 gap-2">
-                {[
-                  { id: 'portrait', label: '4:5 Retrato Feed', icon: '📸', desc: '1080x1350 • Mais tela' },
-                  { id: 'square', label: '1:1 Quadrado', icon: '🖼️', desc: '1080x1080 • Tradicional' },
-                  { id: 'story', label: '9:16 Stories/Zap', icon: '📱', desc: '1080x1920 • Tela Cheia' },
-                ].map((f) => (
-                  <button
-                    key={f.id}
-                    onClick={() => {
-                      playProceduralHaptic('toggle');
-                      setFormat(f.id as PostFormat);
-                      setActiveSlide(0);
-                    }}
-                    className={`p-3 rounded-2xl border text-center transition-all ${
-                      format === f.id
-                        ? 'border-[#C52229] bg-red-50/70 dark:bg-red-950/30 text-[#C52229] font-bold shadow-sm ring-1 ring-[#C52229]'
-                        : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 text-slate-700 dark:text-slate-300'
-                    }`}
-                  >
-                    <span className="text-xl block mb-1">{f.icon}</span>
-                    <span className="text-xs block font-bold">{f.label}</span>
-                    <span className="text-[10px] text-slate-400 block mt-0.5">{f.desc}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Seletor de Tema & Atmosfera Editorial */}
-            <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 block">
-                🎨 Estilo & Atmosfera Editorial
-              </label>
-              <div className="grid grid-cols-2 gap-2">
-                {[
-                  { id: 'brasil-editorial', name: 'Brasil Papel Algodão', color: '#FAF7F2', border: '#C52229' },
-                  { id: 'dark-moderno', name: 'Dark Obsidian VIP', color: '#0B0F19', border: '#C52229' },
-                  { id: 'jornalismo-investigativo', name: 'Dossiê Noticioso', color: '#F1F5F9', border: '#0F172A' },
-                  { id: 'brasil-vibrante', name: 'Solar Esperança', color: '#FFFDF5', border: '#F59E0B' },
-                ].map((t) => (
-                  <button
-                    key={t.id}
-                    onClick={() => {
-                      playProceduralHaptic('toggle');
-                      setTheme(t.id as VisualTheme);
-                    }}
-                    className={`p-3 rounded-2xl border text-left flex items-center gap-2.5 transition-all ${
-                      theme === t.id
-                        ? 'border-[#C52229] shadow-sm ring-1 ring-[#C52229] bg-red-50/30 dark:bg-red-950/20'
-                        : 'border-slate-200 dark:border-slate-800 hover:border-slate-300'
-                    }`}
-                  >
+                {/* Miniatura Gráfica do Post (Mockup 4:5 Real) */}
+                <div
+                  className={`w-full aspect-[4/5] rounded-xl overflow-hidden p-2.5 relative flex flex-col justify-between bg-gradient-to-br ${tpl.miniBgClass} border border-white/10 shadow-inner mb-3`}
+                >
+                  {/* Topo da Miniatura */}
+                  <div>
+                    <div className="flex items-center justify-between gap-1 mb-1.5">
+                      <div className="flex gap-0.5 w-full">
+                        <span className="h-0.5 w-1/5 bg-red-500 rounded-full" />
+                        <span className="h-0.5 w-1/5 bg-white/40 rounded-full" />
+                        <span className="h-0.5 w-1/5 bg-white/20 rounded-full" />
+                        <span className="h-0.5 w-1/5 bg-white/20 rounded-full" />
+                        <span className="h-0.5 w-1/5 bg-white/20 rounded-full" />
+                      </div>
+                    </div>
                     <span
-                      className="w-5 h-5 rounded-full border border-slate-300 dark:border-slate-700 shrink-0 shadow-inner"
-                      style={{ background: t.color }}
-                    />
-                    <span className="text-xs font-bold text-slate-800 dark:text-slate-200 leading-tight">
-                      {t.name}
-                    </span>
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {/* Seletor de Arquétipo do Slide Ativo (Fim da Monotonia de IA) */}
-            {isCarousel && (
-              <div>
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 block">
-                  🎭 Arquétipo do Slide {activeSlide + 1}:
-                </label>
-                <div className="grid grid-cols-2 gap-2">
-                  {[
-                    { id: 'editorial-cover', label: '📰 Capa Noticiosa', desc: 'Manchete de impacto' },
-                    { id: 'big-stat-hero', label: '📊 Big Stat (Número)', desc: 'Dado gigante na tela' },
-                    { id: 'dialectic-split', label: '🛡️ Desarme Split', desc: 'O que dizem vs. O fato' },
-                    { id: 'pocket-reality', label: '💡 Vida Real no Bolso', desc: 'Preço da feira e salário' },
-                    { id: 'manifesto-cta', label: '⭐ Manifesto & Ação', desc: 'Conclusão e chamado' },
-                  ].map((arq) => (
-                    <button
-                      key={arq.id}
-                      onClick={() => {
-                        playProceduralHaptic('toggle');
-                        setSlideArchetypes((prev) => ({
-                          ...prev,
-                          [activeSlide]: arq.id as SlideArchetype,
-                        }));
-                      }}
-                      className={`p-2.5 rounded-xl border text-left transition-all ${
-                        (slideArchetypes[activeSlide] || 'editorial-cover') === arq.id
-                          ? 'border-[#C52229] bg-red-50/70 dark:bg-red-950/30 text-[#C52229] font-bold shadow-sm'
-                          : 'border-slate-200 dark:border-slate-800 hover:border-slate-300 text-slate-700 dark:text-slate-300'
-                      }`}
+                      className={`text-[8px] font-black uppercase tracking-wider px-1.5 py-0.5 rounded-full inline-block ${tpl.miniBadgeColor}`}
                     >
-                      <span className="text-xs block font-bold">{arq.label}</span>
-                      <span className="text-[10px] text-slate-400 block">{arq.desc}</span>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-
-          {/* ── PAINEL MODO AVANÇADO (PRECISION STUDIO) ── */}
-          {studioMode === 'avancado' && (
-            <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4 animate-fade-in">
-              <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-xs font-bold uppercase tracking-wider text-slate-800 dark:text-white flex items-center gap-1.5">
-                  <span>🛠️</span>
-                  <span>Ajustes Finos & Tipografia</span>
-                </span>
-                <span className="text-[11px] font-bold text-amber-600 bg-amber-50 dark:bg-amber-950/40 px-2 py-0.5 rounded-full">
-                  Precision Engine
-                </span>
-              </div>
-
-              {/* Controles Tipográficos */}
-              <div className="space-y-3">
-                <div>
-                  <div className="flex justify-between text-xs font-bold text-slate-600 dark:text-slate-300 mb-1">
-                    <span>Escala da Tipografia:</span>
-                    <span>{Math.round(fontScale * 100)}%</span>
+                      {tpl.badge}
+                    </span>
                   </div>
-                  <input
-                    type="range"
-                    min="0.8"
-                    max="1.3"
-                    step="0.05"
-                    value={fontScale}
-                    onChange={(e) => setFontScale(parseFloat(e.target.value))}
-                    className="w-full accent-[#C52229]"
-                  />
+
+                  {/* Miolo da Miniatura */}
+                  <div className="my-auto py-1">
+                    {tpl.miniSampleNumber ? (
+                      <div className="text-center font-black text-sm text-emerald-400 tracking-tighter">
+                        {tpl.miniSampleNumber}
+                      </div>
+                    ) : (
+                      <div className="p-1 rounded bg-black/40 border border-white/10 flex items-center gap-1">
+                        <div className="w-5 h-5 rounded bg-slate-700 shrink-0" />
+                        <div className="space-y-0.5 flex-1">
+                          <div className="h-1 bg-white/80 rounded w-full" />
+                          <div className="h-1 bg-white/50 rounded w-3/4" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Rodapé da Miniatura */}
+                  <div className="flex items-center justify-between text-[7px] text-white/60 pt-1 border-t border-white/10">
+                    <span>Bora 13</span>
+                    <span>👉 Deslize</span>
+                  </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={() => {
-                      playProceduralHaptic('toggle');
-                      setIsUppercase(!isUppercase);
-                    }}
-                    className={`p-2 rounded-xl border text-xs font-bold transition-all ${
-                      isUppercase
-                        ? 'border-[#C52229] bg-red-50 text-[#C52229]'
-                        : 'border-slate-200 dark:border-slate-700'
+                {/* Textos Informativos do Template */}
+                <div>
+                  <h4 className="font-bold text-xs line-clamp-1">{tpl.title}</h4>
+                  <p
+                    className={`text-[10px] mt-1 line-clamp-2 leading-tight ${
+                      activeTemplateId === tpl.id ? 'text-slate-300' : 'text-slate-500'
                     }`}
                   >
-                    {isUppercase ? '🔤 CAIXA ALTA (ON)' : '🔤 Caixa Padrão'}
-                  </button>
-
-                  <button
-                    onClick={() => {
-                      playProceduralHaptic('toggle');
-                      setHeadlineWeight(headlineWeight === 'black' ? 'bold' : 'black');
-                    }}
-                    className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold"
-                  >
-                    Peso: {headlineWeight === 'black' ? '900 Black' : '700 Bold'}
-                  </button>
+                    {tpl.desc}
+                  </p>
                 </div>
-              </div>
 
-              {/* Biblioteca de Selos Oficiais */}
-              <div>
-                <label className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-2 block">
-                  🛡️ Selo de Topo Ativo:
-                </label>
-                <div className="grid grid-cols-2 gap-1.5">
-                  {OFFICIAL_SEALS.map((s) => (
-                    <button
-                      key={s.id}
-                      onClick={() => {
-                        playProceduralHaptic('click');
-                        setActiveSeal(s.text);
-                      }}
-                      className={`p-2 rounded-xl border text-left text-xs font-bold transition-all ${
-                        activeSeal === s.text
-                          ? 'border-[#C52229] bg-red-50 text-[#C52229]'
-                          : 'border-slate-200 dark:border-slate-800'
-                      }`}
-                    >
-                      {s.label}
-                    </button>
-                  ))}
+                <div className="mt-2.5 pt-2 border-t border-slate-200/40 dark:border-slate-700/40 flex items-center justify-between text-[10px] font-bold">
+                  <span>{activeTemplateId === tpl.id ? '✓ Estilo Ativo' : 'Usar este estilo'}</span>
+                  <span>👉</span>
                 </div>
-              </div>
-
-              {/* Toggles de Texturas Analógicas & Safe Zone */}
-              <div className="pt-2 border-t border-slate-100 dark:border-slate-800 space-y-2">
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-700 dark:text-slate-300">
-                    📐 Máscara Safe Zone (Instagram):
-                  </span>
-                  <input
-                    type="checkbox"
-                    checked={showSafeZone}
-                    onChange={(e) => setShowSafeZone(e.target.checked)}
-                    className="accent-[#C52229] w-4 h-4 cursor-pointer"
-                  />
-                </div>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-700 dark:text-slate-300">
-                    📜 Textura Papel Algodão / Grão:
-                  </span>
-                  <input
-                    type="checkbox"
-                    checked={enablePaperGrain}
-                    onChange={(e) => setEnablePaperGrain(e.target.checked)}
-                    className="accent-[#C52229] w-4 h-4 cursor-pointer"
-                  />
-                </div>
-                <div className="flex items-center justify-between text-xs">
-                  <span className="font-bold text-slate-700 dark:text-slate-300">
-                    📏 Guias de Grade Modernista:
-                  </span>
-                  <input
-                    type="checkbox"
-                    checked={enableGridLines}
-                    onChange={(e) => setEnableGridLines(e.target.checked)}
-                    className="accent-[#C52229] w-4 h-4 cursor-pointer"
-                  />
-                </div>
-              </div>
-            </div>
-          )}
-
-          {/* Editor de Textos do Post Atual */}
-          <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
-                ✍️ Ajustar Textos da Imagem
-              </span>
-              <span className="text-[11px] text-slate-400">Edição livre</span>
-            </div>
-
-            <div>
-              <label className="text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1 block">
-                Manchete Principal:
-              </label>
-              <input
-                type="text"
-                value={preset.headline}
-                onChange={(e) => setPreset((p) => ({ ...p, headline: e.target.value }))}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-bold focus:outline-none focus:ring-2 focus:ring-[#C52229]"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1 block">
-                  Número Gigante (Big Stat):
-                </label>
-                <input
-                  type="text"
-                  value={preset.statNumber || ''}
-                  placeholder="Ex: -59%, 17 CAPITAIS"
-                  onChange={(e) => setPreset((p) => ({ ...p, statNumber: e.target.value }))}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-bold text-emerald-600 focus:outline-none focus:ring-2 focus:ring-[#C52229]"
-                />
-              </div>
-              <div>
-                <label className="text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1 block">
-                  Rótulo do Número:
-                </label>
-                <input
-                  type="text"
-                  value={preset.statLabel || ''}
-                  placeholder="Ex: Queda no valor da cesta básica"
-                  onChange={(e) => setPreset((p) => ({ ...p, statLabel: e.target.value }))}
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs focus:outline-none focus:ring-2 focus:ring-[#C52229]"
-                />
-              </div>
-            </div>
-
-            <div>
-              <label className="text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1 block">
-                Dado ou Prova Pública Auditada:
-              </label>
-              <textarea
-                rows={2}
-                value={preset.proofData}
-                onChange={(e) => setPreset((p) => ({ ...p, proofData: e.target.value }))}
-                className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#C52229]"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1 block">
-                  A Dúvida ou Boato:
-                </label>
-                <input
-                  type="text"
-                  value={preset.counterArg || ''}
-                  onChange={(e) => setPreset((p) => ({ ...p, counterArg: e.target.value }))}
-                  placeholder="Ex: Mas tudo está caro..."
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs focus:outline-none focus:ring-2 focus:ring-[#C52229]"
-                />
-              </div>
-              <div>
-                <label className="text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1 block">
-                  A Resposta com Fatos:
-                </label>
-                <input
-                  type="text"
-                  value={preset.rebuttal || ''}
-                  onChange={(e) => setPreset((p) => ({ ...p, rebuttal: e.target.value }))}
-                  placeholder="Ex: Inflação fechou na meta..."
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs focus:outline-none focus:ring-2 focus:ring-[#C52229]"
-                />
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1 block">
-                  Fonte Pública:
-                </label>
-                <input
-                  type="text"
-                  value={preset.sourceName}
-                  onChange={(e) => setPreset((p) => ({ ...p, sourceName: e.target.value }))}
-                  placeholder="Ex: IBGE, DIEESE"
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs focus:outline-none focus:ring-2 focus:ring-[#C52229]"
-                />
-              </div>
-              <div>
-                <label className="text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1 block">
-                  Link de Consulta:
-                </label>
-                <input
-                  type="text"
-                  value={preset.sourceUrl}
-                  onChange={(e) => setPreset((p) => ({ ...p, sourceUrl: e.target.value }))}
-                  placeholder="https://..."
-                  className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs focus:outline-none focus:ring-2 focus:ring-[#C52229]"
-                />
-              </div>
-            </div>
+              </button>
+            ))}
           </div>
         </div>
+      )}
 
-        {/* COLUNA DIREITA: PREVIEW DO CANVAS & MOTOR DE COPYWRITING (7 COLUNAS) */}
-        <div className="lg:col-span-7 flex flex-col gap-6">
-          {/* Card do Preview do Canvas */}
-          <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl flex flex-col items-center">
-            {/* Navegador de Slides do Carrossel */}
+      {/* ── PASSO 3: POST PRONTO (CANVAS DOMINANTE & AÇÕES EM 1 CLIQUE) ── */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* COLUNA ESQUERDA: CANVAS DOMINANTE DO POST (7 COLUNAS) */}
+        <div className="lg:col-span-7 flex flex-col items-center">
+          <div className="w-full p-5 sm:p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl flex flex-col items-center">
+            {/* Navegador das 5 Lâminas do Carrossel */}
             {isCarousel && (
-              <div className="flex items-center justify-between w-full mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
-                <span className="text-xs font-bold text-slate-600 dark:text-slate-400">
-                  Slide Ativo: <strong className="text-[#C52229]">{activeSlide + 1} de {TOTAL_SLIDES}</strong>
-                  <span className="ml-2 text-[11px] text-slate-400">
-                    ({slideArchetypes[activeSlide] === 'editorial-cover' ? 'Capa Noticiosa' : slideArchetypes[activeSlide] === 'big-stat-hero' ? 'Dado Gigante' : slideArchetypes[activeSlide] === 'dialectic-split' ? 'Desarme Tático' : slideArchetypes[activeSlide] === 'pocket-reality' ? 'Vida Real' : 'Conclusão'})
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 w-full mb-4 pb-3 border-b border-slate-100 dark:border-slate-800">
+                <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
+                  Slide Ativo:{' '}
+                  <strong className="text-[#C52229]">
+                    0{activeSlide + 1} de 0{TOTAL_SLIDES}
+                  </strong>
+                  <span className="ml-2 text-[11px] text-slate-400 font-normal">
+                    {activeSlide === 0 && '(Capa Noticiosa Auditada)'}
+                    {activeSlide === 1 && '(A Prova Material dos Fatos)'}
+                    {activeSlide === 2 && '(Desarme sem Brigas de Família)'}
+                    {activeSlide === 3 && '(A Vida Real no Bolso)'}
+                    {activeSlide === 4 && '(Manifesto de União & Compartilhar)'}
                   </span>
                 </span>
 
-                <div className="flex items-center gap-1.5">
+                <div className="flex items-center gap-1.5 self-center">
                   {[0, 1, 2, 3, 4].map((idx) => (
                     <button
                       key={idx}
@@ -1299,7 +1700,7 @@ export default function PostStudioSection({
                       }}
                       className={`w-8 h-8 rounded-full text-xs font-bold transition-all ${
                         activeSlide === idx
-                          ? 'bg-[#C52229] text-white shadow-md scale-110'
+                          ? 'bg-[#C52229] text-white shadow-md scale-110 ring-2 ring-red-300/40'
                           : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200'
                       }`}
                     >
@@ -1310,9 +1711,9 @@ export default function PostStudioSection({
               </div>
             )}
 
-            {/* Container Responsivo do Canvas com Box Shadow Realista */}
+            {/* Container Responsivo do Canvas 1080x1350 */}
             <div
-              className={`w-full max-w-[480px] rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 relative bg-slate-50 dark:bg-black transition-all ${
+              className={`w-full max-w-[480px] rounded-2xl overflow-hidden shadow-2xl border border-slate-200 dark:border-slate-800 relative bg-slate-950 transition-all ${
                 format === 'story'
                   ? 'aspect-[9/16]'
                   : format === 'square'
@@ -1326,22 +1727,22 @@ export default function PostStudioSection({
               />
             </div>
 
-            {/* Barra de Status da Exportação */}
+            {/* Barra de Progresso da Exportação ZIP */}
             {exportProgress && (
               <div className="w-full mt-3 p-2.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 text-xs font-bold text-center animate-pulse">
                 {exportProgress}
               </div>
             )}
 
-            {/* Barra de Ações do Canvas */}
-            <div className="flex flex-wrap items-center justify-between gap-3 w-full mt-6 pt-4 border-t border-slate-100 dark:border-slate-800">
+            {/* Botões de Ação Direta em 1 Clique */}
+            <div className="flex flex-wrap items-center justify-between gap-3 w-full mt-5 pt-4 border-t border-slate-100 dark:border-slate-800">
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => handleDownloadSlide(activeSlide)}
                   className="px-4 py-2.5 rounded-xl bg-[#C52229] hover:bg-[#a51b21] text-white font-bold text-xs flex items-center gap-2 transition-all shadow-md active:scale-95"
                 >
                   <span>📥</span>
-                  <span>Salvar Imagem (Slide {activeSlide + 1})</span>
+                  <span>Baixar Slide {activeSlide + 1} (PNG HD)</span>
                 </button>
 
                 {isCarousel && (
@@ -1351,7 +1752,7 @@ export default function PostStudioSection({
                     className="px-3.5 py-2.5 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 text-xs font-bold transition-all shadow-sm flex items-center gap-1.5"
                   >
                     <span>📦</span>
-                    <span>{isExporting ? 'Empacotando...' : 'Baixar Carrossel (.ZIP)'}</span>
+                    <span>{isExporting ? 'Processando...' : 'Baixar Carrossel Completo (.ZIP)'}</span>
                   </button>
                 )}
               </div>
@@ -1365,17 +1766,20 @@ export default function PostStudioSection({
               </button>
             </div>
           </div>
+        </div>
 
-          {/* ── SUÍTE DE MENSAGENS PRONTAS ── */}
-          <div className="p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md">
+        {/* COLUNA DIREITA: LEGENDA PRONTA & CONTROLES DISCRETOS (5 COLUNAS) */}
+        <div className="lg:col-span-5 flex flex-col gap-5">
+          {/* Caixa de Legenda Calibrada */}
+          <div className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-md">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider flex items-center gap-2">
                   <span>📝</span>
-                  <span>Legenda & Mensagem Dialética Adaptada</span>
+                  <span>Texto Pronto para o Post</span>
                 </h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400">
-                  Copywriting estratégico sem clichê de IA, calibrado para a sintaxe de cada rede.
+                  Copy dialogada com dados oficiais, acolhedora e pronta para viralizar.
                 </p>
               </div>
 
@@ -1384,17 +1788,17 @@ export default function PostStudioSection({
                 className="px-3.5 py-1.5 rounded-xl bg-[#C52229] hover:bg-[#a51b21] text-white text-xs font-bold shadow-sm transition-all flex items-center gap-1.5"
               >
                 <span>{copiedKey === `copy-${copyTab}` ? '✅' : '📋'}</span>
-                <span>{copiedKey === `copy-${copyTab}` ? 'Copiado!' : 'Copiar Texto'}</span>
+                <span>{copiedKey === `copy-${copyTab}` ? 'Copiado!' : 'Copiar'}</span>
               </button>
             </div>
 
             {/* Abas de Plataforma */}
-            <div className="flex gap-2 border-b border-slate-200 dark:border-slate-800 pb-3 mb-4">
+            <div className="flex gap-1.5 border-b border-slate-200 dark:border-slate-800 pb-3 mb-3.5">
               {[
-                { id: 'whatsapp', label: 'WhatsApp (Família e Grupos)', icon: '💬' },
-                { id: 'instagram', label: 'Instagram (Legenda)', icon: '📸' },
-                { id: 'stories', label: 'Status do Zap / Stories', icon: '📱' },
-                { id: 'threads', label: 'Twitter / X / Threads', icon: '🧵' },
+                { id: 'instagram', label: 'Instagram', icon: '📸' },
+                { id: 'whatsapp', label: 'WhatsApp', icon: '💬' },
+                { id: 'stories', label: 'Stories', icon: '📱' },
+                { id: 'threads', label: 'Threads/X', icon: '🧵' },
               ].map((tab) => (
                 <button
                   key={tab.id}
@@ -1409,17 +1813,90 @@ export default function PostStudioSection({
                   }`}
                 >
                   <span>{tab.icon}</span>
-                  <span className="hidden sm:inline">{tab.label}</span>
+                  <span>{tab.label}</span>
                 </button>
               ))}
             </div>
 
-            {/* Prévia do Texto com Formatação */}
+            {/* Prévia do Texto */}
             <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 max-h-60 overflow-y-auto">
               <p className="text-xs whitespace-pre-wrap font-sans leading-relaxed text-slate-800 dark:text-slate-200">
                 {copies[copyTab]}
               </p>
             </div>
+          </div>
+
+          {/* Troca Rápida de Pauta & Estilo Sem Rolar a Página */}
+          <div className="p-5 rounded-3xl bg-slate-50 dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 flex flex-col gap-3">
+            <span className="text-xs font-extrabold uppercase tracking-wider text-slate-700 dark:text-slate-300">
+              ⚡ Atalhos Rápidos:
+            </span>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setActiveStep(1)}
+                className="flex-1 py-2 px-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 hover:border-[#C52229] transition-colors flex items-center justify-center gap-1.5"
+              >
+                <span>🎯</span>
+                <span>Mudar Pauta ({preset.categoryTag})</span>
+              </button>
+              <button
+                onClick={() => setActiveStep(2)}
+                className="flex-1 py-2 px-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-200 hover:border-[#C52229] transition-colors flex items-center justify-center gap-1.5"
+              >
+                <span>🎨</span>
+                <span>Mudar Estilo Visual</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Ajuste Discreto de Localização & Manchete (Opcional) */}
+          <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-sm">
+            <button
+              onClick={() => {
+                playProceduralHaptic('toggle');
+                setShowQuickSettings(!showQuickSettings);
+              }}
+              className="w-full p-4 flex items-center justify-between text-xs font-bold uppercase tracking-wider text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+            >
+              <div className="flex items-center gap-2">
+                <span>📍</span>
+                <span>Ajustar Cidade / Estado no Post (Opcional)</span>
+              </div>
+              <span>{showQuickSettings ? '▲ Fechar' : '▼ Editar'}</span>
+            </button>
+
+            {showQuickSettings && (
+              <div className="p-5 border-t border-slate-100 dark:border-slate-800 space-y-3.5 animate-fade-in">
+                <div>
+                  <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1 block">
+                    Nome da Cidade ou Estado que aparece no topo:
+                  </label>
+                  <input
+                    type="text"
+                    value={territoryTag}
+                    onChange={(e) => setTerritoryTag(e.target.value)}
+                    placeholder="Ex: Florianópolis • SC"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-bold"
+                  />
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-bold text-slate-600 dark:text-slate-400 mb-1 block">
+                    Manchete Principal Personalizada:
+                  </label>
+                  <input
+                    type="text"
+                    value={preset.headline}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      setPreset((p) => ({ ...p, headline: val }));
+                      setNewsHeadline(val);
+                    }}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-xs font-bold"
+                  />
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

@@ -2,7 +2,7 @@
 
 > **Aplicação Web Progressiva (PWA) de Alto Desempenho e Acessibilidade Popular**  
 > Construída em Next.js 16 (Turbopack), Tailwind CSS v4, React 19 e TypeScript.  
-> 🌐 **URL de Produção**: [https://www.gigantera.xyz/bora](https://www.gigantera.xyz/bora) (Micro-frontend via Vercel)
+> 🌐 **URL de Produção**: [https://patriaamada.lat](https://patriaamada.lat) (Vercel Anycast Edge)
 
 ---
 

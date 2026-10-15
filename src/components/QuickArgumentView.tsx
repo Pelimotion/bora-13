@@ -322,7 +322,7 @@ export default function QuickArgumentView({
       lines.push(`📎 ${currentArg.sourceUrl}`);
     }
     lines.push('');
-    lines.push(`_Bora 13 • Iniciativa Cidadã • Feita pra Somar na Causa • gigantera.xyz/bora_`);
+    lines.push(`_Bora 13 • Iniciativa Cidadã • Feita pra Somar na Causa • patriaamada.lat_`);
 
     return lines.join('\n');
   }, [currentArg]);

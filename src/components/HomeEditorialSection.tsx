@@ -123,7 +123,7 @@ export default function HomeEditorialSection({
           <div className="lg:col-span-5 relative">
             <div className="relative rounded-2xl overflow-hidden border-2 border-white/25 shadow-2xl group">
               <img
-                src="/bora/images/hero-dialogue.jpg"
+                src="/images/hero-dialogue.jpg"
                 alt="Brasileiros em conversa comunitária acolhedora"
                 className="w-full h-72 sm:h-80 object-cover object-center group-hover:scale-102 transition-transform duration-500"
               />
@@ -466,7 +466,7 @@ export default function HomeEditorialSection({
           <div className="lg:col-span-5 flex justify-center">
             <div className="relative rounded-2xl overflow-hidden border-2 border-slate-200 dark:border-slate-700 shadow-xl max-w-sm">
               <img
-                src="/bora/images/phone-showcase.jpg"
+                src="/images/phone-showcase.jpg"
                 alt="Bora 13 aberto em smartphone no café comunitário"
                 className="w-full h-auto object-cover"
               />
@@ -484,7 +484,7 @@ export default function HomeEditorialSection({
           ═══════════════════════════════════════════════════════════════ */}
       <div className="relative rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 shadow-md">
         <img
-          src="/bora/images/campaign-workshop.jpg"
+          src="/images/campaign-workshop.jpg"
           alt="Jovens brasileiros organizando materiais da campanha"
           className="w-full h-72 sm:h-96 object-cover object-center"
         />
