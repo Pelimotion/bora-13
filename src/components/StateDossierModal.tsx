@@ -21,16 +21,18 @@ import {
 
 interface StateDossierModalProps {
   uf: string;
+  city?: string;
   isOpen: boolean;
   onClose: () => void;
   onStartPreparation?: (uf: string) => void;
 }
 
-type InterlocutorType = 'familia' | 'comerciante' | 'idoso' | 'jovem' | 'nulo';
-type FocusTopic = 'comida_salario' | 'obras_emprego' | 'farmacia_popular' | 'risco_flavio';
+type InterlocutorType = 'familia' | 'comerciante' | 'idoso' | 'jovem' | 'bolsonarista' | 'nulo';
+type FocusTopic = 'comida_salario' | 'obras_emprego' | 'farmacia_popular' | 'escala_6x1' | 'risco_flavio';
 
 export default function StateDossierModal({
   uf,
+  city,
   isOpen,
   onClose,
   onStartPreparation,
@@ -45,36 +47,42 @@ export default function StateDossierModal({
 
   // Geração de mensagem altamente persuasiva para virar voto no 1-a-1
   const generatedMessage = useMemo(() => {
-    const siteUrl = `https://www.gigantera.xyz/bora?state=${stateGeo.uf}&dossier=1`;
+    const siteUrl = `https://www.gigantera.xyz/bora?state=${stateGeo.uf}${city ? `&city=${encodeURIComponent(city)}` : ''}&dossier=1`;
     const stateName = stateGeo.name;
+    const locationName = city ? `${city} (${stateGeo.uf})` : stateName;
 
     let greeting = 'Oi!';
     let connection = 'lembrei da nossa conversa esses dias';
 
     if (interlocutor === 'familia') {
       greeting = 'Oi, tudo bem?';
-      connection = 'lembrei de você e de conversas que a gente já teve em família';
+      connection = `lembrei de você e de conversas que a gente já teve em família aqui em ${locationName}`;
     } else if (interlocutor === 'comerciante') {
       greeting = 'Olá, tudo certo?';
-      connection = 'lembrei do seu trabalho e de como as coisas andam no comércio aqui da região';
+      connection = `lembrei do seu trabalho e de como as coisas andam no comércio aqui em ${locationName}`;
     } else if (interlocutor === 'idoso') {
       greeting = 'Oi, benção! Tudo bem por aí?';
-      connection = 'lembrei de você e tava pensando na nossa saúde e no custo das coisas';
+      connection = `lembrei de você e tava pensando na nossa saúde e no custo das coisas aqui em ${locationName}`;
     } else if (interlocutor === 'jovem') {
       greeting = 'E aí, beleza?';
-      connection = 'vi isso aqui e lembrei das nossas conversas sobre estudo e futuro';
+      connection = `vi isso aqui e lembrei das nossas conversas sobre estudo e futuro em ${locationName}`;
+    } else if (interlocutor === 'bolsonarista') {
+      greeting = 'Oi, tudo bem?';
+      connection = `lembrei de você e do quanto a gente valoriza o trabalho honesto e a família aqui em ${locationName}`;
     } else if (interlocutor === 'nulo') {
       greeting = 'Oi, tudo bem?';
-      connection = 'lembrei de quando você comentou que tava desanimado da política';
+      connection = `lembrei de quando você comentou que tava desanimado da política aqui em ${locationName}`;
     }
 
     let coreReason = '';
     if (topic === 'obras_emprego') {
-      coreReason = `Aqui em ${stateName}, o dado real é que foram gerados ${stats.jobsCreated}. Além disso, as obras federais foram retomadas pra destravar o transporte e o emprego local.`;
+      coreReason = `Aqui em ${locationName}, o dado real é que foram gerados ${stats.jobsCreated}. Além disso, as obras federais foram retomadas pra destravar o transporte e o emprego local.`;
     } else if (topic === 'comida_salario') {
       coreReason = `Eu sei que a feira ainda pesa, mas o salário mínimo voltou a ter aumento acima da inflação pelo 2º ano consecutivo e a comida básica caiu em relação ao que tava na pandemia.`;
     } else if (topic === 'farmacia_popular') {
-      coreReason = `Aqui em ${stateName}, o Farmácia Popular tá atendendo ${stats.farmaciaPopularBeneficiaries}. É remédio de graça de pressão, diabetes e asma sem gastar um centavo do bolso.`;
+      coreReason = `Aqui em ${locationName}, o Farmácia Popular tá atendendo ${stats.farmaciaPopularBeneficiaries}. É remédio de graça de pressão, diabetes e asma sem gastar um centavo do bolso.`;
+    } else if (topic === 'escala_6x1') {
+      coreReason = `Você sabia que o Flávio votou contra o fim da escala 6x1? Ele acha normal quem rala no comércio ou na fábrica folgar só um dia na semana e não ter tempo pra descansar com a família.`;
     } else if (topic === 'risco_flavio') {
       coreReason = `Eu sei que ninguém é perfeito, mas o risco de votar em Flávio é trazer de volta corte de verba de remédio e congelamento do salário mínimo. Não dá pra arriscar o pouco que a gente reconquistou.`;
     }
@@ -83,13 +91,15 @@ export default function StateDossierModal({
     if (interlocutor === 'familia') {
       closing = 'Sem briga nenhuma, longe de mim querer discutir. É só que eu me preocupo com a nossa família e achei legal te mandar pra gente pensar juntos com calma. Um abraço!';
     } else if (interlocutor === 'comerciante') {
-      closing = 'Quando o trabalhador ganha aumento real e tem emprego, sobra mais dinheiro pra gastar no comércio local da nossa cidade. Dá uma olhada depois com calma!';
+      closing = `Quando o trabalhador ganha aumento real e tem emprego, sobra mais dinheiro pra gastar no comércio local de ${city || stateName}. Dá uma olhada depois com calma!`;
     } else if (interlocutor === 'idoso') {
       closing = 'Se puder, dá uma olhada com carinho. A gente que vive do próprio esforço precisa valorizar o que protege os remédios e a aposentadoria. Fica com Deus!';
     } else if (interlocutor === 'jovem') {
-      closing = `Dá uma olhada nessa página com os dados reais de ${stateName} pra gente não cair em corte de zap sem checar a fonte. Tamo junto!`;
+      closing = `Dá uma olhada nessa página com os dados reais de ${locationName} pra gente não cair em corte de zap sem checar a fonte. Tamo junto!`;
+    } else if (interlocutor === 'bolsonarista') {
+      closing = `A gente não precisa brigar por político, mas ninguém come discurso. Quis te mandar essa página de ${locationName} pra gente não ver o trabalhador perder a folga nem os remédios. Dá uma olhada com calma!`;
     } else {
-      closing = 'Não votar ou votar nulo acaba ajudando quem quer cortar direitos da gente. Dá uma lida sem compromisso nos dados do nosso estado:';
+      closing = `Não votar ou votar nulo acaba ajudando quem quer cortar direitos da gente. Dá uma lida sem compromisso nos dados de ${locationName}:`;
     }
 
     const fullText = `${greeting} ${connection}.\n\n${coreReason}\n\nEncontrei essa página que reúne os dados auditados e os motivos reais de ${stateName}:\n${siteUrl}\n\n${closing}`;
@@ -138,7 +148,7 @@ export default function StateDossierModal({
           <div className="space-y-1.5">
             <div className="flex flex-wrap items-center gap-2">
               <span className="px-2.5 py-0.5 rounded-full text-[10px] font-black uppercase tracking-wider bg-[#C52229] text-white">
-                Dossiê Territorial • {stateGeo.uf}
+                Dossiê Territorial • {stateGeo.uf}{city ? ` • ${city}` : ''}
               </span>
               <span className="text-xs font-bold text-slate-500 dark:text-slate-400">
                 Região {stateGeo.region} • Capital: {stateGeo.capital}
@@ -149,11 +159,11 @@ export default function StateDossierModal({
             </div>
 
             <h2 id="dossier-modal-title" className="text-xl sm:text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-              Por que {stateGeo.name} ganha com Lula: <span className="text-[#C52229]">5 Motivos Reais</span>
+              Por que {city || stateGeo.name} ganha com Lula: <span className="text-[#C52229]">5 Motivos Reais</span>
             </h2>
 
             <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 font-normal leading-relaxed">
-              Argumentos concretos, obras auditadas e números de bolso para conversar no privado com amigos e familiares de {stateGeo.name} no 2º turno.
+              Argumentos concretos, obras auditadas e números de bolso para conversar no privado com amigos e familiares de {city || stateGeo.name} no 2º turno.
             </p>
           </div>
 
@@ -310,6 +320,7 @@ export default function StateDossierModal({
                 {[
                   { id: 'familia', label: '👨‍👩‍👧 Parente / Família' },
                   { id: 'comerciante', label: '🏪 Comerciante / Autônomo' },
+                  { id: 'bolsonarista', label: '🎯 Já vota em Flávio / Conservador' },
                   { id: 'idoso', label: '👵 Aposentado / Idoso' },
                   { id: 'jovem', label: '🎓 Jovem / Estudante' },
                   { id: 'nulo', label: '⚪ Voto Nulo / Desiludido' },
@@ -342,6 +353,7 @@ export default function StateDossierModal({
                 {[
                   { id: 'obras_emprego', label: `🛣️ Obras e Empregos em ${stateGeo.uf}` },
                   { id: 'comida_salario', label: '🥩 Preço da Feira & Salário Mínimo' },
+                  { id: 'escala_6x1', label: '⏰ Fim da Escala 6x1 & Folga Digna' },
                   { id: 'farmacia_popular', label: '💊 Remédios Grátis (Farmácia Popular)' },
                   { id: 'risco_flavio', label: '⚠️ O Risco Flávio Bolsonaro' },
                 ].map((item) => (

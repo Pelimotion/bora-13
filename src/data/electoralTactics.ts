@@ -4,8 +4,15 @@
 // Foco: Trocar a Pergunta, Mostrar o Menos, Os 4 Votos Decisivos
 // ═══════════════════════════════════════════════════════════════
 
+export type ConversionFrontId =
+  | 'ex_lula'
+  | 'terceira_via'
+  | 'bolsonarista_flavio'
+  | 'abstencao_70'
+  | 'nulo_branco';
+
 export interface ConversionFront {
-  id: 'ex_lula' | 'terceira_via' | 'abstencao_70' | 'nulo_branco';
+  id: ConversionFrontId;
   number: number;
   title: string;
   subtitle: string;
@@ -18,6 +25,7 @@ export interface ConversionFront {
   rootCause: string;
   mindsetQuote: string;
   goldenRule: string;
+  keywords: string[];
   conversationSteps: {
     step: number;
     title: string;
@@ -124,6 +132,7 @@ export const CONVERSION_FRONTS: ConversionFront[] = [
     rootCause: 'O trabalhador quer MAIS, e isso é um direito justo de quem trabalha duro. O risco é cair na ilusão de que Flávio traria mais.',
     mindsetQuote: '"Votei nele esperando picanha e alívio, mas o mercado continua pesado e o dinheiro não sobra."',
     goldenRule: 'NUNCA defenda cegamente o governo nem diga que a vida tá uma maravilha. Primeiro concorde: "Você tem toda razão de querer mais. A vida tá puxada. Mas com Flávio não vai vir mais, vai vir MENOS."',
+    keywords: ['Preço da Feira', 'Salário Mínimo Real', 'Isenção IR R$ 5k', 'Não Desmerecer o Cansaço'],
     conversationSteps: [
       {
         step: 1,
@@ -184,6 +193,7 @@ export const CONVERSION_FRONTS: ConversionFront[] = [
     rootCause: 'Quer tranquilidade, segurança para trabalhar e regras claras sem bagunça política.',
     mindsetQuote: '"Eu tenho ressalvas com o PT, mas a família Bolsonaro me dá medo com tanta briga."',
     goldenRule: 'NUNCA force essa pessoa a virar fã de Lula. Faça APENAS perguntas calmas e reflexivas sobre o histórico e as atitudes de Flávio Bolsonaro.',
+    keywords: ['Estabilidade', 'Pequenos Comércios', 'Perguntas Sem Imposição', 'Risco Poder Absoluto'],
     conversationSteps: [
       {
         step: 1,
@@ -229,8 +239,69 @@ export const CONVERSION_FRONTS: ConversionFront[] = [
   },
 
   {
-    id: 'abstencao_70',
+    id: 'bolsonarista_flavio',
     number: 3,
+    title: 'Quem já vota em Flávio ou se diz bolsonarista',
+    subtitle: 'Eleitor convicto ou moderado da direita: foco em salário, remédios e folga da escala 6x1',
+    tag: 'Desarmar Ideologia • Focar no Bolso',
+    badgeColor: 'bg-amber-100 text-amber-900 border-amber-300 dark:bg-amber-950/60 dark:text-amber-300 dark:border-amber-800',
+    icon: '🎯',
+    priority: 'Estratégica',
+    electoralWeight: 'Voto direto que neutraliza a base adversária e desarma preconceitos',
+    whoIsThis: 'Trabalhador, motorista, comerciante ou aposentado que consome grupos de WhatsApp, tem valores conservadores e acredita que a esquerda quer prejudicar a família ou o país.',
+    rootCause: 'Medo cultivado em redes sociais e sensação de pertencimento ao grupo patriota.',
+    mindsetQuote: '"Eu voto no Flávio porque sou contra a corrupção e defendo a família e os valores cristãos."',
+    goldenRule: 'NUNCA ataque os valores morais, religiosos ou a bandeira do Brasil. Respeite as convicções da pessoa e mostre que Flávio vota contra o próprio trabalhador que o apoia.',
+    keywords: ['Fim da Escala 6x1', 'Remédios Farmácia Popular', 'Respeito à Fé', 'Mansão R$ 6 Milhões'],
+    conversationSteps: [
+      {
+        step: 1,
+        title: '1. Respeitar os valores da pessoa',
+        action: 'Elogie a preocupação dela com a família e com o trabalho honesto.',
+        script: '"Eu respeito de verdade a sua fé, a sua família e a sua dedicação ao trabalho. Acho bonito quem defende valores honestos e acorda cedo pra sustentar a casa."',
+      },
+      {
+        step: 2,
+        title: '2. Separar os valores do político rico',
+        action: 'Mostre a diferença entre a fé honesta do povo e o histórico de Flávio.',
+        script: '"Mas você acha que o Flávio vive esses mesmos valores? Ele mora em mansão de 6 milhões em Brasília, respondeu pelo escândalo das rachadinhas e nunca pegou no pesado como você."',
+      },
+      {
+        step: 3,
+        title: '3. A pergunta do cansaço: Escala 6x1 e Salário',
+        action: 'Toque na dor concreta da rotina e do sustento.',
+        script: '"Você sabia que o Flávio votou CONTRA o fim da escala 6x1? Ele acha normal o trabalhador brasileiro não ter descanso digno pra ficar com os filhos e ir ao culto. E no governo passado cortaram 59% da Farmácia Popular. Se faltar remédio pro seu pai ou pra sua mãe, de que adianta discurso de família na internet?"',
+      },
+      {
+        step: 4,
+        title: '4. Convidar para a proteção prática',
+        action: 'Proponha pensar no sustento real da casa.',
+        script: '"A gente pode até ter ideias diferentes sobre política, mas ninguém come discurso. Vamos proteger o nosso emprego, a folga da escala e o remédio de graça."',
+      },
+    ],
+    whatToSay: [
+      'Valide valores cristãos e amor à família: mostre que proteger os vulneráveis é cristão.',
+      'Lembre que Flávio defende a escala 6x1 e vota contra mais tempo livre para a família.',
+      'Explique que quem ganha até R$ 5 mil vai ter Imposto de Renda ZERO com Lula.',
+      'Alerte sobre a PEC das praias e as privatizações predatórias que Flávio liderou.',
+    ],
+    whatNeverToSay: [
+      'NUNCA ofenda a religião da pessoa nem a chame de "fascista" ou "alienada".',
+      'NUNCA debata fake news absurdas que desviam do bolso para a moralidade.',
+      'NUNCA diga que a bandeira do Brasil não pertence a todos nós.',
+    ],
+    menorComFlavioPoints: [
+      'Voto contra o fim da exaustiva escala 6x1 no Senado',
+      'Corte de 59% na Farmácia Popular no governo Bolsonaro',
+      'PEC da privatização de praias e terrenos públicos relatada por Flávio',
+      'Tabela do Imposto de Renda congelada taxando quem ganha 2 salários mínimos',
+    ],
+    suggestedPostPresetId: 'preset_o_menos_com_flavio',
+  },
+
+  {
+    id: 'abstencao_70',
+    number: 4,
     title: 'Quem faltou no 1º turno ou idosos (70+)',
     subtitle: '17 milhões de pessoas que não foram votar por cansaço, chuva ou condução',
     tag: 'Carona e Incentivo com Carinho',
@@ -242,6 +313,7 @@ export const CONVERSION_FRONTS: ConversionFront[] = [
     rootCause: 'Falta de condução, chuva, cansaço físico da semana de trabalho ou sensação de que seu voto não faria falta.',
     mindsetQuote: '"Eu não fui votar porque choveu forte, o ponto de ônibus tava longe e achei que tanto faz."',
     goldenRule: 'ESCUTE com carinho o motivo real da ausência antes de falar de política. Ofereça ajuda prática, carona ou companhia.',
+    keywords: ['Carona Solidária', 'Passe Livre na Eleição', 'Remédios Gratuitos', 'Sem Julgamentos'],
     conversationSteps: [
       {
         step: 1,
@@ -280,7 +352,7 @@ export const CONVERSION_FRONTS: ConversionFront[] = [
 
   {
     id: 'nulo_branco',
-    number: 4,
+    number: 5,
     title: 'Quem votou nulo ou em branco',
     subtitle: 'Cansado de briga política e achando que "é tudo farinha do mesmo saco"',
     tag: 'Lembrar quem vai assinar as leis',
@@ -292,6 +364,7 @@ export const CONVERSION_FRONTS: ConversionFront[] = [
     rootCause: 'Cansaço da polarização e sensação de que nada muda na vida prática.',
     mindsetQuote: '"São todos iguais, nenhum deles põe comida no meu prato."',
     goldenRule: 'Coloque a pessoa no comando do dilema real: "Se amanhã votarem contra o seu 13º ou sua folga, quem você quer na presidência pra vetar?".',
+    keywords: ['Defesa da Folga', '13º Salário', 'Quem Assina as Leis', 'Proteger o Bolso'],
     conversationSteps: [
       {
         step: 1,

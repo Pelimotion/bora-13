@@ -12,6 +12,7 @@ import {
   MENOS_COM_FLAVIO_FACTS,
   getRegionalTacticForUF,
   type ConversionFront,
+  type ConversionFrontId,
 } from '@/data/electoralTactics';
 
 // ─────────────────────────────────────────────────────────────
@@ -115,7 +116,7 @@ export interface AgenticWorkingMemory {
   occupation?: string;
   profileTags: ProfileTag[];
   rejectionLevel: number;
-  activeFrontId?: 'ex_lula' | 'terceira_via' | 'abstencao_70' | 'nulo_branco';
+  activeFrontId?: ConversionFrontId;
   familyFlags: {
     hasElderly: boolean;
     hasChildren: boolean;
@@ -756,7 +757,7 @@ export interface TailoredConversationPlan {
   stateName: string;
   city: string;
   locationLabel: string;
-  frontId: 'ex_lula' | 'terceira_via' | 'abstencao_70' | 'nulo_branco';
+  frontId: ConversionFrontId;
   frontTitle: string;
   frontIcon: string;
   frontPriority: string;
@@ -785,7 +786,7 @@ export interface TailoredConversationPlan {
 export function createCustomizedConversationPlan(
   uf: string = 'SP',
   city?: string,
-  frontId: 'ex_lula' | 'terceira_via' | 'abstencao_70' | 'nulo_branco' = 'ex_lula',
+  frontId: ConversionFrontId = 'ex_lula',
   occupation?: string,
   familyFlags?: {
     hasElderly?: boolean;
@@ -810,6 +811,8 @@ export function createCustomizedConversationPlan(
     acolhimentoHook = `Eu te entendo totalmente quando você fala que o carrinho de mercado tá pesado. Quem vive de salário sente no bolso e dá uma angústia danada ver o preço das coisas. A gente trabalhou a vida inteira e quer ver o país respirar melhor mais rápido.`;
   } else if (frontId === 'terceira_via') {
     acolhimentoHook = `Eu concordo com você que o Brasil precisa de menos briga partidária e de gente séria trabalhando. Antes de decidir na raiva, vamos olhar o que tá em jogo na prática para a nossa cidade e quem tem propostas reais de pé.`;
+  } else if (frontId === 'bolsonarista_flavio') {
+    acolhimentoHook = `Eu respeito de verdade quem acorda cedo, defende a família e valoriza a sua fé e o trabalho honesto. Ninguém quer corrupção nem bagunça no país. Mas antes de apertar 22, vamos olhar o que o Flávio vota na prática contra quem rala no comércio e na indústria.`;
   } else if (frontId === 'abstencao_70') {
     acolhimentoHook = `Ir votar no domingo é um esforço enorme, ainda mais quando a gente tá cansado de tanta promessa. Mas você sabia que a sua presença na urna é o que garante que o remédio gratuito e a poupança dos nossos jovens continuem funcionando?`;
   } else {
@@ -888,6 +891,12 @@ export function createCustomizedConversationPlan(
       rebuttal: `A renovação com Flávio significa dar a presidência, a maioria do Senado e indicar mais 4 ministros no STF para a mesma família. Concentração total de poder sem oposição.`,
       source: 'Análise Institucional do Senado',
     };
+  } else if (frontId === 'bolsonarista_flavio') {
+    objectionRebuttal = {
+      objection: 'Eu voto no Flávio porque sou de direita e defendo a família contra o comunismo.',
+      rebuttal: `Defender a família é garantir comida na mesa, folga no sábado e remédio pro pai idoso. O Flávio votou CONTRA o fim da escala 6x1 e quer o trabalhador trabalhando 6 dias pra 1 de folga. E no governo deles, cortaram 59% da Farmácia Popular. Isso protege ou adoece a família?`,
+      source: 'Votações Oficiais no Senado Federal / Orçamento da União',
+    };
   } else if (frontId === 'abstencao_70') {
     objectionRebuttal = {
       objection: 'Para que eu vou me cansar indo votar se nada muda?',
@@ -904,7 +913,14 @@ export function createCustomizedConversationPlan(
     source: 'Orçamento Geral da União',
   };
 
-  if (familyFlags?.hasChildren) {
+  if (frontId === 'bolsonarista_flavio') {
+    retrocessoAlert = {
+      title: 'Voto Contra o Fim da Escala 6x1',
+      description: 'Flávio Bolsonaro se declarou contra a PEC que acaba com a escala 6x1, mantendo o trabalhador de comércio e indústria preso 6 dias por semana sem descanso com os filhos.',
+      statNumber: '6x1',
+      source: 'Declarações e Votações Oficiais no Senado',
+    };
+  } else if (familyFlags?.hasChildren) {
     retrocessoAlert = {
       title: 'Corte de 90% na Habitação & Veto à Merenda',
       description: 'Cortaram 90% dos recursos do Minha Casa Minha Vida e vetaram o reajuste da merenda escolar de milhares de crianças.',

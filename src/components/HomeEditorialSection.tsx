@@ -7,7 +7,7 @@ import {
   getStateStats,
 } from '@/lib/agenticOrchestrator';
 import { getStateByUF, BRAZIL_STATES_GEO } from '@/data/brazilGeo';
-import { CONVERSION_FRONTS } from '@/data/electoralTactics';
+import { CONVERSION_FRONTS, type ConversionFrontId } from '@/data/electoralTactics';
 import {
   IconStar,
   IconPrepare,
@@ -29,7 +29,7 @@ interface HomeEditorialSectionProps {
   onResetContext?: () => void;
   canInstall?: boolean;
   onInstall?: () => void;
-  onSelectFront?: (frontId: 'ex_lula' | 'terceira_via' | 'abstencao_70' | 'nulo_branco') => void;
+  onSelectFront?: (frontId: ConversionFrontId) => void;
   onOpenStudioWithPreset?: (preset: PostPresetData) => void;
   onSelectState?: (uf: string, city?: string) => void;
   initialOpenDossier?: boolean;
@@ -226,6 +226,7 @@ export default function HomeEditorialSection({
           ═══════════════════════════════════════════════════════════════ */}
       <TerritoryMapHud
         activeUF={activeUF}
+        activeCity={activeCity}
         onSelectState={(uf, city) => onSelectState?.(uf, city)}
         onNavigate={handleNav}
         initialOpenDossier={initialOpenDossier}

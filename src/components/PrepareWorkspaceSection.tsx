@@ -5,6 +5,7 @@ import type { AppSection, AgenticWorkingMemory, PostPresetData } from '@/lib/age
 import { playProceduralHaptic } from '@/lib/agenticOrchestrator';
 import TailoredMissionFunnel from '@/components/TailoredMissionFunnel';
 import { getStateByUF, BRAZIL_STATES_GEO } from '@/data/brazilGeo';
+import type { ConversionFrontId } from '@/data/electoralTactics';
 import {
   IconStar,
   IconPrepare,
@@ -19,7 +20,7 @@ interface PrepareWorkspaceSectionProps {
   memory: AgenticWorkingMemory;
   onNavigate: (section: AppSection) => void;
   onSelectState: (uf: string, city?: string) => void;
-  onSelectFront: (frontId: 'ex_lula' | 'terceira_via' | 'abstencao_70' | 'nulo_branco') => void;
+  onSelectFront: (frontId: ConversionFrontId) => void;
   onOpenStudioWithPreset?: (preset: PostPresetData) => void;
   onNavigateToSimulator?: (frontId?: string, occupation?: string) => void;
 }

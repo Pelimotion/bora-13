@@ -12,6 +12,7 @@ import {
   CONVERSION_FRONTS,
   MENOS_COM_FLAVIO_FACTS,
   type ConversionFront,
+  type ConversionFrontId,
 } from '@/data/electoralTactics';
 import { copyToClipboardClean, openWhatsApp } from '@/lib/shareUtils';
 
@@ -23,8 +24,8 @@ interface ProfileSectionProps {
   onGeneratePostFromConversionFront?: (front: ConversionFront) => void;
   onGeneratePostFromMenosFact?: (fact: (typeof MENOS_COM_FLAVIO_FACTS)[0]) => void;
   onNavigateToSimulator: () => void;
-  activeFrontId?: 'ex_lula' | 'terceira_via' | 'abstencao_70' | 'nulo_branco';
-  onSelectFront?: (frontId: 'ex_lula' | 'terceira_via' | 'abstencao_70' | 'nulo_branco') => void;
+  activeFrontId?: ConversionFrontId;
+  onSelectFront?: (frontId: ConversionFrontId) => void;
   selectedUF?: string;
   selectedCity?: string;
   onNavigateToTerritory?: () => void;
@@ -81,7 +82,7 @@ export default function ProfileSection({
     setOccQuery('');
   };
 
-  const handleFrontSelect = (frontId: 'ex_lula' | 'terceira_via' | 'abstencao_70' | 'nulo_branco') => {
+  const handleFrontSelect = (frontId: ConversionFrontId) => {
     playProceduralHaptic('toggle');
     if (onSelectFront) {
       onSelectFront(frontId);
@@ -179,12 +180,12 @@ export default function ProfileSection({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         {/* COLUNA ESQUERDA: PERFIL DO INTERLOCUTOR & FRENTE DOS 4 NOMES (5 COLUNAS) */}
         <div className="lg:col-span-5 flex flex-col gap-6">
-          {/* Card 1: AS 4 FRENTES DE CONVERSÃO (O MÉTODO NORMOSE / SABRINA FERNANDES) */}
+          {/* Card 1: OS 5 PERFIS DE CONVERSÃO DO 2º TURNO */}
           <div className="p-5 rounded-3xl bg-white dark:bg-slate-900 border-2 border-red-200/90 dark:border-slate-800 shadow-sm space-y-3 relative overflow-hidden">
             <div className="flex items-center justify-between">
               <span className="text-xs font-black uppercase tracking-wider text-[#C52229] flex items-center gap-1.5">
                 <span>⭐</span>
-                <span>1. Quem é essa pessoa no 2º Turno? (A Lista dos 4 Votos)</span>
+                <span>1. Quem é essa pessoa no 2º Turno? (Os 5 Perfis Decisivos)</span>
               </span>
             </div>
 
@@ -199,7 +200,7 @@ export default function ProfileSection({
                   <button
                     key={front.id}
                     onClick={() => handleFrontSelect(front.id)}
-                    className={`w-full p-3.5 rounded-2xl border text-left transition-all flex items-start gap-3 relative ${
+                    className={`w-full p-3.5 rounded-2xl border text-left transition-all flex items-start gap-3 relative cursor-pointer ${
                       isSelected
                         ? 'border-[#C52229] bg-gradient-to-r from-red-50/90 to-amber-50/40 dark:from-red-950/50 dark:to-slate-900 shadow-md ring-2 ring-[#C52229]/40'
                         : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 hover:border-slate-300'
@@ -218,7 +219,26 @@ export default function ProfileSection({
                       <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-snug line-clamp-2">
                         {front.subtitle}
                       </p>
-                      <span className="text-[10px] font-bold text-[#C52229] dark:text-red-400 mt-1 block">
+
+                      {/* Palavras-chave Visuais */}
+                      {front.keywords && front.keywords.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-1.5">
+                          {front.keywords.map((kw, i) => (
+                            <span
+                              key={i}
+                              className={`text-[9px] font-bold px-2 py-0.5 rounded-md border ${
+                                isSelected
+                                  ? 'bg-red-100 dark:bg-red-900/40 text-[#C52229] dark:text-red-300 border-red-200 dark:border-red-800'
+                                  : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 border-slate-200 dark:border-slate-700'
+                              }`}
+                            >
+                              {kw}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+
+                      <span className="text-[10px] font-bold text-[#C52229] dark:text-red-400 mt-1.5 block">
                         ⚡ {front.electoralWeight}
                       </span>
                     </div>

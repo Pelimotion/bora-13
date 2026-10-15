@@ -6,6 +6,7 @@ import {
   CONVERSION_FRONTS,
   MENOS_COM_FLAVIO_FACTS,
   type ConversionFront,
+  type ConversionFrontId,
 } from '@/data/electoralTactics';
 import {
   createCustomizedConversationPlan,
@@ -35,11 +36,11 @@ import { copyToClipboardClean, openWhatsApp, cleanTextForSharing } from '@/lib/s
 interface TailoredMissionFunnelProps {
   initialUF?: string;
   initialCity?: string;
-  initialFrontId?: 'ex_lula' | 'terceira_via' | 'abstencao_70' | 'nulo_branco';
+  initialFrontId?: ConversionFrontId;
   initialOccupation?: string;
   onSelectState?: (uf: string, city?: string) => void;
   onSelectCity?: (city: string) => void;
-  onSelectFront?: (frontId: 'ex_lula' | 'terceira_via' | 'abstencao_70' | 'nulo_branco') => void;
+  onSelectFront?: (frontId: ConversionFrontId) => void;
   onOpenStudio?: (preset: PostPresetData) => void;
   onOpenSimulator?: (frontId?: string, occupation?: string) => void;
   className?: string;
@@ -82,7 +83,7 @@ export default function TailoredMissionFunnel({
   const [cityInputCustom, setCityInputCustom] = useState<string>('');
   const [showCustomCityInput, setShowCustomCityInput] = useState<boolean>(false);
 
-  const [activeFrontId, setActiveFrontId] = useState<'ex_lula' | 'terceira_via' | 'abstencao_70' | 'nulo_branco'>(
+  const [activeFrontId, setActiveFrontId] = useState<ConversionFrontId>(
     initialFrontId
   );
 
@@ -151,7 +152,7 @@ export default function TailoredMissionFunnel({
     if (onSelectState) onSelectState(activeUF, trimmed);
   };
 
-  const handleFrontPick = (frontId: 'ex_lula' | 'terceira_via' | 'abstencao_70' | 'nulo_branco') => {
+  const handleFrontPick = (frontId: ConversionFrontId) => {
     playProceduralHaptic('toggle');
     setActiveFrontId(frontId);
     if (onSelectFront) onSelectFront(frontId);
@@ -334,8 +335,8 @@ export default function TailoredMissionFunnel({
           </span>
         </div>
 
-        {/* Grid das 4 Frentes de Conversão */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        {/* Grid dos 5 Perfis Estratégicos de Diálogo */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
           {CONVERSION_FRONTS.map((front) => {
             const isSelected = activeFrontId === front.id;
             return (
@@ -343,32 +344,61 @@ export default function TailoredMissionFunnel({
                 key={front.id}
                 type="button"
                 onClick={() => handleFrontPick(front.id)}
-                className={`p-4 rounded-2xl border text-left transition-all relative flex items-start gap-3 cursor-pointer ${
+                className={`p-4 rounded-2xl border text-left transition-all relative flex flex-col justify-between gap-2.5 cursor-pointer ${
                   isSelected
-                    ? 'border-[#C52229] bg-red-50/70 dark:bg-red-950/40 shadow-sm ring-2 ring-[#C52229]/40'
-                    : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 hover:border-slate-300'
+                    ? 'border-[#C52229] bg-red-50/80 dark:bg-red-950/40 shadow-md ring-2 ring-[#C52229]/40 scale-[1.01]'
+                    : 'border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 hover:border-slate-300 hover:shadow-xs'
                 }`}
               >
-                <div className={`w-8 h-8 rounded-xl flex items-center justify-center font-black text-xs shrink-0 mt-0.5 ${
-                  isSelected ? 'bg-[#C52229] text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
-                }`}>
-                  {front.number}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-1 mb-0.5">
-                    <span className="text-xs font-black text-slate-900 dark:text-white truncate">
+                <div className="flex items-start justify-between gap-2 w-full">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl shrink-0">{front.icon}</span>
+                    <span className={`w-5 h-5 rounded-full flex items-center justify-center font-black text-[10px] shrink-0 ${
+                      isSelected ? 'bg-[#C52229] text-white' : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300'
+                    }`}>
+                      {front.number}
+                    </span>
+                    <span className="text-xs font-black text-slate-900 dark:text-white line-clamp-1">
                       {front.title}
                     </span>
-                    <span className={`text-[9px] font-black px-2 py-0.5 rounded-full border shrink-0 ${front.badgeColor}`}>
-                      {front.priority}
-                    </span>
                   </div>
-                  <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-snug line-clamp-2">
-                    {front.subtitle}
-                  </p>
-                  <span className="text-[10px] font-bold text-[#C52229] dark:text-red-400 mt-1 block">
-                    {front.electoralWeight}
+
+                  <span className={`text-[9px] font-black px-2 py-0.5 rounded-full border shrink-0 ${front.badgeColor}`}>
+                    {front.priority}
                   </span>
+                </div>
+
+                <p className="text-[11px] text-slate-600 dark:text-slate-400 leading-snug line-clamp-2">
+                  {front.subtitle}
+                </p>
+
+                {/* Palavras-chave Visuais Intuitivas */}
+                {front.keywords && front.keywords.length > 0 && (
+                  <div className="flex flex-wrap gap-1 pt-1">
+                    {front.keywords.slice(0, 3).map((kw, i) => (
+                      <span
+                        key={i}
+                        className={`text-[9px] font-bold px-2 py-0.5 rounded-md border ${
+                          isSelected
+                            ? 'bg-red-100/80 dark:bg-red-900/40 text-[#C52229] dark:text-red-300 border-red-200/60 dark:border-red-800/50'
+                            : 'bg-slate-100 dark:bg-slate-800/80 text-slate-600 dark:text-slate-400 border-slate-200/60 dark:border-slate-700/60'
+                        }`}
+                      >
+                        {kw}
+                      </span>
+                    ))}
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between pt-1 border-t border-slate-100 dark:border-slate-800/60 w-full">
+                  <span className="text-[10px] font-bold text-[#C52229] dark:text-red-400 truncate">
+                    {front.tag}
+                  </span>
+                  {isSelected && (
+                    <span className="text-[10px] font-black px-1.5 py-0.2 rounded bg-[#C52229] text-white shrink-0">
+                      Selecionado ✓
+                    </span>
+                  )}
                 </div>
               </button>
             );

@@ -18,6 +18,7 @@ import { openWhatsApp, cleanTextForSharing } from '@/lib/shareUtils';
 
 interface TerritoryMapHudProps {
   activeUF: string;
+  activeCity?: string;
   onSelectState: (uf: string, city?: string) => void;
   onNavigate: (section: AppSection) => void;
   initialOpenDossier?: boolean;
@@ -26,6 +27,7 @@ interface TerritoryMapHudProps {
 
 export default function TerritoryMapHud({
   activeUF,
+  activeCity,
   onSelectState,
   onNavigate,
   initialOpenDossier = false,
@@ -33,6 +35,8 @@ export default function TerritoryMapHud({
 }: TerritoryMapHudProps) {
   const [activeRegion, setActiveRegion] = useState<string>('Todas');
   const [isDossierOpen, setIsDossierOpen] = useState(initialOpenDossier);
+  const [customCityInput, setCustomCityInput] = useState('');
+  const [showCustomInput, setShowCustomInput] = useState(false);
 
   useEffect(() => {
     if (initialOpenDossier) {
@@ -45,6 +49,11 @@ export default function TerritoryMapHud({
     [activeUF]
   );
 
+  const currentCity = useMemo(() => {
+    if (activeCity) return activeCity;
+    return selectedStateGeo.capital;
+  }, [activeCity, selectedStateGeo.capital]);
+
   const stats = useMemo(() => getStateStats(selectedStateGeo.uf), [selectedStateGeo.uf]);
 
   // Estados filtrados pela região ativa para o painel de toque rápido (mobile & desktop)
@@ -55,7 +64,14 @@ export default function TerritoryMapHud({
 
   const handleStateClick = (state: StateGeo) => {
     playProceduralHaptic('card');
-    onSelectState(state.uf, state.capital);
+    // Se a cidade atual pertencer ao novo estado, mantém; senão usa a capital
+    const nextCity = state.majorCities.includes(currentCity) ? currentCity : state.capital;
+    onSelectState(state.uf, nextCity);
+  };
+
+  const handleCityClick = (cityName: string) => {
+    playProceduralHaptic('click');
+    onSelectState(selectedStateGeo.uf, cityName);
   };
 
   const handleRegionClick = (reg: string) => {
@@ -65,13 +81,13 @@ export default function TerritoryMapHud({
 
   const handleStartPreparation = () => {
     playProceduralHaptic('generate');
-    onSelectState(selectedStateGeo.uf, selectedStateGeo.capital);
+    onSelectState(selectedStateGeo.uf, currentCity);
     onNavigate('preparar');
   };
 
   const handleExploreState = () => {
     playProceduralHaptic('click');
-    onSelectState(selectedStateGeo.uf, selectedStateGeo.capital);
+    onSelectState(selectedStateGeo.uf, currentCity);
     onNavigate('explorar');
   };
 
@@ -187,9 +203,9 @@ export default function TerritoryMapHud({
       </div>
 
       {/* ── 3. CORPO DO HUD: MAPA INTERATIVO (ESQ) + PAINEL DE INTELIGÊNCIA LOCAL (DIR) ── */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
-        {/* COLUNA ESQUERDA: MAPA DO BRASIL INTERATIVO */}
-        <div className="lg:col-span-7 flex flex-col items-center justify-center p-2 sm:p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/40 border border-slate-100 dark:border-slate-800/60">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* COLUNA ESQUERDA: MAPA DO BRASIL INTERATIVO + DOCK DE CIDADES */}
+        <div className="lg:col-span-7 flex flex-col items-center justify-center p-3 sm:p-5 rounded-2xl bg-slate-50 dark:bg-slate-950/40 border border-slate-100 dark:border-slate-800/60 w-full">
           <BrazilMap
             selectedState={selectedStateGeo.uf}
             onSelectState={handleStateClick}
@@ -199,12 +215,114 @@ export default function TerritoryMapHud({
             showRegions={false}
             className="w-full max-w-[440px]"
           />
+
+          {/* ── DOCK CRIATIVO DE CIDADES DESTE ESTADO (GRAVADA EM MEMÓRIA) ── */}
+          <div className="w-full mt-4 pt-4 border-t border-slate-200 dark:border-slate-800 space-y-3">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5">
+              <div className="flex items-center gap-1.5">
+                <IconMapPin className="w-3.5 h-3.5 text-[#C52229]" />
+                <span className="text-xs font-black text-slate-800 dark:text-slate-100">
+                  Cidades de {selectedStateGeo.name} ({selectedStateGeo.uf})
+                </span>
+              </div>
+              <div className="inline-flex items-center gap-1.5 text-[11px] font-bold text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/50 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800/60 w-fit">
+                <IconCheck className="w-3 h-3 text-emerald-600" />
+                <span>Cidade Ativa: <strong className="font-black text-slate-900 dark:text-white">{currentCity}</strong></span>
+              </div>
+            </div>
+
+            {/* Pílulas de Cidades com Capital destacada */}
+            <div className="flex flex-wrap gap-1.5 max-h-40 overflow-y-auto pr-1">
+              {/* Botão Especial da Capital */}
+              <button
+                type="button"
+                onClick={() => handleCityClick(selectedStateGeo.capital)}
+                className={`px-3 py-1.5 rounded-xl text-xs font-black transition-all cursor-pointer flex items-center gap-1.5 ${
+                  currentCity.toLowerCase() === selectedStateGeo.capital.toLowerCase()
+                    ? 'bg-[#C52229] text-white shadow-xs ring-2 ring-[#C52229]/40 scale-102'
+                    : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:border-slate-400'
+                }`}
+              >
+                <IconStar className="w-3 h-3 text-amber-400 fill-amber-400" />
+                <span>{selectedStateGeo.capital} (Capital)</span>
+                {currentCity.toLowerCase() === selectedStateGeo.capital.toLowerCase() && (
+                  <IconCheck className="w-3 h-3 text-white" />
+                )}
+              </button>
+
+              {/* Demais Cidades Polo do Estado */}
+              {selectedStateGeo.majorCities
+                .filter((c) => c.toLowerCase() !== selectedStateGeo.capital.toLowerCase())
+                .map((city) => {
+                  const isCityActive = currentCity.toLowerCase() === city.toLowerCase();
+                  return (
+                    <button
+                      key={city}
+                      type="button"
+                      onClick={() => handleCityClick(city)}
+                      className={`px-2.5 py-1.5 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center gap-1 ${
+                        isCityActive
+                          ? 'bg-[#C52229] text-white font-black shadow-xs ring-2 ring-[#C52229]/40 scale-102'
+                          : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 hover:border-slate-400'
+                      }`}
+                    >
+                      <span>{city}</span>
+                      {isCityActive && <IconCheck className="w-3 h-3 text-white" />}
+                    </button>
+                  );
+                })}
+
+              {/* Botão para digitar outro município */}
+              <button
+                type="button"
+                onClick={() => setShowCustomInput(!showCustomInput)}
+                className="px-2.5 py-1.5 rounded-xl text-xs font-bold bg-slate-100 hover:bg-slate-200 dark:bg-slate-800 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-dashed border-slate-300 dark:border-slate-600 transition-colors cursor-pointer"
+              >
+                {showCustomInput ? '✕ Fechar' : '+ Outro Município'}
+              </button>
+            </div>
+
+            {/* Input customizado expansível */}
+            {showCustomInput && (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (customCityInput.trim()) {
+                    handleCityClick(customCityInput.trim());
+                    setCustomCityInput('');
+                    setShowCustomInput(false);
+                  }
+                }}
+                className="flex items-center gap-2 pt-1"
+              >
+                <input
+                  type="text"
+                  placeholder={`Digite qualquer município em ${selectedStateGeo.uf}...`}
+                  value={customCityInput}
+                  onChange={(e) => setCustomCityInput(e.target.value)}
+                  className="flex-1 text-xs px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 text-slate-800 dark:text-slate-200 focus:outline-hidden focus:border-[#C52229]"
+                  autoFocus
+                />
+                <button
+                  type="submit"
+                  disabled={!customCityInput.trim()}
+                  className="px-3.5 py-2 rounded-xl text-xs font-black bg-[#C52229] disabled:opacity-50 text-white cursor-pointer transition-all"
+                >
+                  Gravar Cidade
+                </button>
+              </form>
+            )}
+
+            <p className="text-[10px] text-slate-400 dark:text-slate-500 font-medium">
+              💡 Sua cidade fica gravada para personalizar seu roteiro, simulações de diálogo e mensagens de zap.
+            </p>
+          </div>
         </div>
 
         {/* COLUNA DIREITA: PAINEL HUD DO ESTADO SELECIONADO (POUCOS ITENS, SEM SOBRECARGA) */}
         <div className="lg:col-span-5 flex flex-col justify-between space-y-4 p-5 sm:p-6 rounded-2xl bg-slate-50/70 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 shadow-2xs">
-          {/* Identidade do Estado Ativo */}
-          <div className="space-y-1">
+          {/* Identidade do Estado e Cidade Ativa */}
+          <div className="space-y-1.5">
             <div className="flex items-center justify-between gap-2">
               <span className="text-[10px] font-black uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Região {selectedStateGeo.region} • Capital: {selectedStateGeo.capital}
@@ -214,12 +332,22 @@ export default function TerritoryMapHud({
               </span>
             </div>
 
-            <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white flex items-center gap-2">
-              <span>{selectedStateGeo.name}</span>
-              <span className="text-sm font-black px-2 py-0.5 rounded-lg bg-[#C52229] text-white">
-                {selectedStateGeo.uf}
-              </span>
-            </h3>
+            <div className="space-y-1">
+              <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white flex items-center gap-2">
+                <span>{selectedStateGeo.name}</span>
+                <span className="text-sm font-black px-2 py-0.5 rounded-lg bg-[#C52229] text-white">
+                  {selectedStateGeo.uf}
+                </span>
+              </h3>
+
+              <div className="flex items-center gap-1.5 pt-0.5">
+                <span className="text-xs font-bold text-slate-500 dark:text-slate-400">Cidade ativa gravada:</span>
+                <span className="text-xs font-black px-2.5 py-0.5 rounded-full bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white flex items-center gap-1">
+                  <IconMapPin className="w-3 h-3 text-[#C52229]" />
+                  <span>{currentCity}</span>
+                </span>
+              </div>
+            </div>
           </div>
 
           {/* 2 Provas Concretas do Bolso (Conciso, sem poluição) */}
@@ -254,14 +382,14 @@ export default function TerritoryMapHud({
 
           {/* Hub de Ações Estratégicas (1 Ação Principal + 2 Secundárias) */}
           <div className="space-y-2 pt-2">
-            {/* CTA Primário: Conecta diretamente ao Orquestrador Agêntico */}
+            {/* CTA Primário: Conecta diretamente ao Orquestrador Agêntico com a Cidade Ativa */}
             <button
               type="button"
               onClick={handleStartPreparation}
               style={{ backgroundColor: '#C52229' }}
               className="w-full py-3 px-4 rounded-xl text-white font-black text-xs sm:text-sm flex items-center justify-center gap-2 shadow-sm hover:opacity-95 active:scale-98 transition-all cursor-pointer"
             >
-              <span>Montar Roteiro para {selectedStateGeo.name}</span>
+              <span>Montar Roteiro para {currentCity} ({selectedStateGeo.uf})</span>
               <IconArrowRight className="w-4 h-4" />
             </button>
 
@@ -301,6 +429,7 @@ export default function TerritoryMapHud({
       {/* Modal do Dossiê Territorial com Gerador Estratégico de Conversa */}
       <StateDossierModal
         uf={selectedStateGeo.uf}
+        city={currentCity}
         isOpen={isDossierOpen}
         onClose={() => setIsDossierOpen(false)}
         onStartPreparation={() => {

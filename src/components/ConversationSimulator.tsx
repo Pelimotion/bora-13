@@ -126,6 +126,41 @@ const SCENARIOS: Scenario[] = [
       },
     ],
   },
+  {
+    id: 'bolsonarista-colega',
+    title: 'Pausa do Café no Trabalho',
+    interlocutor: 'Eduardo',
+    avatar: '👔',
+    role: 'Comerciário / Vendedor, 42 anos, eleitor declarado de Flávio',
+    situation: 'No intervalo do café, ele diz que vai votar em Flávio porque quer ordem e defende a família.',
+    statement: '“Eu já decidi, vou de Flávio 22! O Brasil precisa de ordem, valores de família e cortar regalias. A esquerda só quer gastança e corrupção!”',
+    options: [
+      {
+        id: 'opt-1',
+        text: '“Você tá maluco de votar no Flávio? Você não vê o escândalo das rachadinhas, as mansões de luxo e que o grupo dele quase deu um golpe?”',
+        tone: 'confrontador',
+        score: 25,
+        feedback: '❌ Confronto direto gera resistência imediata! Atacar agressivamente o candidato faz a pessoa se fechar por orgulho e encerrar o diálogo.',
+        tacticalTip: 'Nunca ataque o interlocutor nem tente humilhar a escolha dele. Traga a conversa para o chão da fábrica e do comércio.',
+      },
+      {
+        id: 'opt-2',
+        text: '“Eduardo, eu respeito muito a sua fé e a sua preocupação com a família. Ninguém aqui quer baderna nem corrupção. Mas deixa eu te fazer uma pergunta sincera de colega que rala no comércio: você sabia que o Flávio votou CONTRA o fim da escala 6x1? Ele acha normal quem trabalha no comércio folgar só 1 dia por semana e não ter tempo pra família e pro culto. E na gestão passada, cortaram 59% da Farmácia Popular. Se o seu pai ou mãe precisar de remédio de pressão, quem vai pagar a conta? Político que mora em mansão de R$ 6 milhões não sente o que a gente passa na escala de sábado e domingo.”',
+        tone: 'acolhedor',
+        score: 98,
+        feedback: '🎯 Resposta de Mestre! Você validou a fé e a família dele com respeito, separou o trabalhador do político milionário e tocou na ferida real: a folga da escala 6x1 e os remédios.',
+        tacticalTip: 'A escala 6x1 e a Farmácia Popular são as duas maiores chaves de diálogo com eleitores de direita trabalhadores: tocam no cansaço da rotina e no bolso.',
+      },
+      {
+        id: 'opt-3',
+        text: '“É, cada um tem sua opinião, melhor a gente não misturar trabalho com política pra não dar confusão.”',
+        tone: 'passivo',
+        score: 40,
+        feedback: '⚠️ Fuga compreensível, mas perde a oportunidade de mostrar que a escala de trabalho dele está em jogo na urna.',
+        tacticalTip: 'Com calma e respeito, é possível falar de trabalho e folga sem transformar em briga partidária.',
+      },
+    ],
+  },
 ];
 
 export default function ConversationSimulator({

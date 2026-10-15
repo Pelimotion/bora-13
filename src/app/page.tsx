@@ -33,6 +33,7 @@ import {
 } from '@/lib/agenticOrchestrator';
 import {
   type ConversionFront,
+  type ConversionFrontId,
   MENOS_COM_FLAVIO_FACTS,
 } from '@/data/electoralTactics';
 
@@ -254,8 +255,8 @@ export default function BoraApp() {
         updatedProfile.profileTags = inferred;
       }
 
-      const validFronts = ['ex_lula', 'terceira_via', 'abstencao_70', 'nulo_branco'];
-      const parsedFront = (frontParam && validFronts.includes(frontParam)) ? (frontParam as any) : undefined;
+      const validFronts: ConversionFrontId[] = ['ex_lula', 'terceira_via', 'bolsonarista_flavio', 'abstencao_70', 'nulo_branco'];
+      const parsedFront = (frontParam && validFronts.includes(frontParam as any)) ? (frontParam as ConversionFrontId) : undefined;
 
       setProfile(updatedProfile);
       setMemory((prev) => ({
@@ -360,9 +361,9 @@ export default function BoraApp() {
     [memory]
   );
 
-  // Seleção de Frente de Conversão dos 4 Votos
+  // Seleção de Frente de Conversão dos 5 Perfis
   const handleSelectFront = useCallback(
-    (frontId: 'ex_lula' | 'terceira_via' | 'abstencao_70' | 'nulo_branco') => {
+    (frontId: ConversionFrontId) => {
       setMemory((prev) => ({ ...prev, activeFrontId: frontId }));
     },
     []

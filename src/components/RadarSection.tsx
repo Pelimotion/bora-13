@@ -16,6 +16,8 @@ import {
   getRegionalTacticForUF,
 } from '@/data/electoralTactics';
 
+import type { ConversionFrontId } from '@/data/electoralTactics';
+
 interface RadarSectionProps {
   onNavigate: (section: AppSection) => void;
   canInstall?: boolean;
@@ -23,7 +25,7 @@ interface RadarSectionProps {
   memory?: AgenticWorkingMemory;
   onSelectState?: (uf: string, city?: string) => void;
   onGeneratePostFromTerritory?: (uf: string, city?: string) => void;
-  onSelectFront?: (frontId: 'ex_lula' | 'terceira_via' | 'abstencao_70' | 'nulo_branco') => void;
+  onSelectFront?: (frontId: ConversionFrontId) => void;
   onOpenStudioWithPreset?: (preset: PostPresetData) => void;
   onNavigateToSimulator?: (frontId?: string, occupation?: string) => void;
 }
@@ -77,7 +79,7 @@ export default function RadarSection({
     }
   };
 
-  const handleSelectFrontAndGo = (frontId: 'ex_lula' | 'terceira_via' | 'abstencao_70' | 'nulo_branco') => {
+  const handleSelectFrontAndGo = (frontId: ConversionFrontId) => {
     playProceduralHaptic('card');
     if (onSelectFront) {
       onSelectFront(frontId);
